@@ -122,6 +122,18 @@ class GuardrailTests(unittest.TestCase):
         self.assertEqual(a.decision_type, "request_clarification")
         self.assertTrue(events(ctx, "llm_decision_overridden"))
 
+    def test_inconsistent_overlap_does_not_override_agent_decision(self):
+        # C1: the agent decided route_for_approval but marked a seat expansion as covering the need
+        policy, ctx = run_policy("REQ-1001")
+        p = proposal(decision_type="route_for_approval",
+                     required_approvals=[{"role": "Manager", "reason": "tier"}],
+                     risk_flags=["existing_tool_overlap"],
+                     overlap_assessment=[{"software_id": "SW010", "relationship": "same_product_expansion",
+                                          "covers_stated_need": True, "reason": "more identities"}])
+        a = assemble(policy, p, ctx)
+        self.assertEqual(a.decision_type, "route_for_approval")
+        self.assertFalse(events(ctx, "llm_decision_overridden"))
+
     def test_missing_info_added_only_when_fields_missing(self):
         policy, ctx = run_policy("REQ-1001")
         a = assemble(policy, proposal(decision_type="route_for_approval",

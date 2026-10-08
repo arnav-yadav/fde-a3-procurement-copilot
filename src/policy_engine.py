@@ -675,9 +675,14 @@ def evaluate(request_id: str, ctx) -> PolicyResult:
 
 # ================================================================ R12 decision precedence
 def decide(policy: PolicyResult, final_roles: list[str], final_flags: list[str],
-           overlap_assessment: list | None = None) -> str:
+           overlap_assessment: list | None = None, agent_decision: str | None = None) -> str:
+    """R12. Deviation (docs/architecture.md C1): use_existing_tool also requires the agent's own
+    decision to be use_existing_tool, so an inconsistent overlap entry cannot override a decision
+    the agent did not make."""
     if policy.request_fields_missing:
         return "request_clarification"
+    if agent_decision is not None and agent_decision != "use_existing_tool":
+        overlap_assessment = None
     for a in overlap_assessment or []:
         sid = a.software_id if hasattr(a, "software_id") else a.get("software_id")
         covers = a.covers_stated_need if hasattr(a, "covers_stated_need") else a.get("covers_stated_need")

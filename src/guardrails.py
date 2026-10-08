@@ -195,7 +195,8 @@ def assemble(policy: PolicyResult, proposal: AgentProposal | None, ctx,
                 questions.append(text)
 
     # 4. Decision type (R12)
-    decision_type = decide(policy, final_roles, final_flags, proposal.overlap_assessment if proposal else None)
+    decision_type = decide(policy, final_roles, final_flags, proposal.overlap_assessment if proposal else None,
+                           proposal.decision_type if proposal else None)
     overridden = proposal is not None and proposal.decision_type != decision_type
     if overridden:
         ctx.event("llm_decision_overridden", proposed=proposal.decision_type, final=decision_type)
