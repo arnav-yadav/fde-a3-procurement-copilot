@@ -1,0 +1,427 @@
+{
+  "case": "G-21",
+  "architecture": "rules_only",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-1001",
+    "recommendation": "Route for approval: Request is complete and within policy; route to the approvers for this cost tier.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $800; users 3; data access internal_documents",
+        "reference": "employees.csv:E004"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $800 -> tier up to $1,000 -> Manager",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Finance available software budget $29,000; request $800 -> within budget ($28,200 left)",
+        "reference": "department_budgets.csv:Finance"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW010 SignFlow (E-signature, Company-wide, 45 seats, Approved) matches by same_category, same_vendor -> overlap; last purchase PO-2513 $16,000",
+        "reference": "software_catalog.csv:SW010"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V010 SignFlow: procurement Approved, security Approved (review 2026-06-20, 102 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V010"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk service unavailable (ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=9): Max retries exce\u2026; 2 attempts): security status and data residency could not be verified",
+        "reference": "GET /vendor-risk/SignFlow"
+      }
+    ],
+    "required_approvals": [
+      "Manager"
+    ],
+    "missing_information": [
+      "vendor security assessment (vendor-risk service unavailable)",
+      "vendor data-residency status (unverified)"
+    ],
+    "risk_flags": [
+      "existing_tool_overlap",
+      "vendor_risk_unavailable"
+    ],
+    "next_step": "Send the evidence pack to Manager.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 0,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261008T105002-b4f3c7f1",
+    "request_id": "REQ-1001",
+    "architecture": "single",
+    "mode": "rules_only",
+    "path": "rules_only",
+    "provider": null,
+    "model": null,
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_approval",
+    "latency_total_ms": 511.5,
+    "llm_wait_ms": 0.0,
+    "latency_active_ms": 511.5,
+    "llm_ms": 0.0,
+    "tool_ms": 511.2,
+    "llm_calls": 0,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1001"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 2.0,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1001"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 1.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1001"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 1.3,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "SignFlow"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 506.0,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1001"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1001"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1001"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "SignFlow"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-1001"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.8,
+        "cache_hit": false
+      }
+    ],
+    "proposals": {},
+    "policy": {
+      "request_id": "REQ-1001",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Manager",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier up to $1,000 for annual cost $800"
+            }
+          ],
+          "name_hint": "Priya Shah"
+        }
+      ],
+      "flags": [
+        "existing_tool_overlap",
+        "vendor_risk_unavailable"
+      ],
+      "flag_reasons": {
+        "existing_tool_overlap": [
+          {
+            "rule": "R5",
+            "policy_ref": "\u00a73",
+            "detail": "Existing catalog product(s) in the same category/product: SW010 SignFlow"
+          }
+        ],
+        "vendor_risk_unavailable": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a710",
+            "detail": "Vendor-risk service unavailable: security status could not be verified"
+          }
+        ]
+      },
+      "missing_information": [
+        "vendor security assessment (vendor-risk service unavailable)",
+        "vendor data-residency status (unverified)"
+      ],
+      "request_fields_missing": false,
+      "tier": "up to $1,000",
+      "data_classes": [],
+      "data_class_sources": {},
+      "overlap_flag_candidates": [
+        "SW010"
+      ],
+      "requester": {
+        "id": "E004",
+        "name": "Noah Williams",
+        "department": "Finance",
+        "level": "IC4",
+        "manager_hint": "Priya Shah",
+        "department_head_hint": "Priya Shah (Director, Finance)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Finance",
+        "annual_cost": 800.0,
+        "available_usd": 29000.0,
+        "committed_usd": 61000.0,
+        "annual_budget_usd": 90000.0,
+        "within_budget": true,
+        "remaining_after_usd": 28200.0,
+        "reference": "department_budgets.csv:Finance"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "SignFlow",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V010",
+          "vendor_name": "SignFlow",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-06-20",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "unavailable",
+          "status_code": null,
+          "attempts": 2,
+          "endpoint": "http://127.0.0.1:9/vendor-risk/SignFlow",
+          "error": "ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=9): Max retries exceeded with url: /vendor-risk/SignFlow (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=9): Failed to establish a new connection: [Errno 61] Connection refused\"))",
+          "record": null
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-06-20",
+          "registry_age_days": 102,
+          "registry_current": true,
+          "api_outcome": "unavailable",
+          "api_class": null,
+          "api_review_date": null,
+          "api_age_days": null,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": null,
+          "processes_personal_data": null
+        },
+        "untrusted_text": {
+          "registry_notes": "Standard vendor",
+          "api_notes": null
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $800; users 3; data access internal_documents",
+          "reference": "employees.csv:E004",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $800 -> tier up to $1,000 -> Manager",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Finance available software budget $29,000; request $800 -> within budget ($28,200 left)",
+          "reference": "department_budgets.csv:Finance",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW010 SignFlow (E-signature, Company-wide, 45 seats, Approved) matches by same_category, same_vendor -> overlap; last purchase PO-2513 $16,000",
+          "reference": "software_catalog.csv:SW010",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V010 SignFlow: procurement Approved, security Approved (review 2026-06-20, 102 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V010",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk service unavailable (ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=9): Max retries exce\u2026; 2 attempts): security status and data residency could not be verified",
+          "reference": "GET /vendor-risk/SignFlow",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [],
+    "event_counts": {
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Manager",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier up to $1,000 for annual cost $800"
+          }
+        ],
+        "name_hint": "Priya Shah"
+      }
+    ],
+    "flag_reasons": {
+      "existing_tool_overlap": [
+        {
+          "rule": "R5",
+          "policy_ref": "\u00a73",
+          "detail": "Existing catalog product(s) in the same category/product: SW010 SignFlow"
+        }
+      ],
+      "vendor_risk_unavailable": [
+        {
+          "rule": "R6",
+          "policy_ref": "\u00a710",
+          "detail": "Vendor-risk service unavailable: security status could not be verified"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": true,
+      "next_step": true
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-21",
+    "request_id": "REQ-1001",
+    "architecture": "rules_only",
+    "status": "valid",
+    "path": "rules_only",
+    "fault": "vendor_api_down",
+    "requires_ai": "",
+    "tests": "tool_unavailable",
+    "decision_type": "route_for_approval",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 511.5,
+    "latency_active_ms": 511.5,
+    "llm_wait_ms": 0.0,
+    "llm_calls": 0,
+    "tool_calls": 5,
+    "total_tokens": 0,
+    "run_id": "20261008T105002-b4f3c7f1",
+    "model": null,
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "raw_decision_ok": null,
+    "raw_approvals_ok": null,
+    "raw_flags_ok": null,
+    "trial": 1
+  }
+}

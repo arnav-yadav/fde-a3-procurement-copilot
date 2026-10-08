@@ -1,0 +1,729 @@
+{
+  "case": "G-03",
+  "architecture": "single",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-1003",
+    "recommendation": "Route for specialist review: Route the request for Department Head, Finance, Procurement, and Security specialist review.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $18,000; users 30; data access source_code",
+        "reference": "employees.csv:E002"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $18,000 -> tier $10,000.01-$25,000 -> Department Head, Finance, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Engineering available software budget $26,000; request $18,000 -> within budget ($8,000 left)",
+        "reference": "department_budgets.csv:Engineering"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW008 CodeMate (Developer AI, Engineering, 120 seats, Approved) matches by same_category, same_vendor -> overlap; last purchase PO-2440 $90,000",
+        "reference": "software_catalog.csv:SW008"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V008 CodeMate: procurement Approved, security Approved (review 2026-08-20, 41 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V008"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-08-20, stores data outside region no, processes personal data no",
+        "reference": "GET /vendor-risk/CodeMate"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Data classes: source_code (data_access_level 'source_code', integration 'Git repositories')",
+        "reference": "Policy \u00a75, \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Sensitive data/access: source_code (data_access_level 'source_code', integration 'Git repositories')",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Annual cost of $18,000.00 is within the Engineering department's available budget of $26,000.00.",
+        "reference": "department_budgets.csv:Engineering"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "Existing approved catalog product CodeMate (SW008) exists for the same vendor/category.",
+        "reference": "SW008"
+      },
+      {
+        "source": "get_request_details",
+        "finding": "Request is an expansion of CodeMate for two additional engineering squads (30 users) with source code access.",
+        "reference": "REQ-1003"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Policy requires Department Head, Finance, Procurement, and Security approvals due to financial tier ($10,000.01-$25,000) and source code data access.",
+        "reference": "\u00a74, \u00a75"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Finance",
+      "Procurement",
+      "Security"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "existing_tool_overlap",
+      "security_review_required"
+    ],
+    "next_step": "Route the request for Department Head, Finance, Procurement, and Security reviews.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 3,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261008T103425-082bc66f",
+    "request_id": "REQ-1003",
+    "architecture": "single",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 17672.7,
+    "llm_wait_ms": 12795.3,
+    "latency_active_ms": 4877.4,
+    "llm_ms": 4857.4,
+    "tool_ms": 11.1,
+    "llm_calls": 3,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 9443,
+      "completion_tokens": 726,
+      "total_tokens": 10169
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1003"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 2.2,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1003"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.6,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1003"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1003"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1003"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1003"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "CodeMate"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 3.3,
+        "cache_hit": false
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-1003"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 4.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "CodeMate"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1003"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "proposals": {
+      "single": {
+        "decision_type": "route_for_specialist_review",
+        "recommendation": "Route the request for Department Head, Finance, Procurement, and Security specialist review.",
+        "next_step": "Route the request for Department Head, Finance, Procurement, and Security reviews.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $18,000"
+          },
+          {
+            "role": "Finance",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $18,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $18,000"
+          },
+          {
+            "role": "Security",
+            "reason": "\u00a75 Sensitive data/access: source_code (data_access_level 'source_code', integration 'Git repositories')"
+          }
+        ],
+        "risk_flags": [
+          "existing_tool_overlap",
+          "security_review_required"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW008",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "Request is an expansion of an existing licensed tool (CodeMate SW008) to additional squads, not an alternative product."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Annual cost of $18,000.00 is within the Engineering department's available budget of $26,000.00.",
+            "reference": "department_budgets.csv:Engineering"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Existing approved catalog product CodeMate (SW008) exists for the same vendor/category.",
+            "reference": "SW008"
+          },
+          {
+            "source": "get_request_details",
+            "finding": "Request is an expansion of CodeMate for two additional engineering squads (30 users) with source code access.",
+            "reference": "REQ-1003"
+          },
+          {
+            "source": "evaluate_policy_rules",
+            "finding": "Policy requires Department Head, Finance, Procurement, and Security approvals due to financial tier ($10,000.01-$25,000) and source code data access.",
+            "reference": "\u00a74, \u00a75"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor CodeMate is registered and approved with a recent security review date of 2026-08-20.",
+            "reference": "V008"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null
+      },
+      "submissions": [
+        {
+          "next_step": "Route the request for Department Head, Finance, Procurement, and Security reviews.",
+          "decision_type": "route_for_specialist_review",
+          "required_approvals": [
+            {
+              "role": "Department Head",
+              "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $18,000"
+            },
+            {
+              "role": "Finance",
+              "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $18,000"
+            },
+            {
+              "role": "Procurement",
+              "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $18,000"
+            },
+            {
+              "reason": "\u00a75 Sensitive data/access: source_code (data_access_level 'source_code', integration 'Git repositories')",
+              "role": "Security"
+            }
+          ],
+          "overlap_assessment": [
+            {
+              "reason": "Request is an expansion of an existing licensed tool (CodeMate SW008) to additional squads, not an alternative product.",
+              "covers_stated_need": false,
+              "relationship": "same_product_expansion",
+              "software_id": "SW008"
+            }
+          ],
+          "evidence": [
+            {
+              "reference": "department_budgets.csv:Engineering",
+              "finding": "Annual cost of $18,000.00 is within the Engineering department's available budget of $26,000.00.",
+              "source": "check_budget"
+            },
+            {
+              "reference": "SW008",
+              "finding": "Existing approved catalog product CodeMate (SW008) exists for the same vendor/category.",
+              "source": "search_software_catalog"
+            },
+            {
+              "source": "get_request_details",
+              "reference": "REQ-1003",
+              "finding": "Request is an expansion of CodeMate for two additional engineering squads (30 users) with source code access."
+            },
+            {
+              "source": "evaluate_policy_rules",
+              "finding": "Policy requires Department Head, Finance, Procurement, and Security approvals due to financial tier ($10,000.01-$25,000) and source code data access.",
+              "reference": "\u00a74, \u00a75"
+            },
+            {
+              "finding": "Vendor CodeMate is registered and approved with a recent security review date of 2026-08-20.",
+              "reference": "V008",
+              "source": "get_vendor_status"
+            }
+          ],
+          "recommendation": "Route the request for Department Head, Finance, Procurement, and Security specialist review.",
+          "injection_observed": false,
+          "missing_information": [],
+          "risk_flags": [
+            "existing_tool_overlap",
+            "security_review_required"
+          ]
+        }
+      ]
+    },
+    "policy": {
+      "request_id": "REQ-1003",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $18,000"
+            }
+          ],
+          "name_hint": "Maya Rao (Director, Engineering)"
+        },
+        {
+          "role": "Finance",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $18,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $18,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a75",
+              "detail": "Sensitive data/access: source_code (data_access_level 'source_code', integration 'Git repositories')"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "existing_tool_overlap",
+        "security_review_required"
+      ],
+      "flag_reasons": {
+        "existing_tool_overlap": [
+          {
+            "rule": "R5",
+            "policy_ref": "\u00a73",
+            "detail": "Existing catalog product(s) in the same category/product: SW008 CodeMate"
+          }
+        ],
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: source_code (data_access_level 'source_code', integration 'Git repositories')"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$10,000.01-$25,000",
+      "data_classes": [
+        "source_code"
+      ],
+      "data_class_sources": {
+        "source_code": [
+          "data_access_level 'source_code'",
+          "integration 'Git repositories'"
+        ]
+      },
+      "overlap_flag_candidates": [
+        "SW008"
+      ],
+      "requester": {
+        "id": "E002",
+        "name": "Arjun Mehta",
+        "department": "Engineering",
+        "level": "IC5",
+        "manager_hint": "Maya Rao",
+        "department_head_hint": "Maya Rao (Director, Engineering)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Engineering",
+        "annual_cost": 18000.0,
+        "available_usd": 26000.0,
+        "committed_usd": 274000.0,
+        "annual_budget_usd": 300000.0,
+        "within_budget": true,
+        "remaining_after_usd": 8000.0,
+        "reference": "department_budgets.csv:Engineering"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "CodeMate",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V008",
+          "vendor_name": "CodeMate",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-08-20",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/CodeMate",
+          "error": null,
+          "record": {
+            "vendor_name": "CodeMate",
+            "risk_level": "medium",
+            "security_review_status": "approved",
+            "last_review_date": "2026-08-20",
+            "processes_personal_data": false,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-08-20",
+          "registry_age_days": 41,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-08-20",
+          "api_age_days": 41,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": false
+        },
+        "untrusted_text": {
+          "registry_notes": "Approved for source-code use subject to security controls",
+          "api_notes": "Approved for source-code use when repository controls are enabled."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $18,000; users 30; data access source_code",
+          "reference": "employees.csv:E002",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $18,000 -> tier $10,000.01-$25,000 -> Department Head, Finance, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Engineering available software budget $26,000; request $18,000 -> within budget ($8,000 left)",
+          "reference": "department_budgets.csv:Engineering",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW008 CodeMate (Developer AI, Engineering, 120 seats, Approved) matches by same_category, same_vendor -> overlap; last purchase PO-2440 $90,000",
+          "reference": "software_catalog.csv:SW008",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V008 CodeMate: procurement Approved, security Approved (review 2026-08-20, 41 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V008",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-08-20, stores data outside region no, processes personal data no",
+          "reference": "GET /vendor-risk/CodeMate",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Data classes: source_code (data_access_level 'source_code', integration 'Git repositories')",
+          "reference": "Policy \u00a75, \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Sensitive data/access: source_code (data_access_level 'source_code', integration 'Git repositories')",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "get_request_details",
+          "check_budget",
+          "search_software_catalog",
+          "evaluate_policy_rules"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "get_vendor_status"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 3,
+        "forced": false,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": ""
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 3,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $18,000"
+          }
+        ],
+        "name_hint": "Maya Rao (Director, Engineering)"
+      },
+      {
+        "role": "Finance",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $18,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $18,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: source_code (data_access_level 'source_code', integration 'Git repositories')"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "existing_tool_overlap": [
+        {
+          "rule": "R5",
+          "policy_ref": "\u00a73",
+          "detail": "Existing catalog product(s) in the same category/product: SW008 CodeMate"
+        }
+      ],
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Sensitive data/access: source_code (data_access_level 'source_code', integration 'Git repositories')"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-03",
+    "request_id": "REQ-1003",
+    "architecture": "single",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "security_sensitive,threshold",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 17672.7,
+    "latency_active_ms": 4877.4,
+    "llm_wait_ms": 12795.3,
+    "llm_calls": 3,
+    "tool_calls": 5,
+    "total_tokens": 10169,
+    "run_id": "20261008T103425-082bc66f",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "raw_decision_ok": true,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 1
+  }
+}

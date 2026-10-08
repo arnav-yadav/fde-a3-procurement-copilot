@@ -1,0 +1,689 @@
+{
+  "case": "G-12",
+  "architecture": "staged",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-X102",
+    "recommendation": "Route for approval: Route the request to Department Head and Procurement for approval with existing tool overlap flagged for SW004.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $10,000; users 40; data access internal_documents",
+        "reference": "employees.csv:E002"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $10,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Engineering available software budget $26,000; request $10,000 -> within budget ($16,000 left)",
+        "reference": "department_budgets.csv:Engineering"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW004 DocSpace (Knowledge Management, Company-wide, 200 seats, Approved) matches by same_category, same_vendor -> overlap",
+        "reference": "software_catalog.csv:SW004"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V004 DocSpace: procurement Approved, security Approved (review 2026-02-24, 218 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V004"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-02-24, stores data outside region no, processes personal data yes",
+        "reference": "GET /vendor-risk/DocSpace"
+      },
+      {
+        "source": "get_request_details",
+        "finding": "Request REQ-X102 is for DocSpace Analytics Add-on from DocSpace, costing $10,000 annually for 40 users in Engineering.",
+        "reference": "get_request_details"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Engineering department budget has $26,000 available out of $300,000 annual budget; request of $10,000 is within available budget.",
+        "reference": "department_budgets.csv:Engineering"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "Software catalog candidate SW004 is DocSpace (Knowledge Management), an approved company-wide product.",
+        "reference": "search_software_catalog"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor DocSpace is registered and approved in both registry and vendor-risk service, with security review date 2026-02-24 (218 days ago, not expired).",
+        "reference": "get_vendor_status"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API notes that DocSpace processes personal data and stores data within the operating region.",
+        "reference": "get_vendor_status"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Procurement"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "existing_tool_overlap"
+    ],
+    "next_step": "Department Head and Procurement review the request and overlap assessment for approval.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 6,
+      "tool_calls": 8,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "get_vendor_status",
+        "lookup_policy_section",
+        "lookup_policy_section",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261008T104232-c8dd1a80",
+    "request_id": "REQ-X102",
+    "architecture": "staged",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_approval",
+    "latency_total_ms": 34844.9,
+    "llm_wait_ms": 25239.2,
+    "latency_active_ms": 9605.6,
+    "llm_ms": 9556.9,
+    "tool_ms": 28.3,
+    "llm_calls": 6,
+    "tool_calls": 8,
+    "tokens": {
+      "prompt_tokens": 16610,
+      "completion_tokens": 1170,
+      "total_tokens": 17780
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 2.9,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.0,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.3,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "DataSift Analytics"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 5.0,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "DocSpace"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 11.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 5
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.9,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 6
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.9,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "DocSpace"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 3.2,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X102"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "proposals": {
+      "analyst": {
+        "need_summary": "Purchase DocSpace Analytics Add-on to analyze engineering documentation usage within the existing DocSpace workspace.",
+        "data_classes_implied": [
+          "internal_documents"
+        ],
+        "overlap_assessment": [
+          {
+            "software_id": "SW004",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "SW004 is the core DocSpace workspace, whereas the request is specifically for the Analytics Add-on; the stated gap for usage analytics is credible."
+          }
+        ],
+        "vendor_observations": [
+          "DocSpace is fully approved in the registry and vendor-risk service (low risk, review date 2026-02-24, no conflict)."
+        ],
+        "uncertainties": [
+          "Privacy review status not explicitly confirmed despite vendor processing personal data and internal documents data class."
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "evidence": [
+          {
+            "source": "get_request_details",
+            "finding": "Request REQ-X102 is for DocSpace Analytics Add-on from DocSpace, costing $10,000 annually for 40 users in Engineering.",
+            "reference": "get_request_details"
+          },
+          {
+            "source": "check_budget",
+            "finding": "Engineering department budget has $26,000 available out of $300,000 annual budget; request of $10,000 is within available budget.",
+            "reference": "check_budget"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Software catalog candidate SW004 is DocSpace (Knowledge Management), an approved company-wide product.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor DocSpace is registered and approved in both registry and vendor-risk service, with security review date 2026-02-24 (218 days ago, not expired).",
+            "reference": "get_vendor_status"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor-risk API notes that DocSpace processes personal data and stores data within the operating region.",
+            "reference": "get_vendor_status"
+          }
+        ]
+      },
+      "reviewer": {
+        "decision_type": "route_for_approval",
+        "recommendation": "Route the request to Department Head and Procurement for approval with existing tool overlap flagged for SW004.",
+        "next_step": "Department Head and Procurement review the request and overlap assessment for approval.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          }
+        ],
+        "risk_flags": [
+          "existing_tool_overlap"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW004",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "SW004 is the core DocSpace workspace, whereas the request is specifically for the Analytics Add-on; the stated gap for usage analytics is credible."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "get_request_details",
+            "finding": "Request REQ-X102 is for DocSpace Analytics Add-on from DocSpace, costing $10,000 annually for 40 users in Engineering.",
+            "reference": "get_request_details"
+          },
+          {
+            "source": "check_budget",
+            "finding": "Engineering department budget has $26,000 available out of $300,000 annual budget; request of $10,000 is within available budget.",
+            "reference": "department_budgets.csv:Engineering"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Software catalog candidate SW004 is DocSpace (Knowledge Management), an approved company-wide product.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor DocSpace is registered and approved in both registry and vendor-risk service, with security review date 2026-02-24 (218 days ago, not expired).",
+            "reference": "get_vendor_status"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor-risk API notes that DocSpace processes personal data and stores data within the operating region.",
+            "reference": "get_vendor_status"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": "null"
+      }
+    },
+    "policy": {
+      "request_id": "REQ-X102",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $10,000"
+            }
+          ],
+          "name_hint": "Maya Rao (Director, Engineering)"
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $10,000"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "existing_tool_overlap"
+      ],
+      "flag_reasons": {
+        "existing_tool_overlap": [
+          {
+            "rule": "R5",
+            "policy_ref": "\u00a73",
+            "detail": "Existing catalog product(s) in the same category/product: SW004 DocSpace"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$1,000.01-$10,000",
+      "data_classes": [],
+      "data_class_sources": {},
+      "overlap_flag_candidates": [
+        "SW004"
+      ],
+      "requester": {
+        "id": "E002",
+        "name": "Arjun Mehta",
+        "department": "Engineering",
+        "level": "IC5",
+        "manager_hint": "Maya Rao",
+        "department_head_hint": "Maya Rao (Director, Engineering)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Engineering",
+        "annual_cost": 10000.0,
+        "available_usd": 26000.0,
+        "committed_usd": 274000.0,
+        "annual_budget_usd": 300000.0,
+        "within_budget": true,
+        "remaining_after_usd": 16000.0,
+        "reference": "department_budgets.csv:Engineering"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "DocSpace",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V004",
+          "vendor_name": "DocSpace",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-02-24",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/DocSpace",
+          "error": null,
+          "record": {
+            "vendor_name": "DocSpace",
+            "risk_level": "low",
+            "security_review_status": "approved",
+            "last_review_date": "2026-02-24",
+            "processes_personal_data": true,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-02-24",
+          "registry_age_days": 218,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-02-24",
+          "api_age_days": 218,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": true
+        },
+        "untrusted_text": {
+          "registry_notes": "Standard vendor",
+          "api_notes": "Current assessment."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $10,000; users 40; data access internal_documents",
+          "reference": "employees.csv:E002",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $10,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Engineering available software budget $26,000; request $10,000 -> within budget ($16,000 left)",
+          "reference": "department_budgets.csv:Engineering",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW004 DocSpace (Knowledge Management, Company-wide, 200 seats, Approved) matches by same_category, same_vendor -> overlap",
+          "reference": "software_catalog.csv:SW004",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V004 DocSpace: procurement Approved, security Approved (review 2026-02-24, 218 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V004",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-02-24, stores data outside region no, processes personal data yes",
+          "reference": "GET /vendor-risk/DocSpace",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "get_request_details",
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "get_vendor_status"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 3,
+        "forced": false,
+        "tool_calls": [
+          "lookup_policy_section"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 4,
+        "forced": false,
+        "tool_calls": [
+          "lookup_policy_section"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 5,
+        "forced": true,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "reviewer",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": ""
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 6,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          }
+        ],
+        "name_hint": "Maya Rao (Director, Engineering)"
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "existing_tool_overlap": [
+        {
+          "rule": "R5",
+          "policy_ref": "\u00a73",
+          "detail": "Existing catalog product(s) in the same category/product: SW004 DocSpace"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-12",
+    "request_id": "REQ-X102",
+    "architecture": "staged",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "threshold",
+    "decision_type": "route_for_approval",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 34844.9,
+    "latency_active_ms": 9605.6,
+    "llm_wait_ms": 25239.2,
+    "llm_calls": 6,
+    "tool_calls": 8,
+    "total_tokens": 17780,
+    "run_id": "20261008T104232-c8dd1a80",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "raw_decision_ok": true,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 1
+  }
+}

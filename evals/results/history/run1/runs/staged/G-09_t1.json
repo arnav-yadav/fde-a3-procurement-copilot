@@ -1,0 +1,902 @@
+{
+  "case": "G-09",
+  "architecture": "staged",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-1009",
+    "recommendation": "Route for specialist review: Route the request for specialist review across Department Head, Finance, Procurement, Security, Privacy, and Legal due to financial thresholds, missing security assessments, unverified data residency, and new vendor legal review requirements.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $15,000; users 8; data access confidential_documents",
+        "reference": "employees.csv:E004"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $15,000 -> tier $10,000.01-$25,000 -> Department Head, Finance, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Finance available software budget $29,000; request $15,000 -> within budget ($14,000 left)",
+        "reference": "department_budgets.csv:Finance"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V013 NimbusAI: procurement New, security Unknown (review none), legal terms Unknown",
+        "reference": "vendors.csv:V013"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk service unavailable (HTTP 503: Upstream vendor assessment provider is temporarily unavailable.; 2 attempts): security status and data residency could not be verified",
+        "reference": "GET /vendor-risk/NimbusAI"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Data classes: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')",
+        "reference": "Policy \u00a75, \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: registry security status Unknown; Sensitive data/access: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Privacy review required: Data residency unverified (vendor-risk service unavailable) with sensitive data",
+        "reference": "Policy \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Legal review required: New vendor with annual spend $15,000 (>= $10,000); Legal terms not approved/standard (Unknown)",
+        "reference": "Policy \u00a77"
+      },
+      {
+        "source": "get_request_details",
+        "finding": "Request REQ-1009 requests NimbusAI Contract Reviewer for Finance with annual cost $15,000 for 8 users accessing confidential documents and 1 integration.",
+        "reference": "get_request_details"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Finance department budget is sufficient ($29,000 available, $15,000 cost).",
+        "reference": "department_budgets.csv:Finance"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "Software catalog has no existing candidates for category Legal AI.",
+        "reference": "search_software_catalog"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Finance",
+      "Procurement",
+      "Security",
+      "Privacy",
+      "Legal"
+    ],
+    "missing_information": [
+      "vendor security assessment (vendor-risk service unavailable)",
+      "vendor data-residency status (unverified)"
+    ],
+    "risk_flags": [
+      "security_review_required",
+      "privacy_review_required",
+      "legal_review_required",
+      "vendor_risk_unavailable"
+    ],
+    "next_step": "Route the request to Department Head, Finance, Procurement, Security, Privacy, and Legal for review.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 6,
+      "tool_calls": 8,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "get_vendor_status",
+        "lookup_policy_section",
+        "lookup_policy_section",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261008T103956-5e472bde",
+    "request_id": "REQ-1009",
+    "architecture": "staged",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 36528.7,
+    "llm_wait_ms": 25966.4,
+    "latency_active_ms": 10562.3,
+    "llm_ms": 10001.0,
+    "tool_ms": 537.1,
+    "llm_calls": 6,
+    "tool_calls": 8,
+    "tokens": {
+      "prompt_tokens": 16242,
+      "completion_tokens": 1340,
+      "total_tokens": 17582
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 3.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.0,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "Placeholder Vendor"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 17.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "NimbusAI"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 509.8,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 5
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.6,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 7
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "NimbusAI"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 2.7,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1009"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "proposals": {
+      "analyst": {
+        "need_summary": "Procure NimbusAI Contract Reviewer for Finance department users to summarize vendor agreements and flag non-standard payment terms.",
+        "data_classes_implied": [
+          "confidential_documents"
+        ],
+        "overlap_assessment": [
+          {
+            "software_id": "none",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "No matching software category found in catalog."
+          }
+        ],
+        "vendor_observations": [
+          "Vendor is registered in the internal registry with status 'New' and security_status 'Unknown'.",
+          "The external vendor-risk API is unavailable (HTTP 503)."
+        ],
+        "uncertainties": [
+          "Security review status is missing/unknown and the vendor-risk API is currently unavailable.",
+          "Legal review is required because the vendor is new and annual spend is $15,000 (>= $10,000).",
+          "Data-processing details or region storage for confidential documents and repository integration are unverified."
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "evidence": [
+          {
+            "source": "get_request_details",
+            "finding": "Request REQ-1009 is for NimbusAI Contract Reviewer by Noah Williams (Finance) with annual cost $15,000 for 8 users.",
+            "reference": "get_request_details"
+          },
+          {
+            "source": "check_budget",
+            "finding": "Finance department budget is sufficient ($29,000 available, $15,000 cost).",
+            "reference": "check_budget"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Software catalog has no existing candidates for category Legal AI.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor NimbusAI is registered as a New vendor with Unknown security status and Unknown legal terms status.",
+            "reference": "get_vendor_status"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor-risk API service for NimbusAI is temporarily unavailable (HTTP 503).",
+            "reference": "get_vendor_status"
+          }
+        ]
+      },
+      "reviewer": {
+        "decision_type": "route_for_specialist_review",
+        "recommendation": "Route the request for specialist review across Department Head, Finance, Procurement, Security, Privacy, and Legal due to financial thresholds, missing security assessments, unverified data residency, and new vendor legal review requirements.",
+        "next_step": "Route the request to Department Head, Finance, Procurement, Security, Privacy, and Legal for review.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $15,000"
+          },
+          {
+            "role": "Finance",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $15,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $15,000"
+          },
+          {
+            "role": "Security",
+            "reason": "\u00a75 Vendor security assessment missing, expired, not completed or conflicting: registry security status Unknown and Sensitive data/access: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')"
+          },
+          {
+            "role": "Privacy",
+            "reason": "\u00a76 Data residency unverified (vendor-risk service unavailable) with sensitive data"
+          },
+          {
+            "role": "Legal",
+            "reason": "\u00a77 New vendor with annual spend $15,000 (>= $10,000) and Legal terms not approved/standard (Unknown)"
+          }
+        ],
+        "risk_flags": [
+          "security_review_required",
+          "privacy_review_required",
+          "legal_review_required",
+          "vendor_risk_unavailable"
+        ],
+        "missing_information": [
+          "vendor security assessment (vendor-risk service unavailable)",
+          "vendor data-residency status (unverified)"
+        ],
+        "overlap_assessment": [
+          {
+            "software_id": "none",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "No matching software category found in catalog."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "get_request_details",
+            "finding": "Request REQ-1009 requests NimbusAI Contract Reviewer for Finance with annual cost $15,000 for 8 users accessing confidential documents and 1 integration.",
+            "reference": "get_request_details"
+          },
+          {
+            "source": "check_budget",
+            "finding": "Finance department budget is sufficient ($29,000 available, $15,000 cost).",
+            "reference": "department_budgets.csv:Finance"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Software catalog has no existing candidates for category Legal AI.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor NimbusAI is registered as New with Unknown security status and Unknown legal terms status.",
+            "reference": "get_vendor_status"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "External vendor-risk API is temporarily unavailable (HTTP 503).",
+            "reference": "http://127.0.0.1:8011/vendor-risk/NimbusAI"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": "null"
+      }
+    },
+    "policy": {
+      "request_id": "REQ-1009",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $15,000"
+            }
+          ],
+          "name_hint": "Priya Shah (Director, Finance)"
+        },
+        {
+          "role": "Finance",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $15,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $15,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R6",
+              "policy_ref": "\u00a75",
+              "detail": "Vendor security assessment missing, expired, not completed or conflicting: registry security status Unknown"
+            },
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a75",
+              "detail": "Sensitive data/access: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Privacy",
+          "reasons": [
+            {
+              "rule": "R8",
+              "policy_ref": "\u00a76",
+              "detail": "Data residency unverified (vendor-risk service unavailable) with sensitive data"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Legal",
+          "reasons": [
+            {
+              "rule": "R9",
+              "policy_ref": "\u00a77",
+              "detail": "New vendor with annual spend $15,000 (>= $10,000)"
+            },
+            {
+              "rule": "R9",
+              "policy_ref": "\u00a77",
+              "detail": "Legal terms not approved/standard (Unknown)"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "security_review_required",
+        "privacy_review_required",
+        "legal_review_required",
+        "vendor_risk_unavailable"
+      ],
+      "flag_reasons": {
+        "vendor_risk_unavailable": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a710",
+            "detail": "Vendor-risk service unavailable: security status could not be verified"
+          }
+        ],
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: registry security status Unknown; Sensitive data/access: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')"
+          }
+        ],
+        "privacy_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a76",
+            "detail": "Data residency unverified (vendor-risk service unavailable) with sensitive data"
+          }
+        ],
+        "legal_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a77",
+            "detail": "New vendor with annual spend $15,000 (>= $10,000); Legal terms not approved/standard (Unknown)"
+          }
+        ]
+      },
+      "missing_information": [
+        "vendor security assessment (vendor-risk service unavailable)",
+        "vendor data-residency status (unverified)"
+      ],
+      "request_fields_missing": false,
+      "tier": "$10,000.01-$25,000",
+      "data_classes": [
+        "confidential_documents"
+      ],
+      "data_class_sources": {
+        "confidential_documents": [
+          "data_access_level 'confidential_documents'",
+          "integration 'Document repository'"
+        ]
+      },
+      "overlap_flag_candidates": [],
+      "requester": {
+        "id": "E004",
+        "name": "Noah Williams",
+        "department": "Finance",
+        "level": "IC4",
+        "manager_hint": "Priya Shah",
+        "department_head_hint": "Priya Shah (Director, Finance)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Finance",
+        "annual_cost": 15000.0,
+        "available_usd": 29000.0,
+        "committed_usd": 61000.0,
+        "annual_budget_usd": 90000.0,
+        "within_budget": true,
+        "remaining_after_usd": 14000.0,
+        "reference": "department_budgets.csv:Finance"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "NimbusAI",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V013",
+          "vendor_name": "NimbusAI",
+          "procurement_status": "New",
+          "security_status": "Unknown",
+          "security_review_date": "",
+          "legal_terms_status": "Unknown"
+        },
+        "api": {
+          "outcome": "unavailable",
+          "status_code": 503,
+          "attempts": 2,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/NimbusAI",
+          "error": "HTTP 503: Upstream vendor assessment provider is temporarily unavailable.",
+          "record": null
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "unknown",
+          "registry_review_date": null,
+          "registry_age_days": null,
+          "registry_current": false,
+          "api_outcome": "unavailable",
+          "api_class": null,
+          "api_review_date": null,
+          "api_age_days": null,
+          "expired": false,
+          "conflict": false,
+          "cleared": false,
+          "new_vendor": true,
+          "procurement_status": "New",
+          "legal_terms_status": "Unknown",
+          "legal_terms_approved": false,
+          "stores_data_outside_region": null,
+          "processes_personal_data": null
+        },
+        "untrusted_text": {
+          "registry_notes": "Vendor assessment service may be unavailable",
+          "api_notes": null
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $15,000; users 8; data access confidential_documents",
+          "reference": "employees.csv:E004",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $15,000 -> tier $10,000.01-$25,000 -> Department Head, Finance, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Finance available software budget $29,000; request $15,000 -> within budget ($14,000 left)",
+          "reference": "department_budgets.csv:Finance",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V013 NimbusAI: procurement New, security Unknown (review none), legal terms Unknown",
+          "reference": "vendors.csv:V013",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk service unavailable (HTTP 503: Upstream vendor assessment provider is temporarily unavailable.; 2 attempts): security status and data residency could not be verified",
+          "reference": "GET /vendor-risk/NimbusAI",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Data classes: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')",
+          "reference": "Policy \u00a75, \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: registry security status Unknown; Sensitive data/access: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Privacy review required: Data residency unverified (vendor-risk service unavailable) with sensitive data",
+          "reference": "Policy \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Legal review required: New vendor with annual spend $15,000 (>= $10,000); Legal terms not approved/standard (Unknown)",
+          "reference": "Policy \u00a77",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "get_request_details",
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "get_vendor_status"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 3,
+        "forced": false,
+        "tool_calls": [
+          "lookup_policy_section"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 4,
+        "forced": false,
+        "tool_calls": [
+          "lookup_policy_section"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 5,
+        "forced": true,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "reviewer",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": ""
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 6,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $15,000"
+          }
+        ],
+        "name_hint": "Priya Shah (Director, Finance)"
+      },
+      {
+        "role": "Finance",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $15,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $15,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: registry security status Unknown"
+          },
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Privacy",
+        "reasons": [
+          {
+            "rule": "R8",
+            "policy_ref": "\u00a76",
+            "detail": "Data residency unverified (vendor-risk service unavailable) with sensitive data"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Legal",
+        "reasons": [
+          {
+            "rule": "R9",
+            "policy_ref": "\u00a77",
+            "detail": "New vendor with annual spend $15,000 (>= $10,000)"
+          },
+          {
+            "rule": "R9",
+            "policy_ref": "\u00a77",
+            "detail": "Legal terms not approved/standard (Unknown)"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "vendor_risk_unavailable": [
+        {
+          "rule": "R6",
+          "policy_ref": "\u00a710",
+          "detail": "Vendor-risk service unavailable: security status could not be verified"
+        }
+      ],
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Vendor security assessment missing, expired, not completed or conflicting: registry security status Unknown; Sensitive data/access: confidential_documents (data_access_level 'confidential_documents', integration 'Document repository')"
+        }
+      ],
+      "privacy_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a76",
+          "detail": "Data residency unverified (vendor-risk service unavailable) with sensitive data"
+        }
+      ],
+      "legal_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a77",
+          "detail": "New vendor with annual spend $15,000 (>= $10,000); Legal terms not approved/standard (Unknown)"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-09",
+    "request_id": "REQ-1009",
+    "architecture": "staged",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "tool_unavailable,new_vendor,security_sensitive",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 36528.7,
+    "latency_active_ms": 10562.3,
+    "llm_wait_ms": 25966.4,
+    "llm_calls": 6,
+    "tool_calls": 8,
+    "total_tokens": 17582,
+    "run_id": "20261008T103956-5e472bde",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "raw_decision_ok": true,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 1
+  }
+}

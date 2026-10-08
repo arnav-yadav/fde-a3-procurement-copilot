@@ -1,0 +1,591 @@
+{
+  "case": "G-22",
+  "architecture": "rules_only",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-1002",
+    "recommendation": "Route for specialist review: Route for specialist review before any business approval: Security review and Legal review.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E001 Sarah Lee (Marketing, IC4); annual cost $12,000; users 25; data access internal_marketing",
+        "reference": "employees.csv:E001"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $12,000 -> tier $10,000.01-$25,000 -> Department Head, Finance, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Marketing available software budget $15,000; request $12,000 -> within budget ($3,000 left)",
+        "reference": "department_budgets.csv:Marketing"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW001 PixelCraft Pro (Design & Creative, Company-wide, 65 seats, Approved) matches by same_category -> overlap; last purchase PO-2472 $32,000",
+        "reference": "software_catalog.csv:SW001"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW002 CreativeSuite (Design & Creative, Marketing, 40 seats, Approved) matches by same_category -> overlap; last purchase PO-2401 $27,000",
+        "reference": "software_catalog.csv:SW002"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V011 BrandBoard: procurement New, security Pending (review none), legal terms Draft",
+        "reference": "vendors.csv:V011"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status not_completed, last review none, stores data outside region no, processes personal data yes",
+        "reference": "GET /vendor-risk/BrandBoard"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: registry security status Pending; vendor-risk API status not_completed",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Legal review required: New vendor with annual spend $12,000 (>= $10,000); Legal terms not approved/standard (Draft)",
+        "reference": "Policy \u00a77"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Finance",
+      "Procurement",
+      "Security",
+      "Legal"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "existing_tool_overlap",
+      "security_review_required",
+      "legal_review_required",
+      "llm_unavailable"
+    ],
+    "next_step": "Send the evidence pack to Department Head, Finance, Procurement, Security and Legal; Security and Legal review first.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 0,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261008T105002-815f0486",
+    "request_id": "REQ-1002",
+    "architecture": "single",
+    "mode": "llm",
+    "path": "fallback",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 4.4,
+    "llm_wait_ms": 0.0,
+    "latency_active_ms": 4.4,
+    "llm_ms": 0.0,
+    "tool_ms": 4.2,
+    "llm_calls": 0,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1002"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1002"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1002"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "BrandBoard"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 2.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1002"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1002"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1002"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "BrandBoard"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-1002"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.4,
+        "cache_hit": false
+      }
+    ],
+    "proposals": {},
+    "policy": {
+      "request_id": "REQ-1002",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $12,000"
+            }
+          ],
+          "name_hint": "David Chen (Director, Marketing)"
+        },
+        {
+          "role": "Finance",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $12,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $12,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R6",
+              "policy_ref": "\u00a75",
+              "detail": "Vendor security assessment missing, expired, not completed or conflicting: registry security status Pending; vendor-risk API status not_completed"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Legal",
+          "reasons": [
+            {
+              "rule": "R9",
+              "policy_ref": "\u00a77",
+              "detail": "New vendor with annual spend $12,000 (>= $10,000)"
+            },
+            {
+              "rule": "R9",
+              "policy_ref": "\u00a77",
+              "detail": "Legal terms not approved/standard (Draft)"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "existing_tool_overlap",
+        "security_review_required",
+        "legal_review_required"
+      ],
+      "flag_reasons": {
+        "existing_tool_overlap": [
+          {
+            "rule": "R5",
+            "policy_ref": "\u00a73",
+            "detail": "Existing catalog product(s) in the same category/product: SW001 PixelCraft Pro, SW002 CreativeSuite"
+          }
+        ],
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: registry security status Pending; vendor-risk API status not_completed"
+          }
+        ],
+        "legal_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a77",
+            "detail": "New vendor with annual spend $12,000 (>= $10,000); Legal terms not approved/standard (Draft)"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$10,000.01-$25,000",
+      "data_classes": [],
+      "data_class_sources": {},
+      "overlap_flag_candidates": [
+        "SW001",
+        "SW002"
+      ],
+      "requester": {
+        "id": "E001",
+        "name": "Sarah Lee",
+        "department": "Marketing",
+        "level": "IC4",
+        "manager_hint": "David Chen",
+        "department_head_hint": "David Chen (Director, Marketing)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Marketing",
+        "annual_cost": 12000.0,
+        "available_usd": 15000.0,
+        "committed_usd": 165000.0,
+        "annual_budget_usd": 180000.0,
+        "within_budget": true,
+        "remaining_after_usd": 3000.0,
+        "reference": "department_budgets.csv:Marketing"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "BrandBoard",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V011",
+          "vendor_name": "BrandBoard",
+          "procurement_status": "New",
+          "security_status": "Pending",
+          "security_review_date": "",
+          "legal_terms_status": "Draft"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/BrandBoard",
+          "error": null,
+          "record": {
+            "vendor_name": "BrandBoard",
+            "risk_level": "medium",
+            "security_review_status": "not_completed",
+            "last_review_date": null,
+            "processes_personal_data": true,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "pending",
+          "registry_review_date": null,
+          "registry_age_days": null,
+          "registry_current": false,
+          "api_outcome": "ok",
+          "api_class": "pending",
+          "api_review_date": null,
+          "api_age_days": null,
+          "expired": false,
+          "conflict": false,
+          "cleared": false,
+          "new_vendor": true,
+          "procurement_status": "New",
+          "legal_terms_status": "Draft",
+          "legal_terms_approved": false,
+          "stores_data_outside_region": false,
+          "processes_personal_data": true
+        },
+        "untrusted_text": {
+          "registry_notes": "Not yet through full onboarding",
+          "api_notes": "Vendor onboarding incomplete."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E001 Sarah Lee (Marketing, IC4); annual cost $12,000; users 25; data access internal_marketing",
+          "reference": "employees.csv:E001",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $12,000 -> tier $10,000.01-$25,000 -> Department Head, Finance, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Marketing available software budget $15,000; request $12,000 -> within budget ($3,000 left)",
+          "reference": "department_budgets.csv:Marketing",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW001 PixelCraft Pro (Design & Creative, Company-wide, 65 seats, Approved) matches by same_category -> overlap; last purchase PO-2472 $32,000",
+          "reference": "software_catalog.csv:SW001",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW002 CreativeSuite (Design & Creative, Marketing, 40 seats, Approved) matches by same_category -> overlap; last purchase PO-2401 $27,000",
+          "reference": "software_catalog.csv:SW002",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V011 BrandBoard: procurement New, security Pending (review none), legal terms Draft",
+          "reference": "vendors.csv:V011",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status not_completed, last review none, stores data outside region no, processes personal data yes",
+          "reference": "GET /vendor-risk/BrandBoard",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: registry security status Pending; vendor-risk API status not_completed",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Legal review required: New vendor with annual spend $12,000 (>= $10,000); Legal terms not approved/standard (Draft)",
+          "reference": "Policy \u00a77",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [],
+    "event_counts": {
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $12,000"
+          }
+        ],
+        "name_hint": "David Chen (Director, Marketing)"
+      },
+      {
+        "role": "Finance",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $12,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $12,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: registry security status Pending; vendor-risk API status not_completed"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Legal",
+        "reasons": [
+          {
+            "rule": "R9",
+            "policy_ref": "\u00a77",
+            "detail": "New vendor with annual spend $12,000 (>= $10,000)"
+          },
+          {
+            "rule": "R9",
+            "policy_ref": "\u00a77",
+            "detail": "Legal terms not approved/standard (Draft)"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "existing_tool_overlap": [
+        {
+          "rule": "R5",
+          "policy_ref": "\u00a73",
+          "detail": "Existing catalog product(s) in the same category/product: SW001 PixelCraft Pro, SW002 CreativeSuite"
+        }
+      ],
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Vendor security assessment missing, expired, not completed or conflicting: registry security status Pending; vendor-risk API status not_completed"
+        }
+      ],
+      "legal_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a77",
+          "detail": "New vendor with annual spend $12,000 (>= $10,000); Legal terms not approved/standard (Draft)"
+        }
+      ],
+      "llm_unavailable": [
+        {
+          "rule": "SYS",
+          "policy_ref": "\u00a710",
+          "detail": "AI analysis unavailable: rule-based result"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": true,
+      "next_step": true
+    },
+    "error": "LLM unavailable: simulated outage"
+  },
+  "score": {
+    "case_id": "G-22",
+    "request_id": "REQ-1002",
+    "architecture": "rules_only",
+    "status": "valid",
+    "path": "fallback",
+    "fault": "llm_unavailable",
+    "requires_ai": "",
+    "tests": "llm_unavailable",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 4.4,
+    "latency_active_ms": 4.4,
+    "llm_wait_ms": 0.0,
+    "llm_calls": 0,
+    "tool_calls": 5,
+    "total_tokens": 0,
+    "run_id": "20261008T105002-815f0486",
+    "model": "gemini-3.5-flash-lite",
+    "error": "LLM unavailable: simulated outage",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "raw_decision_ok": null,
+    "raw_approvals_ok": null,
+    "raw_flags_ok": null,
+    "trial": 1
+  }
+}

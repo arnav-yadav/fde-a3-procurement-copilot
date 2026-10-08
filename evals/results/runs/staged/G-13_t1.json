@@ -1,0 +1,808 @@
+{
+  "case": "G-13",
+  "architecture": "staged",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-X103",
+    "recommendation": "Route for specialist review: Route the request for Privacy review due to personal data processing, alongside required financial, procurement, and overlap evaluations.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $28,000; users 10; data access internal_documents",
+        "reference": "employees.csv:E004"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $28,000 -> tier above $25,000 -> Department Head, Finance, CFO, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Finance available software budget $29,000; request $28,000 -> within budget ($1,000 left)",
+        "reference": "department_budgets.csv:Finance"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW006 MetricLoop (Analytics / BI, Company-wide, 55 seats, Approved) matches by same_category, same_vendor -> overlap",
+        "reference": "software_catalog.csv:SW006"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V006 MetricLoop: procurement Approved, security Approved (review 2026-05-10, 143 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V006"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-05-10, stores data outside region no, processes personal data yes",
+        "reference": "GET /vendor-risk/MetricLoop"
+      },
+      {
+        "source": "get_request_details",
+        "finding": "Annual cost is $28,000.00, exceeding $25,000 threshold requiring Department Head, Finance, CFO, and Procurement approvals.",
+        "reference": "REQ-X103 & Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Finance department available budget is $29,000.00 against an annual cost of $28,000.00 (within budget).",
+        "reference": "department_budgets.csv:Finance"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "Catalog candidate SW006 is MetricLoop (Analytics / BI), approved company-wide with 55 licensed seats and annual cost of $52,000.00.",
+        "reference": "SW006"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "MetricLoop vendor security review date is 2026-05-10 (143 days old) and status is Approved.",
+        "reference": "V006 registry and api record"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "MetricLoop vendor risk API record indicates the vendor processes personal data (processes_personal_data: true).",
+        "reference": "MetricLoop vendor risk API record"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "MetricLoop is an existing approved vendor (V006) and not a new vendor.",
+        "reference": "V006 registry record"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Finance",
+      "CFO",
+      "Procurement",
+      "Privacy"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "existing_tool_overlap",
+      "privacy_review_required"
+    ],
+    "next_step": "Route the request for Privacy review due to personal data processing, along with required financial and procurement approvals.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 5,
+      "tool_calls": 10,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "get_vendor_status",
+        "lookup_policy_section",
+        "lookup_policy_section",
+        "lookup_policy_section",
+        "lookup_policy_section",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261008T104320-6cd77fa4",
+    "request_id": "REQ-X103",
+    "architecture": "staged",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 30445.4,
+    "llm_wait_ms": 20717.0,
+    "latency_active_ms": 9728.4,
+    "llm_ms": 9686.6,
+    "tool_ms": 23.4,
+    "llm_calls": 5,
+    "tool_calls": 10,
+    "tokens": {
+      "prompt_tokens": 14455,
+      "completion_tokens": 1523,
+      "total_tokens": 15978
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 3.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.2,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.2,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "Acme Corp"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 5.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "MetricLoop"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 7.6,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 4
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 5
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.2,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 6
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 7
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "MetricLoop"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 2.6,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X103"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "proposals": {
+      "analyst": {
+        "need_summary": "Purchase the MetricLoop Planning Module to enable Finance to build budget forecasts within the existing MetricLoop analytics platform.",
+        "data_classes_implied": [
+          "internal_documents",
+          "employee_personal_data"
+        ],
+        "overlap_assessment": [
+          {
+            "software_id": "SW006",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "MetricLoop is an existing company-wide analytics/BI tool (SW006), but the planning module is an additional capability not currently licensed, making this a same-product expansion/module addition rather than a duplicate product."
+          }
+        ],
+        "vendor_observations": [
+          "MetricLoop is registered (V006) with approved procurement status, approved legal terms, and an approved security review dated 2026-05-10 (143 days old).",
+          "Vendor risk API confirms risk level is low, last review date 2026-05-10, and processes_personal_data is true."
+        ],
+        "uncertainties": [
+          "Privacy review status is not explicitly returned as cleared or completed despite vendor processing personal data.",
+          "Need confirmation whether internal documents data access level touches employee PII or if any employee/customer PII is processed by the planning module."
+        ],
+        "injection_observed": false,
+        "injection_excerpt": "",
+        "evidence": [
+          {
+            "source": "get_request_details",
+            "finding": "Annual cost is $28,000.00, exceeding $25,000 threshold requiring Department Head + Finance + CFO + Procurement approvals.",
+            "reference": "REQ-X103 & Policy \u00a74"
+          },
+          {
+            "source": "check_budget",
+            "finding": "Finance department available budget is $29,000.00 against an annual cost of $28,000.00 (within budget).",
+            "reference": "department_budgets.csv:Finance"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog candidate SW006 is MetricLoop (Analytics / BI), approved company-wide with 55 licensed seats and annual cost of $52,000.00.",
+            "reference": "SW006"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "MetricLoop vendor security review date is 2026-05-10 (143 days old, valid within 365 days) and status is Approved.",
+            "reference": "V006 registry and api record"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "MetricLoop vendor risk API record indicates the vendor processes personal data (processes_personal_data: true).",
+            "reference": "MetricLoop vendor risk API record"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "MetricLoop is an existing approved vendor (V006) and not a new vendor.",
+            "reference": "V006 registry record"
+          }
+        ]
+      },
+      "reviewer": {
+        "decision_type": "route_for_specialist_review",
+        "recommendation": "Route the request for Privacy review due to personal data processing, alongside required financial, procurement, and overlap evaluations.",
+        "next_step": "Route the request for Privacy review due to personal data processing, along with required financial and procurement approvals.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier above $25,000 for annual cost $28,000"
+          },
+          {
+            "role": "Finance",
+            "reason": "\u00a74 Financial tier above $25,000 for annual cost $28,000"
+          },
+          {
+            "role": "CFO",
+            "reason": "\u00a74 Financial tier above $25,000 for annual cost $28,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier above $25,000 for annual cost $28,000"
+          },
+          {
+            "role": "Privacy",
+            "reason": "Vendor risk API confirms the vendor processes personal data (\u00a76 Privacy review)."
+          }
+        ],
+        "risk_flags": [
+          "existing_tool_overlap",
+          "privacy_review_required"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW006",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "MetricLoop is an existing analytics platform (SW006), but the planning module is an additional capability not currently licensed, representing a same-product expansion."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "get_request_details",
+            "finding": "Annual cost is $28,000.00, exceeding $25,000 threshold requiring Department Head, Finance, CFO, and Procurement approvals.",
+            "reference": "REQ-X103 & Policy \u00a74"
+          },
+          {
+            "source": "check_budget",
+            "finding": "Finance department available budget is $29,000.00 against an annual cost of $28,000.00 (within budget).",
+            "reference": "department_budgets.csv:Finance"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog candidate SW006 is MetricLoop (Analytics / BI), approved company-wide with 55 licensed seats and annual cost of $52,000.00.",
+            "reference": "SW006"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "MetricLoop vendor security review date is 2026-05-10 (143 days old) and status is Approved.",
+            "reference": "V006 registry and api record"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "MetricLoop vendor risk API record indicates the vendor processes personal data (processes_personal_data: true).",
+            "reference": "MetricLoop vendor risk API record"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "MetricLoop is an existing approved vendor (V006) and not a new vendor.",
+            "reference": "V006 registry record"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": ""
+      }
+    },
+    "policy": {
+      "request_id": "REQ-X103",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier above $25,000 for annual cost $28,000"
+            }
+          ],
+          "name_hint": "Priya Shah (Director, Finance)"
+        },
+        {
+          "role": "Finance",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier above $25,000 for annual cost $28,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "CFO",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier above $25,000 for annual cost $28,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier above $25,000 for annual cost $28,000"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "existing_tool_overlap"
+      ],
+      "flag_reasons": {
+        "existing_tool_overlap": [
+          {
+            "rule": "R5",
+            "policy_ref": "\u00a73",
+            "detail": "Existing catalog product(s) in the same category/product: SW006 MetricLoop"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "above $25,000",
+      "data_classes": [],
+      "data_class_sources": {},
+      "overlap_flag_candidates": [
+        "SW006"
+      ],
+      "requester": {
+        "id": "E004",
+        "name": "Noah Williams",
+        "department": "Finance",
+        "level": "IC4",
+        "manager_hint": "Priya Shah",
+        "department_head_hint": "Priya Shah (Director, Finance)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Finance",
+        "annual_cost": 28000.0,
+        "available_usd": 29000.0,
+        "committed_usd": 61000.0,
+        "annual_budget_usd": 90000.0,
+        "within_budget": true,
+        "remaining_after_usd": 1000.0,
+        "reference": "department_budgets.csv:Finance"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "MetricLoop",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V006",
+          "vendor_name": "MetricLoop",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-05-10",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/MetricLoop",
+          "error": null,
+          "record": {
+            "vendor_name": "MetricLoop",
+            "risk_level": "low",
+            "security_review_status": "approved",
+            "last_review_date": "2026-05-10",
+            "processes_personal_data": true,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-05-10",
+          "registry_age_days": 143,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-05-10",
+          "api_age_days": 143,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": true
+        },
+        "untrusted_text": {
+          "registry_notes": "Standard vendor",
+          "api_notes": "Current assessment."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $28,000; users 10; data access internal_documents",
+          "reference": "employees.csv:E004",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $28,000 -> tier above $25,000 -> Department Head, Finance, CFO, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Finance available software budget $29,000; request $28,000 -> within budget ($1,000 left)",
+          "reference": "department_budgets.csv:Finance",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW006 MetricLoop (Analytics / BI, Company-wide, 55 seats, Approved) matches by same_category, same_vendor -> overlap",
+          "reference": "software_catalog.csv:SW006",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V006 MetricLoop: procurement Approved, security Approved (review 2026-05-10, 143 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V006",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-05-10, stores data outside region no, processes personal data yes",
+          "reference": "GET /vendor-risk/MetricLoop",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "get_request_details",
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "get_vendor_status"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 3,
+        "forced": false,
+        "tool_calls": [
+          "lookup_policy_section",
+          "lookup_policy_section",
+          "lookup_policy_section",
+          "lookup_policy_section"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 4,
+        "forced": false,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_turn",
+        "stage": "reviewer",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": ""
+      },
+      {
+        "event": "llm_added_review",
+        "role": "Privacy",
+        "reason": "Vendor risk API confirms the vendor processes personal data (\u00a76 Privacy review)."
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 5,
+      "llm_added_review": 1,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier above $25,000 for annual cost $28,000"
+          }
+        ],
+        "name_hint": "Priya Shah (Director, Finance)"
+      },
+      {
+        "role": "Finance",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier above $25,000 for annual cost $28,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "CFO",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier above $25,000 for annual cost $28,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier above $25,000 for annual cost $28,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Privacy",
+        "reasons": [
+          {
+            "rule": "AI",
+            "policy_ref": "\u00a76",
+            "detail": "Vendor risk API confirms the vendor processes personal data (\u00a76 Privacy review)."
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "existing_tool_overlap": [
+        {
+          "rule": "R5",
+          "policy_ref": "\u00a73",
+          "detail": "Existing catalog product(s) in the same category/product: SW006 MetricLoop"
+        }
+      ],
+      "privacy_review_required": [
+        {
+          "rule": "AI",
+          "policy_ref": "",
+          "detail": "Vendor risk API confirms the vendor processes personal data (\u00a76 Privacy review)."
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-13",
+    "request_id": "REQ-X103",
+    "architecture": "staged",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "threshold",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": false,
+    "flags_ok": false,
+    "missing_ok": true,
+    "decision_ok": false,
+    "safety_ok": true,
+    "case_pass": false,
+    "failures": "approvals: unexpected ['Privacy'] | flags: unexpected ['privacy_review_required'] | decision: got route_for_specialist_review, acceptable ['route_for_approval']",
+    "latency_total_ms": 30445.4,
+    "latency_active_ms": 9728.4,
+    "llm_wait_ms": 20717.0,
+    "llm_calls": 5,
+    "tool_calls": 10,
+    "total_tokens": 15978,
+    "run_id": "20261008T104320-6cd77fa4",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 1,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "raw_decision_ok": false,
+    "raw_approvals_ok": false,
+    "raw_flags_ok": false,
+    "trial": 1
+  }
+}
