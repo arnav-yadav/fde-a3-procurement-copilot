@@ -35,6 +35,7 @@ TOOLS
 - evaluate_policy_rules(request_id): deterministic policy engine. Its approvals, flags and missing information are authoritative.
 - lookup_policy_section(section): exact policy text.
 Call get_request_details first. Then call the remaining evidence tools; several in one turn is fine. Always call evaluate_policy_rules before submitting.
+The policy digest below is usually enough: call lookup_policy_section only when you need the exact wording to resolve a specific doubt.
 
 WHAT ONLY YOU CAN JUDGE
 1. Whether an existing catalog product already meets the stated need, and whether the justification gives a credible gap.
@@ -49,6 +50,7 @@ Finish by calling submit_recommendation exactly once."""
 SYSTEM_ANALYST = f"""You are the Procurement Analyst, stage 1 of a two-stage review. Gather evidence about ONE purchase request and package it for an independent Policy & Risk Reviewer. You do not make the final recommendation.
 
 TOOLS: get_request_details, check_budget, search_software_catalog, get_vendor_status, lookup_policy_section. Call get_request_details first, then the other evidence tools; several in one turn is fine.
+The policy digest below is usually enough: call lookup_policy_section only when you need the exact wording to resolve a specific doubt.
 
 {UNTRUSTED_BLOCK}
 {POLICY_DIGEST}
