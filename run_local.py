@@ -72,22 +72,23 @@ def main() -> None:
     signal.signal(signal.SIGTERM, _handle_termination)
     api_url = os.getenv("VENDOR_RISK_BASE_URL", "http://127.0.0.1:8001").rstrip("/")
     api_port = port_from_url(api_url)
-    app_port = int(os.getenv("APP_PORT", "8000") or 8000)
+    app_port = int(os.getenv("APP_PORT", "8501") or 8501)
     procs: list[subprocess.Popen] = []
     try:
         print(f"Starting vendor-risk API on http://127.0.0.1:{api_port} ...")
         procs.append(start_mock_api(api_port))
         print("Vendor-risk API is ready.")
 
-        print(f"Starting web app on http://127.0.0.1:{app_port} ...")
+        print(f"Starting reviewer UI (Streamlit) on http://127.0.0.1:{app_port} ...")
         app_proc = start(
-            [sys.executable, "-m", "uvicorn", "webapp.main:app", "--host", "127.0.0.1", "--port", str(app_port)]
+            [sys.executable, "-m", "streamlit", "run", "app.py", "--server.address", "127.0.0.1",
+             "--server.port", str(app_port), "--server.headless", "true", "--browser.gatherUsageStats", "false"]
         )
         procs.append(app_proc)
-        wait_for_api(f"http://127.0.0.1:{app_port}/api/health", app_proc, timeout_seconds=15, name="Web app")
+        wait_for_api(f"http://127.0.0.1:{app_port}/_stcore/health", app_proc, timeout_seconds=30, name="Reviewer UI")
 
         print("\nReady:")
-        print(f"  Web app:         http://127.0.0.1:{app_port}")
+        print(f"  Reviewer UI:     http://127.0.0.1:{app_port}")
         print(f"  Vendor-risk API: http://127.0.0.1:{api_port}")
         print("Press Ctrl+C to stop.")
 

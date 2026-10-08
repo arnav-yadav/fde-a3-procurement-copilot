@@ -16,7 +16,7 @@ source .venv/bin/activate            # Windows: .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 cp .env.example .env                 # Windows: Copy-Item .env.example .env ; then add GEMINI_API_KEY (or LLM_PROVIDER=groq + GROQ_API_KEY)
 python verify_setup.py               # pre-flight: PRE-FLIGHT PASSED
-python run_local.py                  # ONE command: mock vendor-risk API :8001 + web app http://127.0.0.1:8000
+python run_local.py                  # ONE command: mock vendor-risk API :8001 + reviewer UI (Streamlit) http://127.0.0.1:8501
 ```
 
 Without an API key the app still works: every request gets the rule-based result with an "AI analysis unavailable" banner.
@@ -46,7 +46,7 @@ Employee submits request (form, or data/requests.json)
   -> runtime/audit_log.jsonl: time, request, run ID, architecture, copilot decision, action, override, reason
 ```
 
-Routing is simulated: actions are recorded in the audit log only. The queue can be searched and filtered by status, each request has a direct link (`http://127.0.0.1:8000/#REQ-1007`), and the UI follows the system light/dark setting and works at phone width.
+The reviewer UI is the Streamlit app from the starter pack (`app.py`), extended to the full workflow. Routing is simulated: actions are recorded in the audit log only. The queue can be searched and filtered by status, each request has a direct link (`http://127.0.0.1:8501/?request=REQ-1007`), the latest analysis of each request survives a restart, and the layout works at phone width.
 
 ## 4. Architecture
 
@@ -94,7 +94,7 @@ Both end in the same code: completeness gate → policy engine → guardrails �
 
 Guardrails (`src/guardrails.py`): code-computed approvals and flags are always kept; LLM-proposed roles other than Security/Privacy/Legal are dropped; LLM evidence is kept only if its source tool ran and every number, date and ID in it appears in the tool results; wording that claims approval or purchase is replaced by a template; `human_review_required` is always true.
 
-Prompt injection: request text, vendor notes and API text reach the LLM only inside tool results marked as untrusted data, a deterministic scanner flags embedded instructions independently of the LLM, and the UI renders all business text as plain text.
+Prompt injection: request text, vendor notes and API text reach the LLM only inside tool results marked as untrusted data, a deterministic scanner flags embedded instructions independently of the LLM, and the UI renders all business text as plain text (Markdown-escaped, never HTML; tested with link, image, formula and `<img onerror>` payloads).
 
 ## 6. Assumptions
 
