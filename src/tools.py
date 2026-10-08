@@ -49,6 +49,14 @@ class RunContext:
     def event(self, kind: str, **data) -> None:
         self.events.append({"event": kind, **data})
 
+    def catalog_candidates(self) -> list[dict]:
+        out = {}
+        for (name, _), result in self.cache.items():
+            if name == "search_software_catalog":
+                for c in result.get("candidates", []):
+                    out.setdefault(c["software_id"], c)
+        return list(out.values())
+
     def called(self, name: str, pred: Callable[[dict], bool] | None = None) -> bool:
         return any(e["tool"] == name and e["status"] == "ok" and (pred is None or pred(e["args"]))
                    for e in self.tool_log)
@@ -212,3 +220,31 @@ EVIDENCE_TOOLS = ["get_request_details", "check_budget", "search_software_catalo
 
 def tool_schemas(names: list[str]) -> list[dict]:
     return [TOOLS[n].schema() for n in names]
+
+
+def completeness_gate(ctx: RunContext, request_id: str, include_policy: bool, record: bool = True) -> list[str]:
+    """T6.3: run (initiator="gate") any evidence tool the agent skipped for THIS request."""
+    filled: list[str] = []
+    rid = str(request_id).strip()
+    same_request = lambda a: str(a.get("request_id", "")).strip() == rid  # noqa: E731
+    if not ctx.called("get_request_details", same_request):
+        filled.append("get_request_details")
+    details = ctx.execute("get_request_details", {"request_id": rid}, initiator="gate")
+    if details.get("status") == "error":
+        raise KeyError(f"Unknown request_id: {rid} ({details.get('error')})")
+    for name in ["check_budget", "search_software_catalog"]:
+        if not ctx.called(name, same_request):
+            ctx.execute(name, {"request_id": rid}, initiator="gate")
+            filled.append(name)
+    vendor = (details.get("untrusted_text") or {}).get("vendor_name")
+    if vendor and not ctx.called("get_vendor_status",
+                                 lambda a: da.norm_key(a.get("vendor_name", "")) == da.norm_key(vendor)):
+        ctx.execute("get_vendor_status", {"vendor_name": vendor}, initiator="gate")
+        filled.append("get_vendor_status")
+    if include_policy and not ctx.called("evaluate_policy_rules", same_request):
+        ctx.execute("evaluate_policy_rules", {"request_id": rid}, initiator="gate")
+        filled.append("evaluate_policy_rules")
+    if record:
+        for name in filled:
+            ctx.event(f"gate_filled:{name}", tool=name)
+    return filled
