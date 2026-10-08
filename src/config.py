@@ -23,13 +23,13 @@ PROVIDERS = {
     "gemini": {
         "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
         "key_envs": ("GEMINI_API_KEY", "GOOGLE_API_KEY"),
-        "default_model": "gemini-2.5-flash",
+        "default_model": "gemini-3.5-flash",
         "default_min_interval": 6.0,
     },
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
         "key_envs": ("GROQ_API_KEY",),
-        "default_model": "llama-3.3-70b-versatile",
+        "default_model": "openai/gpt-oss-120b",
         "default_min_interval": 2.0,
     },
 }
