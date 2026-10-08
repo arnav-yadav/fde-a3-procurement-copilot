@@ -95,7 +95,7 @@ Both architectures end in the same code path: completeness gate → policy engin
 3. Missing information: policy items only, plus up to 3 LLM items when the request is going back to the requester anyway. Other LLM questions are shown to the reviewer as "Questions for the reviewer".
 4. Decision: rule precedence R12 (clarification → existing tool → specialist review → approval). See change C1 below.
 5. Recommendation and next step: the LLM's wording is used unless the decision was overridden or the output filter matches ("pre-approved", "approval granted", "purchase completed", ...), in which case a template is used.
-6. Evidence: deterministic items first, then LLM items that pass the grounding check: the source must be a tool called in this run, and every number, date and ID in the finding must appear in the tool results (numbers compared by value). Capped at 12.
+6. Evidence: deterministic items first, then LLM items that pass the grounding check: the source must be a tool called in this run, and every number, date and ID in the finding must appear in the tool results (numbers compared by value). Items that contradict the code-computed budget status are also removed (C2). Capped at 12.
 
 ## Untrusted data
 
@@ -136,6 +136,7 @@ Prompts are stored verbatim from SPEC_TECHNICAL T16 in `src/prompts.py`. Each ch
 | # | Date | Change | Evidence |
 |---|---|---|---|
 | C1 | 2026-10-08 | R12 step 2 (deviation from SPEC_TECHNICAL R12): `use_existing_tool` now requires the agent's own `decision_type` to be `use_existing_tool` **and** a flagged candidate with `covers_stated_need=true`. Previously code derived `use_existing_tool` from `covers_stated_need` alone. | Eval run 1 (`evals/results/history/run1_summary.md`): in all 9 `use_existing_tool` failures (single G-01, G-11, G-16, G-21; staged G-01, G-03, G-11, G-14, G-21) the agent's own decision was correct (route for approval/specialist review) but its overlap entry for a seat/add-on expansion said `covers_stated_need=true`; R12 overrode the correct decision. In G-08, the only case where reuse is right, the agent chose `use_existing_tool` itself. A prompt change was considered and rejected: tightening the definition ("an upgraded tier is not covered") risked flipping G-08 (TaskFlow Pro vs TaskFlow), and the evidence showed the model's decisions were already right. |
+| C2 | 2026-10-08 | Guardrail step 7: AI evidence that contradicts the code-computed budget status is removed (`contradicting_evidence_removed` event): a shortfall claim when `check_budget` is `ok`, or an "affordable" claim when it is `insufficient`. | Manual review (`evals/results/manual_review.md`, single G-08): "Marketing department budget has $7,000 remaining… insufficient for the $8,000 annual cost" passed the number-level grounding check because every number exists in the tool results. Replayed over all 233 AI evidence items from eval run 2, the check removes exactly that one item. Evidence is not part of golden scoring, so the eval results are unaffected. |
 
 ## Other deviations from the spec
 

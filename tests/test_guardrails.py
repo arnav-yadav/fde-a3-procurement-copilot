@@ -98,6 +98,30 @@ class GuardrailTests(unittest.TestCase):
         self.assertEqual(len(events(ctx, "ungrounded_evidence_removed")), 2)
         self.assertLessEqual(len(a.decision.evidence), 12)
 
+    def test_evidence_contradicting_budget_status_removed(self):
+        # C2: the exact sentence the single agent produced for REQ-1008 in eval run 2 (manual review)
+        policy, ctx = run_policy("REQ-1008")
+        self.assertEqual(policy.budget["status"], "ok")
+        wrong = "Marketing department budget has $7,000 remaining after committed costs, insufficient for the $8,000 annual cost."
+        right = "The requested annual cost of $8,000 is within Marketing's available budget of $15,000."
+        p = proposal(decision_type="use_existing_tool",
+                     required_approvals=[{"role": "Department Head", "reason": "t"}, {"role": "Procurement", "reason": "t"}],
+                     risk_flags=["existing_tool_overlap"],
+                     evidence=[{"source": "check_budget", "finding": wrong, "reference": "x"},
+                               {"source": "check_budget", "finding": right, "reference": "x"}])
+        findings = [e.finding for e in assemble(policy, p, ctx).decision.evidence]
+        self.assertNotIn(wrong, findings)
+        self.assertIn(right, findings)
+        self.assertEqual(len(events(ctx, "contradicting_evidence_removed")), 1)
+        # the opposite direction: a real shortfall must not be described as affordable
+        policy, ctx = run_policy("REQ-1005")
+        self.assertEqual(policy.budget["status"], "insufficient")
+        p = proposal(evidence=[{"source": "check_budget", "finding": "Sales has a sufficient budget of $18,000 for this.", "reference": "x"},
+                               {"source": "check_budget", "finding": "The $22,000 request exceeds the Sales budget of $18,000.", "reference": "x"}])
+        findings = [e.finding for e in assemble(policy, p, ctx).decision.evidence]
+        self.assertNotIn("Sales has a sufficient budget of $18,000 for this.", findings)
+        self.assertIn("The $22,000 request exceeds the Sales budget of $18,000.", findings)
+
     def test_grounding_dates_and_ids(self):
         policy, ctx = run_policy("REQ-1007")
         self.assertTrue(grounded("Registry review 2025-07-01 for V005 is 456 days old", "get_vendor_status", ctx)[0])

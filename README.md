@@ -92,7 +92,7 @@ Both end in the same code: completeness gate → policy engine → guardrails �
 | LLM | does an existing tool already meet the need; data classes implied only by free text (it may add Security/Privacy/Legal with a reason, never remove); recommendation and next-step wording |
 | Human | every routing action, approval and exception |
 
-Guardrails (`src/guardrails.py`): code-computed approvals and flags are always kept; LLM-proposed roles other than Security/Privacy/Legal are dropped; LLM evidence is kept only if its source tool ran and every number, date and ID in it appears in the tool results; wording that claims approval or purchase is replaced by a template; `human_review_required` is always true.
+Guardrails (`src/guardrails.py`): code-computed approvals and flags are always kept; LLM-proposed roles other than Security/Privacy/Legal are dropped; LLM evidence is kept only if its source tool ran, every number, date and ID in it appears in the tool results, and it does not contradict the code's budget check; wording that claims approval or purchase is replaced by a template; `human_review_required` is always true.
 
 Prompt injection: request text, vendor notes and API text reach the LLM only inside tool results marked as untrusted data, a deterministic scanner flags embedded instructions independently of the LLM, and the UI renders all business text as plain text (Markdown-escaped, never HTML; tested with link, image, formula and `<img onerror>` payloads).
 
@@ -177,7 +177,7 @@ Staged's independent reviewer produced cleaner evidence, which was its hypothesi
 
 ## 9. Ship decision
 
-**Ship the single agent (A).** It has the better pass rate, the only win on the AI-only cases, and 40% fewer LLM calls. The reasoning is in [`docs/DECISION_MEMO.md`](docs/DECISION_MEMO.md) (481 words). Two things to do before production: cross-check AI evidence against tool status fields (number-level grounding missed one wrong claim), and add a deterministic PII keyword scan of justifications for G-23-type requests.
+**Ship the single agent (A).** It has the better pass rate, the only win on the AI-only cases, and 40% fewer LLM calls. The reasoning is in [`docs/DECISION_MEMO.md`](docs/DECISION_MEMO.md) (488 words). Two things to do before production: extend the budget-status cross-check added after the manual review (C2: AI evidence claiming a shortfall the budget check did not find is removed) to vendor and data-class claims, and add a deterministic PII keyword scan of justifications for G-23-type requests.
 
 ## 10. Known limitations
 

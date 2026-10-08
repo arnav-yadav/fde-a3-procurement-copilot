@@ -238,16 +238,25 @@ with case_col:
         do_compare = b[2].button("Compare both architectures", width="stretch")
 
     if do_analyse:
-        with st.spinner("Gathering evidence: budget · catalog · vendor · policy…"):
-            view = svc.analyse(ss.selected, ss.arch)
-        ss.compare.pop(ss.selected, None)
-        st.rerun()
+        try:
+            with st.spinner("Gathering evidence: budget · catalog · vendor · policy…"):
+                view = svc.analyse(ss.selected, ss.arch)
+        except Exception as exc:  # never show a traceback to the reviewer
+            st.error(f"Analysis could not be completed ({type(exc).__name__}). Try again; if it keeps failing, "
+                     "check that `python run_local.py` is running and see the terminal output.")
+        else:
+            ss.compare.pop(ss.selected, None)
+            st.rerun()
     if do_compare:
-        with st.spinner("Running both architectures: gathering evidence twice…"):
-            order = [a for a in ("single", "staged") if a != ss.arch] + [ss.arch]  # selected one runs last = shown below
-            both = {a: svc.analyse(ss.selected, a) for a in order}
-        ss.compare[ss.selected] = both
-        st.rerun()
+        try:
+            with st.spinner("Running both architectures: gathering evidence twice…"):
+                order = [a for a in ("single", "staged") if a != ss.arch] + [ss.arch]  # selected one runs last = shown below
+                both = {a: svc.analyse(ss.selected, a) for a in order}
+        except Exception as exc:
+            st.error(f"Comparison could not be completed ({type(exc).__name__}). Try again.")
+        else:
+            ss.compare[ss.selected] = both
+            st.rerun()
 
     if ss.flash and ss.flash.get("request_id") == ss.selected:
         ts = datetime.fromisoformat(ss.flash["timestamp"]).astimezone().strftime("%d %b %Y, %H:%M")

@@ -38,3 +38,5 @@ A **policy failure** is an output that would lead a reviewer to a wrong or unsaf
 | Wrong decision (safe) | 0 | 1 |
 
 Takeaway: the staged reviewer, which checks the analyst against raw tool results, produced cleaner evidence in this sample (consistent with 0 vs 3 ungrounded items removed in `summary.md`), while the single agent made the better decisions. Number-level grounding cannot catch a correct number attached to the wrong meaning (G-08, single).
+
+**Follow-up (2026-10-08):** the G-08 single finding is addressed by guardrail C2 (`docs/architecture.md`): AI evidence that contradicts the code-computed budget status is now removed. Replayed over all 233 AI evidence items from eval run 2, it removes exactly this item. The table above records the outputs as they were produced.

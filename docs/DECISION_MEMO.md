@@ -32,7 +32,7 @@ Deterministic code carried safety in every column. Every architecture passed all
 ## Risks / limitations
 
 - 23 cases and one trial: one or two cases of difference is within noise. The free tier's 500 requests/day prevented multi-trial runs.
-- Grounding checks numbers, not meaning. In G-08 the single agent wrote "$7,000 remaining… insufficient": every number exists in the tool results, but the claim is wrong. Before production, cross-check AI evidence against tool status fields and run several trials on a paid tier.
+- Grounding checks numbers, not meaning. In G-08 the single agent wrote "$7,000 remaining… insufficient": every number exists in the tool results, but the claim is wrong. A budget-status cross-check (C2) now removes it; extend that to vendor and data-class claims, and run several trials on a paid tier, before production.
 - Free-text data classes (G-23) remain a gap. A deterministic PII keyword scan of justifications would close it cheaply.
 
 ## Why this is the right MVP

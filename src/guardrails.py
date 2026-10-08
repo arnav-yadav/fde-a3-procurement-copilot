@@ -54,6 +54,27 @@ def output_filter_hit(text: str | None) -> bool:
     return bool(text) and any(p.search(text) for p in OUTPUT_FILTER)
 
 
+# C2: AI evidence must not contradict the code-computed budget status (number-level grounding cannot see this).
+_BUDGET_WORD = re.compile(r"\bbudget", re.IGNORECASE)
+_SHORTFALL = re.compile(r"\b(insufficient|not\s+(enough|sufficient|within)|exceed(s|ed|ing)?|over[\s-]?budget|"
+                        r"shortfall|short\s+by|cannot\s+(cover|afford))\b", re.IGNORECASE)
+_AFFORDABLE = re.compile(r"\b(within(\s+the)?(\s+\w+)?\s+budget|sufficient|enough\s+budget|can\s+cover|"
+                         r"covers?\s+the)\b", re.IGNORECASE)
+
+
+def contradicts_policy(finding: str, policy: PolicyResult) -> str | None:
+    """Reason if an AI evidence sentence contradicts the deterministic budget check, else None."""
+    text = finding or ""
+    if not _BUDGET_WORD.search(text):
+        return None
+    status = (policy.budget or {}).get("status")
+    if status == "ok" and _SHORTFALL.search(text):
+        return "claims a budget shortfall, but check_budget found the request within the available budget"
+    if status == "insufficient" and _AFFORDABLE.search(text) and not _SHORTFALL.search(text):
+        return "claims the budget is sufficient, but check_budget found a shortfall"
+    return None
+
+
 def grounded(finding: str, source: str, ctx) -> tuple[bool, str]:
     called = {e["tool"] for e in ctx.tool_log if e["status"] == "ok"}
     if source != "copilot_analysis" and source not in called:
@@ -235,6 +256,10 @@ def assemble(policy: PolicyResult, proposal: AgentProposal | None, ctx,
             ok, why = grounded(item.finding, item.source, ctx)
             if not ok:
                 ctx.event("ungrounded_evidence_removed", item=item.model_dump(), why=why)
+                continue
+            clash = contradicts_policy(item.finding, policy)
+            if clash:
+                ctx.event("contradicting_evidence_removed", item=item.model_dump(), why=clash)
                 continue
             if item.finding.casefold() in seen or len(evidence) >= MAX_EVIDENCE:
                 continue
