@@ -119,8 +119,8 @@ Spec defaults (`gemini-2.5-flash`, `llama-3.3-70b-versatile`) are no longer avai
 
 | Model | Result |
 |---|---|
-| `gemini-3.5-flash` | Works, but the free tier allows 20 requests per day per model: not enough for one evaluation trial (about 250 calls). |
-| `gemini-3.5-flash-lite` | **Default.** Tool calling and forced `submit_recommendation` work; free-tier daily cap is higher (exact value not published to the client). |
+| `gemini-3.5-flash` | Works, but the free tier allows 20 requests per day per model: not enough for one evaluation trial (run 2 needed 176 LLM calls for the golden cases alone). |
+| `gemini-3.5-flash-lite` | **Default.** Tool calling and forced `submit_recommendation` work; free-tier cap is 500 requests/day per project (hit during eval run 2, which was resumed on a second project's key). |
 | Groq `openai/gpt-oss-120b` | Works; 1,000 requests/day but 8,000 tokens/minute, and it calls tools one at a time, so runs wait about a minute for the token budget. Kept as the alternative (`LLM_PROVIDER=groq`). |
 
 ## Prompt changes

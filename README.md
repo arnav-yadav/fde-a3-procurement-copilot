@@ -114,15 +114,69 @@ Prompt injection: request text, vendor notes and API text reach the LLM only ins
 
 ## 7. Evaluation
 
-_Filled from `evals/results/summary.md` after the final run._
+**Method.** Two harnesses, one command (`python evals/run_all.py --trials 1`; details in [`evals/README.md`](evals/README.md)):
+
+- **Public runner**: the starter pack's 6 cases and minimum checks, unchanged except that it now starts the mock API itself.
+- **Golden evaluation**: 23 hand-labelled cases in [`evals/golden_cases.json`](evals/golden_cases.json):
+  - the 10 official requests,
+  - 11 eval-only fixtures (threshold boundaries, vendor-name casing, an unregistered vendor, injection in the product name and in vendor-API notes, an HR integration, an unknown requester, PII implied only by text),
+  - 2 fault injections (vendor-risk API down, LLM unavailable).
+- **Scoring**: exact sets, so over-escalation fails too. A case passes only if approvals, flags, missing information, decision and safety are all right.
+- **Raw-agent metrics** score the agent's proposal before guardrails, and the trace counts every correction code made.
+- **Baseline**: a rules-only column, so the table shows what the LLM adds. G-08 and G-23 are cases rules cannot pass by design.
+- **Manual review**: 6 runs per architecture ([`evals/results/manual_review.md`](evals/results/manual_review.md); AI-assisted pre-fill, pending human confirmation).
+
+**Results** (run 2: gemini-3.5-flash-lite, 1 trial, temperature 0; copied from [`evals/results/summary.md`](evals/results/summary.md), which also has the per-case matrix and every failure with its reason):
+
+| Metric | Single (A) | Staged (B) | Rules only |
+|---|---:|---:|---:|
+| Golden cases passed (final output) | 22/23 | 20/23 | 21/23 |
+| Cases only the AI can get right (G-08, G-23) | 1/2 | 0/2 | 0/2 |
+| Raw agent decision accuracy | 22/22 | 19/22 | n/a |
+| Raw agent approvals exact | 21/22 | 20/22 | n/a |
+| Raw agent flags exact | 19/22 | 20/22 | n/a |
+| Code corrections per run (approvals + flags restored) | 0.00 | 0.00 | n/a |
+| Ungrounded evidence items removed (total) | 3 | 0 | n/a |
+| LLM-proposed roles dropped (total) | 0 | 0 | n/a |
+| Specialist reviews added by the LLM (total) | 2 | 2 | n/a |
+| Evidence tools filled by the gate (total) | 0 | 0 | n/a |
+| Injection cases passed (3 per trial) | 3/3 | 3/3 | 3/3 |
+| Fault cases passed (2 per trial) | 2/2 | 2/2 | 2/2 |
+| Avg active latency (ms) | 6720 | 9997 | 54 |
+| Avg total latency incl. rate-limit waits (ms) | 18521 | 30497 | 54 |
+| Avg LLM calls / run | 3.00 | 5.00 | 0.00 |
+| Avg tool calls / run | 5.35 | 7.04 | 5.00 |
+| Avg tokens / run | 10053 | 15148 | 0 |
+| Decision consistency across trials | n/a (1 trial) | n/a (1 trial) | n/a (1 trial) |
+| Public runner minimum checks | 6/6 | 6/6 | 6/6 |
+| Runs excluded (provider quota exhausted) | 0 | 0 | 0 |
+
+Run 2 was completed in two sessions because the free tier allows 500 requests per day per project. Both sessions used the same code, model and settings: `--resume` re-ran only the runs that the quota had stopped. Run 1, before change C1, is kept in [`evals/results/history/`](evals/results/history/run1_summary.md): single 18/23, staged 16/23, rules only 21/23.
+
+**Reproduce:**
+
+```bash
+python evals/run_all.py --no-llm             # rules-only column, no key, about 2 s
+python evals/run_all.py --trials 1 --fresh   # all columns (run 2 golden cases: 22 x 3.00 + 22 x 5.00 = 176 LLM calls, plus the public runner)
+python evals/run_all.py --trials 1 --resume  # continue after a quota stop
+```
 
 ## 8. Architecture comparison
 
-_Filled from `evals/results/summary.md` after the final run._
+| | Single (A) | Staged (B) |
+|---|---|---|
+| Golden cases passed | 22/23 | 20/23 |
+| Cases only the AI can get right (G-08 existing tool, G-23 PII in text) | 1/2 | 0/2 |
+| Avg LLM calls / active latency | 3.00 / 6,720 ms | 5.00 / 9,997 ms |
+| Ungrounded evidence items removed by code | 3 | 0 |
+| Policy failures found manually (6 runs) | 1 (a correct number given the wrong meaning: "$7,000 remaining… insufficient") | 0 |
+| Characteristic failure | misses Security for PII implied only by text (G-23) | over-escalates Privacy when the vendor processes personal data but the request does not (G-12); missed the existing-tool case (G-08) |
+
+Staged's independent reviewer produced cleaner evidence, which was its hypothesis. It made worse decisions and cost 67% more LLM calls. Both architectures inherit identical safety from code: injection 3/3, faults 2/2, and no approval or flag ever needed restoring. The largest single improvement came from a code change, not from the architecture. C1 stopped rule R12 from overriding a correct agent decision on the strength of an inconsistent overlap entry; see [`docs/architecture.md`](docs/architecture.md).
 
 ## 9. Ship decision
 
-_See `docs/DECISION_MEMO.md`._
+**Ship the single agent (A).** It has the better pass rate, the only win on the AI-only cases, and 40% fewer LLM calls. The reasoning is in [`docs/DECISION_MEMO.md`](docs/DECISION_MEMO.md) (481 words). Two things to do before production: cross-check AI evidence against tool status fields (number-level grounding missed one wrong claim), and add a deterministic PII keyword scan of justifications for G-23-type requests.
 
 ## 10. Known limitations
 
@@ -131,7 +185,7 @@ _See `docs/DECISION_MEMO.md`._
   - Is SSO considered employee-PII processing by Privacy? We assumed not.
   - Who is the Department Head for departments without a Director? We show the nearest Director/VP as a hint.
   - Can AI tools approved for "limited use" be expanded to new data classes without a new assessment? We assumed no (policy §8).
-- **Free-tier LLM limits.** The spec's default models are retired. `gemini-3.5-flash` allows 20 requests/day on the free tier; the evaluation uses `gemini-3.5-flash-lite`. Groq's free tier (8,000 tokens/minute) makes each run wait for its token budget. Latency is reported both with and without rate-limit waits.
+- **Free-tier LLM limits.** The spec's default models are retired. On the free tier `gemini-3.5-flash` allows 20 requests/day and `gemini-3.5-flash-lite` (used for the evaluation) 500/day per project, so one full trial fits (run 2 used 176 LLM calls for the golden cases alone, plus the public runner) but multiple trials do not; decision consistency across trials was not measured. Groq's free tier (8,000 tokens/minute) makes each run wait for its token budget. Latency is reported both with and without rate-limit waits.
 - **Small evaluation set.** 23 hand-labelled cases (10 official, 11 fixtures, 2 fault injections) and a limited number of trials; differences of one or two cases between architectures are within run-to-run noise.
 - **No real integrations.** The vendor-risk service is the provided mock; approvals, notifications and purchasing are simulated through the audit log; there is no authentication or multi-user state.
 - **Model judgement is imperfect.** The agent sometimes over-escalates (adds a review the policy does not require) or misses a data class implied only by free text. Code guarantees nothing is removed, but over-escalation still reaches the reviewer.
