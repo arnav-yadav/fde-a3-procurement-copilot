@@ -37,6 +37,15 @@ FIELD_LABELS = ["requester (unknown employee ID)", "department", "product or ven
 app = FastAPI(title="Procurement Request Copilot")
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
+
+@app.middleware("http")
+async def no_stale_ui(request, call_next):
+    """Browsers revalidate the UI files so an updated app never runs with a stale script or stylesheet."""
+    response = await call_next(request)
+    if request.url.path == "/" or request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
 _lock = threading.Lock()
 _latest: dict[str, dict] = {}   # request_id -> latest analysis response
 _runs: dict[str, dict] = {}     # run_id -> analysis response

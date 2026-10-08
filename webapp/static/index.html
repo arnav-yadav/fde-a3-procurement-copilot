@@ -2,37 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Procurement Request Copilot</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">Procurement Request Copilot <span class="muted">· recommendations only, humans decide</span></div>
-    <div class="health">
-      <span class="dot" id="dot-vendor"></span><span id="health-vendor">Vendor-risk API</span>
-      <span class="dot" id="dot-llm"></span><span id="health-llm">LLM</span>
-      <button class="btn" id="btn-new">New request</button>
+    <div class="brand">
+      <h1>Procurement Request Copilot</h1>
+      <span class="tag">Recommends only. People approve.</span>
+    </div>
+    <div class="health" aria-label="Service status">
+      <span class="item"><span class="dot" id="dot-vendor"></span><span id="health-vendor">Vendor-risk service</span></span>
+      <span class="item"><span class="dot" id="dot-llm"></span><span id="health-llm">AI model</span></span>
+      <button class="btn btn-small" id="btn-new" type="button">New request</button>
     </div>
   </header>
 
   <main class="layout">
-    <section class="queue" aria-label="Review queue">
+    <aside class="queue" aria-label="Review queue">
       <div class="queue-head">
-        <h2>Review queue</h2>
-        <button class="btn btn-small" id="btn-refresh" title="Reload the queue">Refresh</button>
+        <div class="row">
+          <h2>Review queue</h2>
+          <button class="btn btn-small" id="btn-refresh" type="button">Refresh</button>
+        </div>
+        <div class="queue-tools">
+          <input id="q-search" type="search" placeholder="Search requests" aria-label="Search requests">
+          <select id="q-filter" aria-label="Filter by status">
+            <option value="">All</option>
+            <option value="New">New</option>
+            <option value="Analysed">Analysed</option>
+            <option value="Action recorded">Action recorded</option>
+          </select>
+        </div>
+        <div class="queue-counts" id="q-counts"></div>
       </div>
       <div id="queue-body"></div>
-    </section>
+    </aside>
 
-    <section class="detail" id="detail" aria-live="polite">
-      <div class="empty">Select a request from the queue.</div>
-    </section>
+    <section class="detail" id="detail" aria-live="polite"></section>
   </main>
 
-  <div class="modal-backdrop hidden" id="modal-backdrop">
-    <div class="modal" role="dialog" aria-modal="true" id="modal"></div>
+  <div class="modal-backdrop" id="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" id="modal"></div>
   </div>
+  <div class="toast" id="toast" role="status" hidden></div>
 
   <script src="/static/app.js"></script>
 </body>

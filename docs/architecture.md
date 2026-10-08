@@ -148,3 +148,4 @@ Prompts are stored verbatim from SPEC_TECHNICAL T16 in `src/prompts.py`. Each ch
 | Unknown data-access keyword fallback | substring vs word match unspecified | substring (`product_data` → production access) | Conservative: more review, never less. |
 | Grounding check | string match on the corpus | numbers compared by value (`$800.00` == `800.0`); dates and IDs exact | JSON floats made correct amounts fail. |
 | Reviewer input (B) | raw tool results | only the results for this request and its vendor | The analyst sometimes queries a guessed vendor in a parallel first turn. |
+| Approvals in the UI | role chips, click or expand for reasons | grouped (business approvals / specialist reviews) with every reason shown inline | AC-2.3 asks that each approval shows why; inline is faster to scan than a click per role. |

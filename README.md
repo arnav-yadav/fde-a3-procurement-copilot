@@ -37,15 +37,16 @@ python evals/run_all.py --no-llm                 # rules-only baseline (no key n
 Employee submits request (form, or data/requests.json)
   -> Reviewer opens it from the queue (status: New / Analysed / Action recorded)
   -> Copilot gathers evidence and runs deterministic checks
-  -> Reviewer sees: recommendation + next step, banners for anything unverified/conflicting/injected,
-     approvals (click a role for the rule and policy section), risk flags, missing / could-not-verify,
-     evidence table (source, finding, reference, Rule/Tool/AI), cost footer
+  -> Reviewer sees, decision first: banners for anything unverified/conflicting/injected, the recommendation
+     and next step, approvals grouped into business approvals and specialist reviews (each with its rule
+     and policy section), risk flags by severity, missing / could-not-verify, an evidence table filterable
+     by Rule/Tool/AI, and run cost (LLM calls, tool calls, latency)
   -> Reviewer chooses: Send for approvals | Request clarification | Suggest existing tool | Hold for manual review
      The confirmation states the consequence; a reason is required when overriding the copilot
   -> runtime/audit_log.jsonl: time, request, run ID, architecture, copilot decision, action, override, reason
 ```
 
-Routing is simulated: actions are recorded in the audit log only.
+Routing is simulated: actions are recorded in the audit log only. The queue can be searched and filtered by status, each request has a direct link (`http://127.0.0.1:8000/#REQ-1007`), and the UI follows the system light/dark setting and works at phone width.
 
 ## 4. Architecture
 
