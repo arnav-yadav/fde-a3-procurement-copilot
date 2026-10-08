@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import csv
 import json
+import os
 import sys
 import time
 from pathlib import Path
+
+import requests
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -13,6 +17,22 @@ if str(ROOT) not in sys.path:
 
 from src.contracts import ProcurementDecision
 from src.solution import handle_request
+from run_local import port_from_url, start_mock_api, stop_processes
+
+RESULTS_DIR = ROOT / 'evals' / 'results'
+
+
+def ensure_mock_api() -> None:
+    """Start the mock vendor-risk API if VENDOR_RISK_BASE_URL is unreachable (fix F1)."""
+    base_url = os.getenv('VENDOR_RISK_BASE_URL', 'http://127.0.0.1:8001').rstrip('/')
+    try:
+        if requests.get(f"{base_url}/health", timeout=1).ok:
+            return
+    except requests.RequestException:
+        pass
+    print(f"Vendor-risk API not reachable at {base_url}; starting mock_api ...")
+    proc = start_mock_api(port_from_url(base_url), env=os.environ.copy(), quiet=True)
+    atexit.register(stop_processes, [proc])
 
 
 def norm(value: object) -> str:
@@ -65,7 +85,11 @@ def evaluate(decision: ProcurementDecision, expectations: dict) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('--architecture', choices=['single','staged'], default='single')
+    parser.add_argument('--no-start-api', action='store_true', help='do not auto-start the mock API')
+    parser.add_argument('--out', default=None, help='CSV output path (default evals/results/public_<arch>.csv)')
     args = parser.parse_args()
+    if not args.no_start_api:
+        ensure_mock_api()
 
     cases = json.loads((ROOT/'evals'/'public_cases.json').read_text(encoding='utf-8'))
     rows = []
@@ -102,7 +126,10 @@ def main() -> None:
             })
 
     if rows:
-        out = ROOT/'evals'/f"results_{args.architecture}.csv"
+        out = Path(args.out) if args.out else RESULTS_DIR/f"public_{args.architecture}.csv"
+        if not out.is_absolute():
+            out = ROOT/out
+        out.parent.mkdir(parents=True, exist_ok=True)
         with out.open('w', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=rows[0].keys())
             writer.writeheader(); writer.writerows(rows)
