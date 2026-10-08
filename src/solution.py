@@ -31,14 +31,6 @@ def _run_agent(architecture: str, request_id: str, ctx: RunContext):
     return runner(request_id, ctx)
 
 
-def _llm_unavailable_types() -> tuple:
-    try:
-        from src.llm_client import LLMUnavailable
-        return (LLMUnavailable, AgentFailed)
-    except ImportError:
-        return (AgentFailed,)
-
-
 def _error_decision(request_id: str, exc: Exception, ctx: RunContext) -> tuple[ProcurementDecision, str]:
     """Last-resort decision when even the deterministic path fails."""
     not_found = isinstance(exc, KeyError) or "Unknown request_id" in str(exc)
@@ -89,7 +81,7 @@ def handle_request_with_trace(request_id: str, architecture: Architecture = "sin
         else:
             try:
                 assembly, proposals = _run_agent(architecture, ctx.request_id, ctx)
-            except _llm_unavailable_types() as exc:
+            except Exception as exc:  # LLMUnavailable, AgentFailed or any agent bug -> rules-only fallback
                 error = f"{type(exc).__name__}: {exc}"
                 path = "fallback"
                 ctx.event("fallback_used", reason=error)

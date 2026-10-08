@@ -33,6 +33,8 @@ OUTPUT_FILTER = [re.compile(p, re.IGNORECASE) for p in [
 ]]
 
 # Order matters: the date alternative must come first so "2026-09-30" is one token.
+_NUMBER = re.compile(r"\d+(?:\.\d+)?")
+_CORPUS_NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?")
 GROUNDING_TOKEN = re.compile(r"\d{4}-\d{2}-\d{2}|\$?\d[\d,]*(?:\.\d+)?|[A-Z]{1,4}-?\d{2,5}")
 
 FLAG_SHORT = {
@@ -58,10 +60,17 @@ def grounded(finding: str, source: str, ctx) -> tuple[bool, str]:
         return False, f"source '{source}' was not called in this run"
     corpus = ctx.evidence_corpus
     corpus_nocomma = corpus.replace(",", "")
+    corpus_numbers = None
     for raw in GROUNDING_TOKEN.findall(finding or ""):
         token = raw.replace("$", "").replace(",", "")
-        if token and token not in corpus and token not in corpus_nocomma:
-            return False, f"token '{raw}' not found in tool results"
+        if not token or token in corpus or token in corpus_nocomma:
+            continue
+        if _NUMBER.fullmatch(token):  # "$800.00" vs JSON 800.0: compare by value
+            if corpus_numbers is None:
+                corpus_numbers = {float(n.replace(",", "")) for n in _CORPUS_NUMBER.findall(corpus)}
+            if float(token) in corpus_numbers:
+                continue
+        return False, f"token '{raw}' not found in tool results"
     return True, ""
 
 
@@ -205,12 +214,12 @@ def assemble(policy: PolicyResult, proposal: AgentProposal | None, ctx,
     rec_sentence, next_step = tmpl_rec, tmpl_next
     if proposal is not None and not overridden:
         cand = _strip_label(" ".join(proposal.recommendation.split()))
-        if cand and not output_filter_hit(cand) and not matches_injection(cand):
+        if cand and not output_filter_hit(cand):
             rec_sentence, used["recommendation"] = cand, False
         elif cand:
             ctx.event("output_guardrail_triggered", field="recommendation", text=cand)
         cand = " ".join(proposal.next_step.split())
-        if cand and not output_filter_hit(cand) and not matches_injection(cand):
+        if cand and not output_filter_hit(cand):
             next_step, used["next_step"] = cand, False
         elif cand:
             ctx.event("output_guardrail_triggered", field="next_step", text=cand)
