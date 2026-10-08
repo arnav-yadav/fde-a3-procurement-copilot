@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Procurement Request Copilot</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Procurement Request Copilot <span class="muted">· recommendations only, humans decide</span></div>
+    <div class="health">
+      <span class="dot" id="dot-vendor"></span><span id="health-vendor">Vendor-risk API</span>
+      <span class="dot" id="dot-llm"></span><span id="health-llm">LLM</span>
+      <button class="btn" id="btn-new">New request</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="queue" aria-label="Review queue">
+      <div class="queue-head">
+        <h2>Review queue</h2>
+        <button class="btn btn-small" id="btn-refresh" title="Reload the queue">Refresh</button>
+      </div>
+      <div id="queue-body"></div>
+    </section>
+
+    <section class="detail" id="detail" aria-live="polite">
+      <div class="empty">Select a request from the queue.</div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop hidden" id="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" id="modal"></div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
