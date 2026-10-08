@@ -4,7 +4,7 @@
   "trial": 1,
   "decision": {
     "request_id": "REQ-X102",
-    "recommendation": "Route for approval: Route the request to Department Head and Procurement for approval with existing tool overlap flagged for SW004.",
+    "recommendation": "Route for specialist review: Route the request for Privacy review and required Department Head and Procurement approvals, noting the existing DocSpace platform overlap.",
     "evidence": [
       {
         "source": "get_request_details",
@@ -38,43 +38,45 @@
       },
       {
         "source": "get_request_details",
-        "finding": "Request REQ-X102 is for DocSpace Analytics Add-on from DocSpace, costing $10,000 annually for 40 users in Engineering.",
-        "reference": "get_request_details"
+        "finding": "Request REQ-X102 submitted by Arjun Mehta for DocSpace Analytics Add-on costing $10,000.00 annually for 40 users.",
+        "reference": "REQ-X102 request details"
       },
       {
         "source": "check_budget",
-        "finding": "Engineering department budget has $26,000 available out of $300,000 annual budget; request of $10,000 is within available budget.",
+        "finding": "Engineering department has $26,000.00 available in its $300,000.00 annual budget (request is within budget).",
         "reference": "department_budgets.csv:Engineering"
       },
       {
         "source": "search_software_catalog",
-        "finding": "Software catalog candidate SW004 is DocSpace (Knowledge Management), an approved company-wide product.",
-        "reference": "search_software_catalog"
+        "finding": "Catalog candidate SW004 (DocSpace) exists in Knowledge Management, raising an existing_tool_overlap flag as a same-product expansion.",
+        "reference": "Software catalog search"
       },
       {
         "source": "get_vendor_status",
-        "finding": "Vendor DocSpace is registered and approved in both registry and vendor-risk service, with security review date 2026-02-24 (218 days ago, not expired).",
-        "reference": "get_vendor_status"
+        "finding": "Vendor DocSpace is registered, approved, with security review date 2026-02-24 (218 days old, current) and approved legal terms.",
+        "reference": "Vendor registry and risk service for DocSpace"
       },
       {
         "source": "get_vendor_status",
-        "finding": "Vendor-risk API notes that DocSpace processes personal data and stores data within the operating region.",
-        "reference": "get_vendor_status"
+        "finding": "Vendor risk API for DocSpace indicates it processes personal data and stores data within the region.",
+        "reference": "Vendor risk API record for DocSpace"
       }
     ],
     "required_approvals": [
       "Department Head",
-      "Procurement"
+      "Procurement",
+      "Privacy"
     ],
     "missing_information": [],
     "risk_flags": [
-      "existing_tool_overlap"
+      "existing_tool_overlap",
+      "privacy_review_required"
     ],
-    "next_step": "Department Head and Procurement review the request and overlap assessment for approval.",
+    "next_step": "Procurement routes the request for Privacy review due to personal data processing, alongside required Department Head and Procurement approvals.",
     "human_review_required": true,
     "telemetry": {
       "llm_calls": 6,
-      "tool_calls": 8,
+      "tool_calls": 9,
       "tool_names": [
         "get_request_details",
         "check_budget",
@@ -83,12 +85,13 @@
         "get_vendor_status",
         "lookup_policy_section",
         "lookup_policy_section",
+        "lookup_policy_section",
         "evaluate_policy_rules"
       ]
     }
   },
   "trace": {
-    "run_id": "20261008T104232-c8dd1a80",
+    "run_id": "20261008T110722-6b6a9dcf",
     "request_id": "REQ-X102",
     "architecture": "staged",
     "mode": "llm",
@@ -96,18 +99,18 @@
     "provider": "gemini",
     "model": "gemini-3.5-flash-lite",
     "reference_date": "2026-09-30",
-    "decision_type": "route_for_approval",
-    "latency_total_ms": 34844.9,
-    "llm_wait_ms": 25239.2,
-    "latency_active_ms": 9605.6,
-    "llm_ms": 9556.9,
-    "tool_ms": 28.3,
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 36566.7,
+    "llm_wait_ms": 25925.1,
+    "latency_active_ms": 10641.6,
+    "llm_ms": 10591.6,
+    "tool_ms": 18.6,
     "llm_calls": 6,
-    "tool_calls": 8,
+    "tool_calls": 9,
     "tokens": {
-      "prompt_tokens": 16610,
-      "completion_tokens": 1170,
-      "total_tokens": 17780
+      "prompt_tokens": 17674,
+      "completion_tokens": 1835,
+      "total_tokens": 19509
     },
     "tool_log": [
       {
@@ -117,7 +120,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 2.9,
+        "duration_ms": 2.1,
         "cache_hit": false
       },
       {
@@ -127,7 +130,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 1.0,
+        "duration_ms": 1.8,
         "cache_hit": false
       },
       {
@@ -137,17 +140,17 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 1.3,
+        "duration_ms": 0.9,
         "cache_hit": false
       },
       {
         "tool": "get_vendor_status",
         "args": {
-          "vendor_name": "DataSift Analytics"
+          "vendor_name": "DataPulse AI"
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 5.0,
+        "duration_ms": 5.3,
         "cache_hit": false
       },
       {
@@ -157,7 +160,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 11.1,
+        "duration_ms": 4.7,
         "cache_hit": false
       },
       {
@@ -167,7 +170,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 1.9,
+        "duration_ms": 0.5,
         "cache_hit": false
       },
       {
@@ -177,7 +180,17 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 1.9,
+        "duration_ms": 0.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 7
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.1,
         "cache_hit": false
       },
       {
@@ -237,7 +250,7 @@
         },
         "initiator": "orchestrator",
         "status": "ok",
-        "duration_ms": 3.2,
+        "duration_ms": 3.1,
         "cache_hit": false
       },
       {
@@ -253,7 +266,7 @@
     ],
     "proposals": {
       "analyst": {
-        "need_summary": "Purchase DocSpace Analytics Add-on to analyze engineering documentation usage within the existing DocSpace workspace.",
+        "need_summary": "Purchase the DocSpace Analytics Add-on to analyze engineering document usage within the existing DocSpace workspace.",
         "data_classes_implied": [
           "internal_documents"
         ],
@@ -262,49 +275,49 @@
             "software_id": "SW004",
             "relationship": "same_product_expansion",
             "covers_stated_need": false,
-            "reason": "SW004 is the core DocSpace workspace, whereas the request is specifically for the Analytics Add-on; the stated gap for usage analytics is credible."
+            "reason": "SW004 is the core DocSpace platform license, whereas this request is specifically for the analytics add-on feature/workspace extension to track document usage. The stated gap of needing usage analytics is credible."
           }
         ],
         "vendor_observations": [
-          "DocSpace is fully approved in the registry and vendor-risk service (low risk, review date 2026-02-24, no conflict)."
+          "DocSpace is a registered and approved vendor in both the internal registry and external risk service with a current security review (2026-02-24, 218 days old) and approved legal terms."
         ],
         "uncertainties": [
-          "Privacy review status not explicitly confirmed despite vendor processing personal data and internal documents data class."
+          "Stated data access level is internal_documents, but vendor risk API notes DocSpace processes personal data; privacy review applicability regarding employee/customer PII should be verified."
         ],
         "injection_observed": false,
-        "injection_excerpt": null,
+        "injection_excerpt": "",
         "evidence": [
           {
             "source": "get_request_details",
-            "finding": "Request REQ-X102 is for DocSpace Analytics Add-on from DocSpace, costing $10,000 annually for 40 users in Engineering.",
-            "reference": "get_request_details"
+            "finding": "Request REQ-X102 is submitted by Arjun Mehta (Engineering) for DocSpace Analytics Add-on from DocSpace, costing $10,000.00 annually for 40 users.",
+            "reference": "REQ-X102 request details"
           },
           {
             "source": "check_budget",
-            "finding": "Engineering department budget has $26,000 available out of $300,000 annual budget; request of $10,000 is within available budget.",
-            "reference": "check_budget"
+            "finding": "Engineering department has $26,000.00 available in its annual software budget of $300,000.00 (request is within budget).",
+            "reference": "department_budgets.csv:Engineering"
           },
           {
             "source": "search_software_catalog",
-            "finding": "Software catalog candidate SW004 is DocSpace (Knowledge Management), an approved company-wide product.",
-            "reference": "search_software_catalog"
+            "finding": "Catalog candidate SW004 (DocSpace) exists in Knowledge Management and raises an overlap flag as the same vendor/product.",
+            "reference": "Software catalog search"
           },
           {
             "source": "get_vendor_status",
-            "finding": "Vendor DocSpace is registered and approved in both registry and vendor-risk service, with security review date 2026-02-24 (218 days ago, not expired).",
-            "reference": "get_vendor_status"
+            "finding": "Vendor DocSpace is registered, approved, with a security review date of 2026-02-24 (218 days old, current) and approved legal terms.",
+            "reference": "Vendor registry and risk service for DocSpace"
           },
           {
             "source": "get_vendor_status",
-            "finding": "Vendor-risk API notes that DocSpace processes personal data and stores data within the operating region.",
-            "reference": "get_vendor_status"
+            "finding": "Vendor risk API for DocSpace indicates it processes personal data and stores data within the region.",
+            "reference": "Vendor risk API record for DocSpace"
           }
         ]
       },
       "reviewer": {
-        "decision_type": "route_for_approval",
-        "recommendation": "Route the request to Department Head and Procurement for approval with existing tool overlap flagged for SW004.",
-        "next_step": "Department Head and Procurement review the request and overlap assessment for approval.",
+        "decision_type": "route_for_specialist_review",
+        "recommendation": "Route the request for Privacy review and required Department Head and Procurement approvals, noting the existing DocSpace platform overlap.",
+        "next_step": "Procurement routes the request for Privacy review due to personal data processing, alongside required Department Head and Procurement approvals.",
         "required_approvals": [
           {
             "role": "Department Head",
@@ -313,10 +326,15 @@
           {
             "role": "Procurement",
             "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          },
+          {
+            "role": "Privacy",
+            "reason": "\u00a76 Vendor risk API indicates the product processes personal data."
           }
         ],
         "risk_flags": [
-          "existing_tool_overlap"
+          "existing_tool_overlap",
+          "privacy_review_required"
         ],
         "missing_information": [],
         "overlap_assessment": [
@@ -324,38 +342,38 @@
             "software_id": "SW004",
             "relationship": "same_product_expansion",
             "covers_stated_need": false,
-            "reason": "SW004 is the core DocSpace workspace, whereas the request is specifically for the Analytics Add-on; the stated gap for usage analytics is credible."
+            "reason": "SW004 is the core DocSpace platform license, whereas this request is specifically for the analytics add-on workspace extension. The stated need for usage analytics represents a credible product expansion gap."
           }
         ],
         "evidence": [
           {
             "source": "get_request_details",
-            "finding": "Request REQ-X102 is for DocSpace Analytics Add-on from DocSpace, costing $10,000 annually for 40 users in Engineering.",
-            "reference": "get_request_details"
+            "finding": "Request REQ-X102 submitted by Arjun Mehta for DocSpace Analytics Add-on costing $10,000.00 annually for 40 users.",
+            "reference": "REQ-X102 request details"
           },
           {
             "source": "check_budget",
-            "finding": "Engineering department budget has $26,000 available out of $300,000 annual budget; request of $10,000 is within available budget.",
+            "finding": "Engineering department has $26,000.00 available in its $300,000.00 annual budget (request is within budget).",
             "reference": "department_budgets.csv:Engineering"
           },
           {
             "source": "search_software_catalog",
-            "finding": "Software catalog candidate SW004 is DocSpace (Knowledge Management), an approved company-wide product.",
-            "reference": "search_software_catalog"
+            "finding": "Catalog candidate SW004 (DocSpace) exists in Knowledge Management, raising an existing_tool_overlap flag as a same-product expansion.",
+            "reference": "Software catalog search"
           },
           {
             "source": "get_vendor_status",
-            "finding": "Vendor DocSpace is registered and approved in both registry and vendor-risk service, with security review date 2026-02-24 (218 days ago, not expired).",
-            "reference": "get_vendor_status"
+            "finding": "Vendor DocSpace is registered, approved, with security review date 2026-02-24 (218 days old, current) and approved legal terms.",
+            "reference": "Vendor registry and risk service for DocSpace"
           },
           {
             "source": "get_vendor_status",
-            "finding": "Vendor-risk API notes that DocSpace processes personal data and stores data within the operating region.",
-            "reference": "get_vendor_status"
+            "finding": "Vendor risk API for DocSpace indicates it processes personal data and stores data within the region.",
+            "reference": "Vendor risk API record for DocSpace"
           }
         ],
         "injection_observed": false,
-        "injection_excerpt": "null"
+        "injection_excerpt": ""
       }
     },
     "policy": {
@@ -555,6 +573,8 @@
         "turn": 3,
         "forced": false,
         "tool_calls": [
+          "lookup_policy_section",
+          "lookup_policy_section",
           "lookup_policy_section"
         ],
         "text": ""
@@ -565,9 +585,14 @@
         "turn": 4,
         "forced": false,
         "tool_calls": [
-          "lookup_policy_section"
+          "submit_evidence_pack"
         ],
         "text": ""
+      },
+      {
+        "event": "submission_invalid",
+        "stage": "analyst",
+        "error": "[{\"type\":\"missing\",\"loc\":[\"overlap_assessment\",0,\"software_id\"],\"msg\":\"Field required\",\"input\":{\"relationship\":\"same_product_expansion\",\"reason\":\"SW004 is the core DocSpace platform license, whereas this request is specifically for the analytics add-on feature/workspace extension to track document usage. The stated gap of needing usage analytics is credible.\",\"covers_stated_need\":false}}]"
       },
       {
         "event": "llm_turn",
@@ -588,10 +613,17 @@
           "submit_recommendation"
         ],
         "text": ""
+      },
+      {
+        "event": "llm_added_review",
+        "role": "Privacy",
+        "reason": "\u00a76 Vendor risk API indicates the product processes personal data."
       }
     ],
     "event_counts": {
       "llm_turn": 6,
+      "submission_invalid": 1,
+      "llm_added_review": 1,
       "gate_filled": 0
     },
     "approvals": [
@@ -616,6 +648,17 @@
           }
         ],
         "name_hint": null
+      },
+      {
+        "role": "Privacy",
+        "reasons": [
+          {
+            "rule": "AI",
+            "policy_ref": "\u00a76",
+            "detail": "\u00a76 Vendor risk API indicates the product processes personal data."
+          }
+        ],
+        "name_hint": null
       }
     ],
     "flag_reasons": {
@@ -624,6 +667,13 @@
           "rule": "R5",
           "policy_ref": "\u00a73",
           "detail": "Existing catalog product(s) in the same category/product: SW004 DocSpace"
+        }
+      ],
+      "privacy_review_required": [
+        {
+          "rule": "AI",
+          "policy_ref": "",
+          "detail": "\u00a76 Vendor risk API indicates the product processes personal data."
         }
       ]
     },
@@ -656,34 +706,34 @@
     "fault": "",
     "requires_ai": "",
     "tests": "threshold",
-    "decision_type": "route_for_approval",
-    "approvals_ok": true,
-    "flags_ok": true,
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": false,
+    "flags_ok": false,
     "missing_ok": true,
-    "decision_ok": true,
+    "decision_ok": false,
     "safety_ok": true,
-    "case_pass": true,
-    "failures": "",
-    "latency_total_ms": 34844.9,
-    "latency_active_ms": 9605.6,
-    "llm_wait_ms": 25239.2,
+    "case_pass": false,
+    "failures": "approvals: unexpected ['Privacy'] | flags: unexpected ['privacy_review_required'] | decision: got route_for_specialist_review, acceptable ['route_for_approval']",
+    "latency_total_ms": 36566.7,
+    "latency_active_ms": 10641.6,
+    "llm_wait_ms": 25925.1,
     "llm_calls": 6,
-    "tool_calls": 8,
-    "total_tokens": 17780,
-    "run_id": "20261008T104232-c8dd1a80",
+    "tool_calls": 9,
+    "total_tokens": 19509,
+    "run_id": "20261008T110722-6b6a9dcf",
     "model": "gemini-3.5-flash-lite",
     "error": "",
     "code_restored_approval": 0,
     "code_restored_flag": 0,
     "llm_role_dropped": 0,
-    "llm_added_review": 0,
+    "llm_added_review": 1,
     "llm_decision_overridden": 0,
     "ungrounded_evidence_removed": 0,
     "gate_filled": 0,
     "output_guardrail_triggered": 0,
-    "raw_decision_ok": true,
-    "raw_approvals_ok": true,
-    "raw_flags_ok": true,
+    "raw_decision_ok": false,
+    "raw_approvals_ok": false,
+    "raw_flags_ok": false,
     "trial": 1
   }
 }

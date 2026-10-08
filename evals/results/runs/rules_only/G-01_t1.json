@@ -59,7 +59,7 @@
     }
   },
   "trace": {
-    "run_id": "20261008T103319-d72574d2",
+    "run_id": "20261008T105757-4c5fa8b9",
     "request_id": "REQ-1001",
     "architecture": "single",
     "mode": "rules_only",
@@ -68,11 +68,11 @@
     "model": null,
     "reference_date": "2026-09-30",
     "decision_type": "route_for_approval",
-    "latency_total_ms": 19.7,
+    "latency_total_ms": 16.2,
     "llm_wait_ms": 0.0,
-    "latency_active_ms": 19.7,
+    "latency_active_ms": 16.2,
     "llm_ms": 0.0,
-    "tool_ms": 19.2,
+    "tool_ms": 15.9,
     "llm_calls": 0,
     "tool_calls": 5,
     "tokens": {
@@ -88,7 +88,7 @@
         },
         "initiator": "gate",
         "status": "ok",
-        "duration_ms": 1.5,
+        "duration_ms": 1.3,
         "cache_hit": false
       },
       {
@@ -108,7 +108,7 @@
         },
         "initiator": "gate",
         "status": "ok",
-        "duration_ms": 1.2,
+        "duration_ms": 2.1,
         "cache_hit": false
       },
       {
@@ -118,7 +118,7 @@
         },
         "initiator": "gate",
         "status": "ok",
-        "duration_ms": 8.3,
+        "duration_ms": 4.0,
         "cache_hit": false
       },
       {
@@ -168,7 +168,7 @@
         },
         "initiator": "gate",
         "status": "ok",
-        "duration_ms": 0.4,
+        "duration_ms": 0.7,
         "cache_hit": false
       }
     ],
@@ -387,13 +387,13 @@
     "safety_ok": true,
     "case_pass": true,
     "failures": "",
-    "latency_total_ms": 19.7,
-    "latency_active_ms": 19.7,
+    "latency_total_ms": 16.2,
+    "latency_active_ms": 16.2,
     "llm_wait_ms": 0.0,
     "llm_calls": 0,
     "tool_calls": 5,
     "total_tokens": 0,
-    "run_id": "20261008T103319-d72574d2",
+    "run_id": "20261008T105757-4c5fa8b9",
     "model": null,
     "error": "",
     "code_restored_approval": 0,

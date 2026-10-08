@@ -6,68 +6,58 @@ Runs that fell back because the provider quota was exhausted are excluded from s
 
 | Metric | Single (A) | Staged (B) | Rules only |
 |---|---:|---:|---:|
-| Golden cases passed (final output) | 18/23 | 16/23 | 21/23 |
-| Cases only the AI can get right (G-08, G-23) | 1/2 | 1/2 | 0/2 |
-| Raw agent decision accuracy | 22/22 | 19/22 | n/a |
-| Raw agent approvals exact | 21/22 | 20/22 | n/a |
-| Raw agent flags exact | 21/22 | 20/22 | n/a |
+| Golden cases passed (final output) | 16/16 | 13/15 | 21/23 |
+| Cases only the AI can get right (G-08, G-23) | 1/1 | 0/1 | 0/2 |
+| Raw agent decision accuracy | 16/16 | 13/15 | n/a |
+| Raw agent approvals exact | 16/16 | 14/15 | n/a |
+| Raw agent flags exact | 14/16 | 14/15 | n/a |
 | Code corrections per run (approvals + flags restored) | 0.00 | 0.00 | n/a |
-| Ungrounded evidence items removed (total) | 3 | 1 | n/a |
+| Ungrounded evidence items removed (total) | 1 | 0 | n/a |
 | LLM-proposed roles dropped (total) | 0 | 0 | n/a |
-| Specialist reviews added by the LLM (total) | 2 | 2 | n/a |
+| Specialist reviews added by the LLM (total) | 1 | 1 | n/a |
 | Evidence tools filled by the gate (total) | 0 | 0 | n/a |
-| Injection cases passed (3 per trial) | 2/3 | 3/3 | 3/3 |
-| Fault cases passed (2 per trial) | 1/2 | 1/2 | 2/2 |
-| Avg active latency (ms) | 5579 | 8729 | 58 |
-| Avg total latency incl. rate-limit waits (ms) | 18502 | 29845 | 58 |
-| Avg LLM calls / run | 3.09 | 5.00 | 0.00 |
-| Avg tool calls / run | 5.43 | 7.30 | 5.00 |
-| Avg tokens / run | 10306 | 15234 | 0 |
+| Injection cases passed (3 per trial) | 2/2 | 1/1 | 3/3 |
+| Fault cases passed (2 per trial) | n/a | n/a | 2/2 |
+| Avg active latency (ms) | 7695 | 9427 | 54 |
+| Avg total latency incl. rate-limit waits (ms) | 19915 | 31600 | 54 |
+| Avg LLM calls / run | 3.19 | 5.27 | 0.00 |
+| Avg tool calls / run | 5.38 | 7.33 | 5.00 |
+| Avg tokens / run | 10868 | 16129 | 0 |
 | Decision consistency across trials | n/a (1 trial) | n/a (1 trial) | n/a (1 trial) |
 | Public runner minimum checks | 6/6 | 6/6 | 6/6 |
-| Runs excluded (provider quota exhausted) | 0 | 0 | 0 |
+| Runs excluded (provider quota exhausted) | 1 | 1 | 0 |
 
 ## Per-case matrix
 
 | Case | Request | Single (A) | Staged (B) | Rules only |
 |---|---|---|---|---|
-| G-01 | REQ-1001 | FAIL | FAIL | PASS |
+| G-01 | REQ-1001 | PASS | PASS | PASS |
 | G-02 | REQ-1002 | PASS | PASS | PASS |
-| G-03 | REQ-1003 | PASS | FAIL | PASS |
+| G-03 | REQ-1003 | PASS | PASS | PASS |
 | G-04 | REQ-1004 | PASS | PASS | PASS |
 | G-05 | REQ-1005 | PASS | PASS | PASS |
 | G-06 | REQ-1006 | PASS | PASS | PASS |
 | G-07 | REQ-1007 | PASS | PASS | PASS |
-| G-08 | REQ-1008 | PASS | PASS | FAIL |
+| G-08 | REQ-1008 | PASS | FAIL | FAIL |
 | G-09 | REQ-1009 | PASS | PASS | PASS |
 | G-10 | REQ-1010 | PASS | PASS | PASS |
-| G-11 | REQ-X101 | FAIL | FAIL | PASS |
-| G-12 | REQ-X102 | PASS | PASS | PASS |
-| G-13 | REQ-X103 | PASS | FAIL | PASS |
-| G-14 | REQ-X104 | PASS | FAIL | PASS |
+| G-11 | REQ-X101 | PASS | PASS | PASS |
+| G-12 | REQ-X102 | PASS | FAIL | PASS |
+| G-13 | REQ-X103 | PASS | PASS | PASS |
+| G-14 | REQ-X104 | PASS | PASS | PASS |
 | G-15 | REQ-X105 | PASS | PASS | PASS |
-| G-16 | REQ-X106 | FAIL | PASS | PASS |
-| G-17 | REQ-X107 | PASS | PASS | PASS |
-| G-18 | REQ-X108 | PASS | PASS | PASS |
-| G-19 | REQ-X109 | PASS | PASS | PASS |
-| G-20 | REQ-X110 | PASS | PASS | PASS |
-| G-21 | REQ-1001 | FAIL | FAIL | PASS |
-| G-22 | REQ-1002 | PASS | PASS | PASS |
-| G-23 | REQ-X111 | FAIL | FAIL | FAIL |
+| G-16 | REQ-X106 | PASS | quota | PASS |
+| G-17 | REQ-X107 | quota | - | PASS |
+| G-18 | REQ-X108 | - | - | PASS |
+| G-19 | REQ-X109 | - | - | PASS |
+| G-20 | REQ-X110 | - | - | PASS |
+| G-21 | REQ-1001 | - | - | PASS |
+| G-22 | REQ-1002 | - | - | PASS |
+| G-23 | REQ-X111 | - | - | FAIL |
 
 ## Failures
 
-- **G-01** (REQ-1001) Single (A) trial 1: decision: got use_existing_tool, acceptable ['route_for_approval']
-- **G-11** (REQ-X101) Single (A) trial 1: decision: got use_existing_tool, acceptable ['route_for_approval']
-- **G-16** (REQ-X106) Single (A) trial 1: decision: got use_existing_tool, acceptable ['route_for_approval']
-- **G-21** (REQ-1001) Single (A) trial 1: decision: got use_existing_tool, acceptable ['route_for_approval', 'route_for_specialist_review']
-- **G-23** (REQ-X111) Single (A) trial 1: approvals: missing ['Security'] | flags: missing ['security_review_required']
-- **G-01** (REQ-1001) Staged (B) trial 1: decision: got use_existing_tool, acceptable ['route_for_approval']
-- **G-03** (REQ-1003) Staged (B) trial 1: decision: got use_existing_tool, acceptable ['route_for_specialist_review']
-- **G-11** (REQ-X101) Staged (B) trial 1: decision: got use_existing_tool, acceptable ['route_for_approval']
-- **G-13** (REQ-X103) Staged (B) trial 1: approvals: unexpected ['Privacy'] | flags: unexpected ['privacy_review_required'] | decision: got route_for_specialist_review, acceptable ['route_for_approval']
-- **G-14** (REQ-X104) Staged (B) trial 1: decision: got use_existing_tool, acceptable ['route_for_specialist_review']
-- **G-21** (REQ-1001) Staged (B) trial 1: decision: got use_existing_tool, acceptable ['route_for_approval', 'route_for_specialist_review']
-- **G-23** (REQ-X111) Staged (B) trial 1: approvals: missing ['Privacy', 'Security'] | flags: missing ['privacy_review_required', 'security_review_required'] | decision: got route_for_approval, acceptable ['route_for_specialist_review']
+- **G-08** (REQ-1008) Staged (B) trial 1: decision: got route_for_approval, acceptable ['use_existing_tool']
+- **G-12** (REQ-X102) Staged (B) trial 1: approvals: unexpected ['Privacy'] | flags: unexpected ['privacy_review_required'] | decision: got route_for_specialist_review, acceptable ['route_for_approval']
 - **G-08** (REQ-1008) Rules only trial 1: decision: got route_for_approval, acceptable ['use_existing_tool']
 - **G-23** (REQ-X111) Rules only trial 1: approvals: missing ['Privacy', 'Security'] | flags: missing ['privacy_review_required', 'security_review_required'] | decision: got route_for_approval, acceptable ['route_for_specialist_review']

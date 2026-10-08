@@ -4,7 +4,7 @@
   "trial": 1,
   "decision": {
     "request_id": "REQ-1007",
-    "recommendation": "Route for specialist review: Route the request for specialist Security review due to vendor assessment expiration and registry conflict, along with Department Head, Finance, and Procurement approvals.",
+    "recommendation": "Route for specialist review: Route the request for specialist review due to expired vendor security assessment, conflicting vendor evidence, production cloud integration, and existing tool overlap.",
     "evidence": [
       {
         "source": "get_request_details",
@@ -58,12 +58,12 @@
       },
       {
         "source": "get_request_details",
-        "finding": "Request REQ-1007 requests SignalWatch Advanced for $24,000 annual cost and 25 users in Engineering.",
-        "reference": "REQ-1007 get_request_details"
+        "finding": "Request REQ-1007 is for SignalWatch Advanced by SignalWatch, costing $24,000 annually for 25 users in Engineering with production_telemetry data access.",
+        "reference": "REQ-1007"
       },
       {
         "source": "check_budget",
-        "finding": "Engineering department has available budget of $26,000 USD, so the $24,000 cost is within budget.",
+        "finding": "The requested amount ($24,000) is within the department's available software budget ($26,000 available out of $300,000 annual budget, leaving $2,000).",
         "reference": "department_budgets.csv:Engineering"
       }
     ],
@@ -80,7 +80,7 @@
       "vendor_review_expired",
       "conflicting_vendor_evidence"
     ],
-    "next_step": "Route to Department Head, Finance, Procurement, and Security for specialist and financial review.",
+    "next_step": "Route the request to Security, Department Head, Finance, and Procurement for specialist and financial review due to the expired vendor security review, conflicting vendor evidence, production cloud integration, and existing tool overlap.",
     "human_review_required": true,
     "telemetry": {
       "llm_calls": 5,
@@ -96,7 +96,7 @@
     }
   },
   "trace": {
-    "run_id": "20261008T103814-f46ba166",
+    "run_id": "20261008T110304-9259f3b1",
     "request_id": "REQ-1007",
     "architecture": "staged",
     "mode": "llm",
@@ -105,17 +105,17 @@
     "model": "gemini-3.5-flash-lite",
     "reference_date": "2026-09-30",
     "decision_type": "route_for_specialist_review",
-    "latency_total_ms": 30078.4,
-    "llm_wait_ms": 21369.9,
-    "latency_active_ms": 8708.5,
-    "llm_ms": 8660.0,
-    "tool_ms": 20.4,
+    "latency_total_ms": 30469.6,
+    "llm_wait_ms": 20875.4,
+    "latency_active_ms": 9594.2,
+    "llm_ms": 9561.2,
+    "tool_ms": 16.6,
     "llm_calls": 5,
     "tool_calls": 6,
     "tokens": {
-      "prompt_tokens": 13537,
-      "completion_tokens": 1376,
-      "total_tokens": 14913
+      "prompt_tokens": 13769,
+      "completion_tokens": 1711,
+      "total_tokens": 15480
     },
     "tool_log": [
       {
@@ -125,7 +125,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 2.4,
+        "duration_ms": 2.1,
         "cache_hit": false
       },
       {
@@ -135,7 +135,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 1.1,
+        "duration_ms": 0.7,
         "cache_hit": false
       },
       {
@@ -145,7 +145,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 1.1,
+        "duration_ms": 1.2,
         "cache_hit": false
       },
       {
@@ -155,7 +155,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 10.9,
+        "duration_ms": 8.4,
         "cache_hit": false
       },
       {
@@ -165,7 +165,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 1.7,
+        "duration_ms": 1.6,
         "cache_hit": false
       },
       {
@@ -225,7 +225,7 @@
         },
         "initiator": "orchestrator",
         "status": "ok",
-        "duration_ms": 3.2,
+        "duration_ms": 2.6,
         "cache_hit": false
       },
       {
@@ -241,7 +241,7 @@
     ],
     "proposals": {
       "analyst": {
-        "need_summary": "Provide advanced incident analytics for production services through SignalWatch Advanced for 25 engineering users.",
+        "need_summary": "Provide advanced incident analytics for production services to 25 Engineering users.",
         "data_classes_implied": [
           "production_telemetry"
         ],
@@ -249,66 +249,78 @@
           {
             "software_id": "SW005",
             "relationship": "same_product_expansion",
-            "covers_stated_need": false,
-            "reason": "Catalog product SW005 (SignalWatch) provides standard production monitoring, whereas the request is for SignalWatch Advanced with advanced incident analytics and a separate production cloud account integration, presenting a credible feature gap for advanced analytics."
+            "covers_stated_need": true,
+            "reason": "SW005 is the base SignalWatch product from the same vendor in the same category (Observability). The request asks for SignalWatch Advanced, which is a product tier/expansion; the overlap flag is raised and warrants checking whether the advanced tier's specific analytics features represent a credible gap over base SignalWatch."
           }
         ],
         "vendor_observations": [
-          "Internal registry lists SignalWatch as approved with security review date 2025-07-01, but the vendor-risk service API reports the security review status as expired (456 days old, >365 days) with a medium risk level, causing a registry/vendor-risk disagreement conflict."
+          "Internal vendor registry shows procurement_status: Approved, security_status: Approved, security_review_date: 2025-07-01, legal_terms_status: Approved.",
+          "External vendor-risk service reports risk_level: medium, security_review_status: expired, last_review_date: 2025-07-01 (456 days ago, exceeding 365 days), and notes 'Reassessment required before expanded production access.'",
+          "Conflict exists between the internal registry and external vendor-risk service regarding vendor security status."
         ],
         "uncertainties": [
-          "Vendor security status conflicts between internal registry (approved) and vendor-risk service (expired, 456 days old); re-assessment is required before expanded production access."
+          "Whether the existing catalog product SW005 (SignalWatch) can be upgraded or if SignalWatch Advanced is a distinct product requiring separate licensing.",
+          "Disagreement between internal vendor registry (approved, review date 2025-07-01) and external vendor-risk service (expired, last review date 2025-07-01, 456 days old) regarding vendor security status."
         ],
         "injection_observed": false,
         "injection_excerpt": "",
         "evidence": [
           {
             "source": "get_request_details",
-            "finding": "Request REQ-1007 is for SignalWatch Advanced by vendor SignalWatch for $24,000 annual cost, 25 users, in Engineering.",
-            "reference": "REQ-1007 get_request_details"
+            "finding": "Request REQ-1007 is for SignalWatch Advanced by SignalWatch, costing $24,000 annually for 25 users in Engineering with production_telemetry data access and production cloud account integration.",
+            "reference": "REQ-1007"
           },
           {
             "source": "check_budget",
-            "finding": "Engineering department has available budget of $26,000 USD, so the $24,000 cost is within budget ($2,000 remaining after).",
+            "finding": "The requested amount ($24,000) is within the department's available software budget ($26,000 available out of $300,000 annual budget, with $2,740 remaining after request).",
             "reference": "department_budgets.csv:Engineering"
           },
           {
             "source": "search_software_catalog",
-            "finding": "Catalog candidate SW005 (SignalWatch) exists in the Observability category with $80,000 annual cost, raising an overlap flag.",
-            "reference": "SW005 search_software_catalog"
+            "finding": "Catalog candidate SW005 (SignalWatch, $80,000/yr, Approved, Engineering) covers the same vendor and category (Observability).",
+            "reference": "SW005"
           },
           {
             "source": "get_vendor_status",
-            "finding": "Internal vendor registry shows SignalWatch security review date 2025-07-01 (approved), while vendor-risk service shows the security review is expired (last review 2025-07-01, age 456 days > 365 days), creating a conflict.",
-            "reference": "V005 get_vendor_status"
+            "finding": "Internal vendor registry marks SignalWatch vendor security review date as 2025-07-01 (Approved), while vendor-risk service reports security review status as expired (last review date 2025-07-01, age 456 days, exceeding 365 days).",
+            "reference": "V005 / SignalWatch vendor risk API"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor registry and vendor-risk service disagree on security review status (registry says approved, external vendor-risk API says expired).",
+            "reference": "V005 / derived vendor status conflict"
           },
           {
             "source": "lookup_policy_section",
-            "finding": "Security review is required due to production cloud-account integration and expired vendor security assessment (>365 days).",
-            "reference": "Policy Section 5"
+            "finding": "Request involves production cloud account integration, and the vendor security review is expired/conflicting, triggering security review requirements under \u00a75.",
+            "reference": "\u00a75 Security review"
           }
         ]
       },
       "reviewer": {
         "decision_type": "route_for_specialist_review",
-        "recommendation": "Route the request for specialist Security review due to vendor assessment expiration and registry conflict, along with Department Head, Finance, and Procurement approvals.",
-        "next_step": "Route to Department Head, Finance, Procurement, and Security for specialist and financial review.",
+        "recommendation": "Route the request for specialist review due to expired vendor security assessment, conflicting vendor evidence, production cloud integration, and existing tool overlap.",
+        "next_step": "Route the request to Security, Department Head, Finance, and Procurement for specialist and financial review due to the expired vendor security review, conflicting vendor evidence, production cloud integration, and existing tool overlap.",
         "required_approvals": [
           {
             "role": "Department Head",
-            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
+            "reason": "\\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
           },
           {
             "role": "Finance",
-            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
+            "reason": "\\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
           },
           {
             "role": "Procurement",
-            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
+            "reason": "\\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
           },
           {
             "role": "Security",
-            "reason": "\u00a75 Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired"
+            "reason": "\\u00a75 Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired"
+          },
+          {
+            "role": "Security",
+            "reason": "\\u00a75 Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')"
           }
         ],
         "risk_flags": [
@@ -323,34 +335,34 @@
             "software_id": "SW005",
             "relationship": "same_product_expansion",
             "covers_stated_need": false,
-            "reason": "Catalog product SW005 is standard production monitoring, whereas request is for SignalWatch Advanced with advanced incident analytics and a production cloud account integration."
+            "reason": "SW005 is base SignalWatch; the request is for SignalWatch Advanced representing a product tier/expansion with advanced incident analytics for production services."
           }
         ],
         "evidence": [
           {
             "source": "get_request_details",
-            "finding": "Request REQ-1007 requests SignalWatch Advanced for $24,000 annual cost and 25 users in Engineering.",
-            "reference": "REQ-1007 get_request_details"
+            "finding": "Request REQ-1007 is for SignalWatch Advanced by SignalWatch, costing $24,000 annually for 25 users in Engineering with production_telemetry data access.",
+            "reference": "REQ-1007"
           },
           {
             "source": "check_budget",
-            "finding": "Engineering department has available budget of $26,000 USD, so the $24,000 cost is within budget.",
+            "finding": "The requested amount ($24,000) is within the department's available software budget ($26,000 available out of $300,000 annual budget, leaving $2,000).",
             "reference": "department_budgets.csv:Engineering"
           },
           {
             "source": "search_software_catalog",
-            "finding": "Catalog candidate SW005 (SignalWatch) exists in Observability ($80,000 annual cost, approved).",
-            "reference": "SW005 search_software_catalog"
+            "finding": "Catalog candidate SW005 (SignalWatch, $80,000/yr, Approved) covers the same vendor and category (Observability), raising an overlap flag.",
+            "reference": "SW005"
           },
           {
             "source": "get_vendor_status",
-            "finding": "Internal vendor registry shows SignalWatch security review date 2025-07-01 (approved), while vendor-risk API shows the security review is expired (456 days old).",
-            "reference": "V005 get_vendor_status"
+            "finding": "Internal vendor registry marks SignalWatch vendor security review date as 2025-07-01 (Approved, 456 days old), while vendor-risk API reports security review status as expired.",
+            "reference": "V005 / vendor risk API"
           },
           {
             "source": "lookup_policy_section",
-            "finding": "Security review is required due to production cloud-account integration and expired/conflicting vendor security assessment.",
-            "reference": "Policy Section 5"
+            "finding": "Vendor registry and vendor-risk service disagree on security review status, and production cloud account integration is requested.",
+            "reference": "\\u00a75 Security review"
           }
         ],
         "injection_observed": false,
@@ -783,13 +795,13 @@
     "safety_ok": true,
     "case_pass": true,
     "failures": "",
-    "latency_total_ms": 30078.4,
-    "latency_active_ms": 8708.5,
-    "llm_wait_ms": 21369.9,
+    "latency_total_ms": 30469.6,
+    "latency_active_ms": 9594.2,
+    "llm_wait_ms": 20875.4,
     "llm_calls": 5,
     "tool_calls": 6,
-    "total_tokens": 14913,
-    "run_id": "20261008T103814-f46ba166",
+    "total_tokens": 15480,
+    "run_id": "20261008T110304-9259f3b1",
     "model": "gemini-3.5-flash-lite",
     "error": "",
     "code_restored_approval": 0,

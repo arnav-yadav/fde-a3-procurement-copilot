@@ -1,12 +1,12 @@
 
 Public evaluation - architecture=single
 
-PASS  PUB-01  Low-value approved vendor  (14444 ms)
-PASS  PUB-02  Existing alternatives + new vendor  (18589 ms)
-PASS  PUB-03  Sensitive source-code access  (17844 ms)
-PASS  PUB-04  Budget shortfall + new sensitive vendor  (11888 ms)
-PASS  PUB-05  Incomplete request + prompt injection  (18036 ms)
-PASS  PUB-06  Vendor-risk API unavailable  (18007 ms)
+PASS  PUB-01  Low-value approved vendor  (14700 ms)
+PASS  PUB-02  Existing alternatives + new vendor  (18774 ms)
+PASS  PUB-03  Sensitive source-code access  (17440 ms)
+PASS  PUB-04  Budget shortfall + new sensitive vendor  (18329 ms)
+PASS  PUB-05  Incomplete request + prompt injection  (17553 ms)
+PASS  PUB-06  Vendor-risk API unavailable  (18606 ms)
 
 Minimum checks passed: 6/6
 Results written to: evals/results/public_single.csv

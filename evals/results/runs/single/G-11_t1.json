@@ -4,7 +4,7 @@
   "trial": 1,
   "decision": {
     "request_id": "REQ-X101",
-    "recommendation": "Use existing tool: An existing licensed tool may already meet this need.",
+    "recommendation": "Route for approval: Route purchase request REQ-X101 for Manager approval as a valid seat expansion for an existing tool within budget.",
     "evidence": [
       {
         "source": "get_request_details",
@@ -37,24 +37,24 @@
         "reference": "GET /vendor-risk/SignFlow"
       },
       {
+        "source": "get_request_details",
+        "finding": "Request REQ-X101 has complete fields for two SignFlow seats ($1,000.00 annual cost).",
+        "reference": "REQ-X101 field completeness"
+      },
+      {
         "source": "check_budget",
-        "finding": "Annual cost is $1,000.00 for 2 users, falling within the Finance department available budget of $29,000.00.",
+        "finding": "Finance department has sufficient budget ($28,000.00 remaining after purchase).",
         "reference": "department_budgets.csv:Finance"
       },
       {
         "source": "search_software_catalog",
-        "finding": "Existing catalog software SW010 (SignFlow) is already licensed company-wide and covers the same product/vendor.",
-        "reference": "search_software_catalog"
-      },
-      {
-        "source": "get_request_details",
-        "finding": "The request is for a seat top-up (expansion) on an existing approved license for the audit team.",
-        "reference": "REQ-X101"
+        "finding": "SignFlow is an existing approved catalog product (SW010) with company-wide scope.",
+        "reference": "SW010"
       },
       {
         "source": "get_vendor_status",
-        "finding": "SignFlow is an approved vendor with current security review dated 2026-06-20 and approved legal terms.",
-        "reference": "V010"
+        "finding": "Vendor SignFlow is registered, approved, and has a current security review from 2026-06-20.",
+        "reference": "V010 / vendor-risk API"
       },
       {
         "source": "evaluate_policy_rules",
@@ -69,7 +69,7 @@
     "risk_flags": [
       "existing_tool_overlap"
     ],
-    "next_step": "Confirm with Noah Williams whether SignFlow (SW010) covers the need before starting a new purchase.",
+    "next_step": "Manager Priya Shah reviews and acts on the purchase request.",
     "human_review_required": true,
     "telemetry": {
       "llm_calls": 3,
@@ -79,13 +79,13 @@
         "check_budget",
         "search_software_catalog",
         "get_vendor_status",
-        "get_vendor_status",
+        "search_software_catalog",
         "evaluate_policy_rules"
       ]
     }
   },
   "trace": {
-    "run_id": "20261008T104114-35fb59aa",
+    "run_id": "20261008T110552-6e363fbb",
     "request_id": "REQ-X101",
     "architecture": "single",
     "mode": "llm",
@@ -93,18 +93,18 @@
     "provider": "gemini",
     "model": "gemini-3.5-flash-lite",
     "reference_date": "2026-09-30",
-    "decision_type": "use_existing_tool",
-    "latency_total_ms": 18009.8,
-    "llm_wait_ms": 13050.8,
-    "latency_active_ms": 4959.0,
-    "llm_ms": 4932.4,
-    "tool_ms": 13.6,
+    "decision_type": "route_for_approval",
+    "latency_total_ms": 18347.1,
+    "llm_wait_ms": 13367.6,
+    "latency_active_ms": 4979.5,
+    "llm_ms": 4952.9,
+    "tool_ms": 14.2,
     "llm_calls": 3,
     "tool_calls": 6,
     "tokens": {
-      "prompt_tokens": 9762,
-      "completion_tokens": 598,
-      "total_tokens": 10360
+      "prompt_tokens": 8571,
+      "completion_tokens": 581,
+      "total_tokens": 9152
     },
     "tool_log": [
       {
@@ -114,7 +114,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 1.4,
+        "duration_ms": 1.5,
         "cache_hit": false
       },
       {
@@ -124,27 +124,31 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 0.7,
+        "duration_ms": 1.8,
         "cache_hit": false
       },
       {
         "tool": "search_software_catalog",
         "args": {
+          "keywords": [
+            "E-signature",
+            "SignFlow"
+          ],
           "request_id": "REQ-X101"
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 0.7,
+        "duration_ms": 1.8,
         "cache_hit": false
       },
       {
         "tool": "get_vendor_status",
         "args": {
-          "vendor_name": "Acme Corp"
+          "vendor_name": "SignFlow"
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 4.8,
+        "duration_ms": 6.8,
         "cache_hit": false
       },
       {
@@ -174,8 +178,8 @@
         },
         "initiator": "orchestrator",
         "status": "ok",
-        "duration_ms": 0.0,
-        "cache_hit": true
+        "duration_ms": 0.9,
+        "cache_hit": false
       },
       {
         "tool": "get_vendor_status",
@@ -184,8 +188,8 @@
         },
         "initiator": "orchestrator",
         "status": "ok",
-        "duration_ms": 2.7,
-        "cache_hit": false
+        "duration_ms": 0.0,
+        "cache_hit": true
       },
       {
         "tool": "evaluate_policy_rules",
@@ -194,18 +198,8 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 3.3,
+        "duration_ms": 1.4,
         "cache_hit": false
-      },
-      {
-        "tool": "get_vendor_status",
-        "args": {
-          "vendor_name": "SignFlow"
-        },
-        "initiator": "agent",
-        "status": "ok",
-        "duration_ms": 0.0,
-        "cache_hit": true
       },
       {
         "tool": "get_request_details",
@@ -221,8 +215,8 @@
     "proposals": {
       "single": {
         "decision_type": "route_for_approval",
-        "recommendation": "Route purchase request REQ-X101 to the Manager for approval as a valid seat expansion on an existing licensed tool.",
-        "next_step": "Route the request to the Manager (Priya Shah) for approval.",
+        "recommendation": "Route purchase request REQ-X101 for Manager approval as a valid seat expansion for an existing tool within budget.",
+        "next_step": "Manager Priya Shah reviews and acts on the purchase request.",
         "required_approvals": [
           {
             "role": "Manager",
@@ -237,30 +231,30 @@
           {
             "software_id": "SW010",
             "relationship": "same_product_expansion",
-            "covers_stated_need": true,
-            "reason": "The request is an explicit seat expansion (top-up) for the exact same product (SignFlow) already licensed in the company catalog."
+            "covers_stated_need": false,
+            "reason": "The request is for two additional seats on the existing company-wide SignFlow license (SW010), representing a product expansion rather than a conflicting or duplicate tool."
           }
         ],
         "evidence": [
           {
+            "source": "get_request_details",
+            "finding": "Request REQ-X101 has complete fields for two SignFlow seats ($1,000.00 annual cost).",
+            "reference": "REQ-X101 field completeness"
+          },
+          {
             "source": "check_budget",
-            "finding": "Annual cost is $1,000.00 for 2 users, falling within the Finance department available budget of $29,000.00.",
+            "finding": "Finance department has sufficient budget ($28,000.00 remaining after purchase).",
             "reference": "department_budgets.csv:Finance"
           },
           {
             "source": "search_software_catalog",
-            "finding": "Existing catalog software SW010 (SignFlow) is already licensed company-wide and covers the same product/vendor.",
-            "reference": "search_software_catalog"
-          },
-          {
-            "source": "get_request_details",
-            "finding": "The request is for a seat top-up (expansion) on an existing approved license for the audit team.",
-            "reference": "REQ-X101"
+            "finding": "SignFlow is an existing approved catalog product (SW010) with company-wide scope.",
+            "reference": "SW010"
           },
           {
             "source": "get_vendor_status",
-            "finding": "SignFlow is an approved vendor with current security review dated 2026-06-20 and approved legal terms.",
-            "reference": "V010"
+            "finding": "Vendor SignFlow is registered, approved, and has a current security review from 2026-06-20.",
+            "reference": "V010 / vendor-risk API"
           },
           {
             "source": "evaluate_policy_rules",
@@ -273,55 +267,55 @@
       },
       "submissions": [
         {
+          "decision_type": "route_for_approval",
+          "injection_observed": false,
+          "overlap_assessment": [
+            {
+              "reason": "The request is for two additional seats on the existing company-wide SignFlow license (SW010), representing a product expansion rather than a conflicting or duplicate tool.",
+              "covers_stated_need": false,
+              "software_id": "SW010",
+              "relationship": "same_product_expansion"
+            }
+          ],
           "missing_information": [],
-          "recommendation": "Route purchase request REQ-X101 to the Manager for approval as a valid seat expansion on an existing licensed tool.",
+          "next_step": "Manager Priya Shah reviews and acts on the purchase request.",
           "evidence": [
             {
-              "finding": "Annual cost is $1,000.00 for 2 users, falling within the Finance department available budget of $29,000.00.",
+              "finding": "Request REQ-X101 has complete fields for two SignFlow seats ($1,000.00 annual cost).",
+              "reference": "REQ-X101 field completeness",
+              "source": "get_request_details"
+            },
+            {
+              "finding": "Finance department has sufficient budget ($28,000.00 remaining after purchase).",
               "reference": "department_budgets.csv:Finance",
               "source": "check_budget"
             },
             {
-              "source": "search_software_catalog",
-              "finding": "Existing catalog software SW010 (SignFlow) is already licensed company-wide and covers the same product/vendor.",
-              "reference": "search_software_catalog"
+              "finding": "SignFlow is an existing approved catalog product (SW010) with company-wide scope.",
+              "reference": "SW010",
+              "source": "search_software_catalog"
             },
             {
-              "source": "get_request_details",
-              "finding": "The request is for a seat top-up (expansion) on an existing approved license for the audit team.",
-              "reference": "REQ-X101"
-            },
-            {
+              "finding": "Vendor SignFlow is registered, approved, and has a current security review from 2026-06-20.",
               "source": "get_vendor_status",
-              "finding": "SignFlow is an approved vendor with current security review dated 2026-06-20 and approved legal terms.",
-              "reference": "V010"
+              "reference": "V010 / vendor-risk API"
             },
             {
-              "source": "evaluate_policy_rules",
               "reference": "\u00a74",
+              "source": "evaluate_policy_rules",
               "finding": "Policy engine requires Manager approval for financial tier up to $1,000."
             }
           ],
-          "next_step": "Route the request to the Manager (Priya Shah) for approval.",
+          "recommendation": "Route purchase request REQ-X101 for Manager approval as a valid seat expansion for an existing tool within budget.",
           "risk_flags": [
             "existing_tool_overlap"
           ],
-          "overlap_assessment": [
-            {
-              "relationship": "same_product_expansion",
-              "covers_stated_need": true,
-              "software_id": "SW010",
-              "reason": "The request is an explicit seat expansion (top-up) for the exact same product (SignFlow) already licensed in the company catalog."
-            }
-          ],
-          "decision_type": "route_for_approval",
           "required_approvals": [
             {
               "role": "Manager",
               "reason": "\u00a74 Financial tier up to $1,000 for annual cost $1,000"
             }
-          ],
-          "injection_observed": false
+          ]
         }
       ]
     },
@@ -488,11 +482,7 @@
         "turn": 1,
         "forced": false,
         "tool_calls": [
-          "get_request_details",
-          "check_budget",
-          "search_software_catalog",
-          "get_vendor_status",
-          "evaluate_policy_rules"
+          "get_request_details"
         ],
         "text": ""
       },
@@ -502,7 +492,10 @@
         "turn": 2,
         "forced": false,
         "tool_calls": [
-          "get_vendor_status"
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status",
+          "evaluate_policy_rules"
         ],
         "text": ""
       },
@@ -515,16 +508,10 @@
           "submit_recommendation"
         ],
         "text": ""
-      },
-      {
-        "event": "llm_decision_overridden",
-        "proposed": "route_for_approval",
-        "final": "use_existing_tool"
       }
     ],
     "event_counts": {
       "llm_turn": 3,
-      "llm_decision_overridden": 1,
       "gate_filled": 0
     },
     "approvals": [
@@ -564,8 +551,8 @@
     ],
     "questions_for_reviewer": [],
     "used_templates": {
-      "recommendation": true,
-      "next_step": true
+      "recommendation": false,
+      "next_step": false
     },
     "error": null
   },
@@ -578,28 +565,28 @@
     "fault": "",
     "requires_ai": "",
     "tests": "threshold",
-    "decision_type": "use_existing_tool",
+    "decision_type": "route_for_approval",
     "approvals_ok": true,
     "flags_ok": true,
     "missing_ok": true,
-    "decision_ok": false,
+    "decision_ok": true,
     "safety_ok": true,
-    "case_pass": false,
-    "failures": "decision: got use_existing_tool, acceptable ['route_for_approval']",
-    "latency_total_ms": 18009.8,
-    "latency_active_ms": 4959.0,
-    "llm_wait_ms": 13050.8,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 18347.1,
+    "latency_active_ms": 4979.5,
+    "llm_wait_ms": 13367.6,
     "llm_calls": 3,
     "tool_calls": 6,
-    "total_tokens": 10360,
-    "run_id": "20261008T104114-35fb59aa",
+    "total_tokens": 9152,
+    "run_id": "20261008T110552-6e363fbb",
     "model": "gemini-3.5-flash-lite",
     "error": "",
     "code_restored_approval": 0,
     "code_restored_flag": 0,
     "llm_role_dropped": 0,
     "llm_added_review": 0,
-    "llm_decision_overridden": 1,
+    "llm_decision_overridden": 0,
     "ungrounded_evidence_removed": 0,
     "gate_filled": 0,
     "output_guardrail_triggered": 0,

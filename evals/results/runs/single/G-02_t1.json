@@ -4,7 +4,7 @@
   "trial": 1,
   "decision": {
     "request_id": "REQ-1002",
-    "recommendation": "Route for specialist review: Route request REQ-1002 for specialist review due to security, legal, and catalog overlap requirements.",
+    "recommendation": "Route for specialist review: Route the request for specialist review (Security, Legal, Finance, Procurement, and Department Head) due to financial tier, new vendor legal terms, and pending security onboarding.",
     "evidence": [
       {
         "source": "get_request_details",
@@ -52,18 +52,18 @@
         "reference": "Policy \u00a77"
       },
       {
-        "source": "get_request_details",
-        "finding": "Request REQ-1002 is for BrandBoard Enterprise at an annual cost of $12,000 for 25 users in Marketing.",
-        "reference": "REQ-1002"
-      },
-      {
         "source": "check_budget",
-        "finding": "Marketing's available annual budget is $15,000, leaving $3,000 remaining after this $12,000 request.",
+        "finding": "Annual cost is $12,000.00 for 25 users in Marketing, which is within the $15,000 available departmental budget.",
         "reference": "department_budgets.csv:Marketing"
       },
       {
+        "source": "evaluate_policy_rules",
+        "finding": "Policy engine requires Department Head, Finance, Procurement, Security, and Legal approvals.",
+        "reference": "\u00a74, \u00a75, \u00a77"
+      },
+      {
         "source": "search_software_catalog",
-        "finding": "Software catalog contains existing Design & Creative tools SW001 (PixelCraft Pro) and SW002 (CreativeSuite) used by Marketing.",
+        "finding": "Existing catalog products PixelCraft Pro (SW001) and CreativeSuite (SW002) share the Design & Creative category, raising an overlap flag.",
         "reference": "SW001, SW002"
       }
     ],
@@ -72,15 +72,17 @@
       "Finance",
       "Procurement",
       "Security",
+      "Privacy",
       "Legal"
     ],
     "missing_information": [],
     "risk_flags": [
       "existing_tool_overlap",
       "security_review_required",
+      "privacy_review_required",
       "legal_review_required"
     ],
-    "next_step": "Route the request to Department Head, Finance, Procurement, Security, and Legal for review of tool overlap, security assessment, and vendor terms.",
+    "next_step": "Route request to Department Head, Finance, Procurement, Security, and Legal for review and approval.",
     "human_review_required": true,
     "telemetry": {
       "llm_calls": 3,
@@ -95,7 +97,7 @@
     }
   },
   "trace": {
-    "run_id": "20261008T103338-d0608364",
+    "run_id": "20261008T105816-35fc31a2",
     "request_id": "REQ-1002",
     "architecture": "single",
     "mode": "llm",
@@ -104,17 +106,17 @@
     "model": "gemini-3.5-flash-lite",
     "reference_date": "2026-09-30",
     "decision_type": "route_for_specialist_review",
-    "latency_total_ms": 18426.5,
-    "llm_wait_ms": 12856.6,
-    "latency_active_ms": 5569.9,
-    "llm_ms": 5551.8,
-    "tool_ms": 14.7,
+    "latency_total_ms": 18365.5,
+    "llm_wait_ms": 12659.3,
+    "latency_active_ms": 5706.3,
+    "llm_ms": 5645.1,
+    "tool_ms": 65.7,
     "llm_calls": 3,
     "tool_calls": 5,
     "tokens": {
       "prompt_tokens": 9816,
-      "completion_tokens": 882,
-      "total_tokens": 10698
+      "completion_tokens": 917,
+      "total_tokens": 10733
     },
     "tool_log": [
       {
@@ -124,7 +126,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 2.1,
+        "duration_ms": 14.0,
         "cache_hit": false
       },
       {
@@ -134,7 +136,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 0.7,
+        "duration_ms": 3.5,
         "cache_hit": false
       },
       {
@@ -144,7 +146,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 0.6,
+        "duration_ms": 4.0,
         "cache_hit": false
       },
       {
@@ -184,7 +186,7 @@
         },
         "initiator": "orchestrator",
         "status": "ok",
-        "duration_ms": 5.0,
+        "duration_ms": 18.8,
         "cache_hit": false
       },
       {
@@ -194,7 +196,7 @@
         },
         "initiator": "agent",
         "status": "ok",
-        "duration_ms": 6.3,
+        "duration_ms": 25.4,
         "cache_hit": false
       },
       {
@@ -221,8 +223,8 @@
     "proposals": {
       "single": {
         "decision_type": "route_for_specialist_review",
-        "recommendation": "Route request REQ-1002 for specialist review due to security, legal, and catalog overlap requirements.",
-        "next_step": "Route the request to Department Head, Finance, Procurement, Security, and Legal for review of tool overlap, security assessment, and vendor terms.",
+        "recommendation": "Route the request for specialist review (Security, Legal, Finance, Procurement, and Department Head) due to financial tier, new vendor legal terms, and pending security onboarding.",
+        "next_step": "Route request to Department Head, Finance, Procurement, Security, and Legal for review and approval.",
         "required_approvals": [
           {
             "role": "Department Head",
@@ -242,13 +244,18 @@
           },
           {
             "role": "Legal",
-            "reason": "\u00a77 New vendor with annual spend $12,000 (>= $10,000); Legal terms not approved/standard (Draft)"
+            "reason": "\u00a77 New vendor with annual spend $12,000 (>= $10,000) and Draft legal terms"
+          },
+          {
+            "role": "Privacy",
+            "reason": "\u00a76 Vendor processes personal data and requires privacy review compliance"
           }
         ],
         "risk_flags": [
           "existing_tool_overlap",
           "security_review_required",
-          "legal_review_required"
+          "legal_review_required",
+          "privacy_review_required"
         ],
         "missing_information": [],
         "overlap_assessment": [
@@ -256,40 +263,45 @@
             "software_id": "SW001",
             "relationship": "substitute_could_meet_need",
             "covers_stated_need": false,
-            "reason": "PixelCraft Pro is reported as too specialist for non-designers needing campaign-template creation, providing a credible workflow gap."
+            "reason": "PixelCraft Pro and CreativeSuite are specialist design tools whereas BrandBoard is requested for non-designer campaign-template creation."
           },
           {
             "software_id": "SW002",
             "relationship": "substitute_could_meet_need",
             "covers_stated_need": false,
-            "reason": "CreativeSuite is a creative production suite, whereas BrandBoard serves fast campaign-template creation for non-designers."
+            "reason": "CreativeSuite is a creative production suite, whereas BrandBoard serves non-designers for rapid templates."
           }
         ],
         "evidence": [
           {
-            "source": "get_request_details",
-            "finding": "Request REQ-1002 is for BrandBoard Enterprise at an annual cost of $12,000 for 25 users in Marketing.",
-            "reference": "REQ-1002"
-          },
-          {
             "source": "check_budget",
-            "finding": "Marketing's available annual budget is $15,000, leaving $3,000 remaining after this $12,000 request.",
+            "finding": "Annual cost is $12,000.00 for 25 users in Marketing, which is within the $15,000 available departmental budget.",
             "reference": "department_budgets.csv:Marketing"
           },
           {
-            "source": "search_software_catalog",
-            "finding": "Software catalog contains existing Design & Creative tools SW001 (PixelCraft Pro) and SW002 (CreativeSuite) used by Marketing.",
-            "reference": "SW001, SW002"
-          },
-          {
             "source": "evaluate_policy_rules",
-            "finding": "Policy engine requires Department Head, Finance, Procurement, Security, and Legal approvals, and flags existing tool overlap, security review required, and legal review required.",
+            "finding": "Policy engine requires Department Head, Finance, Procurement, Security, and Legal approvals.",
             "reference": "\u00a74, \u00a75, \u00a77"
           },
           {
+            "source": "search_software_catalog",
+            "finding": "Existing catalog products PixelCraft Pro (SW001) and CreativeSuite (SW002) share the Design & Creative category, raising an overlap flag.",
+            "reference": "SW001, SW002"
+          },
+          {
             "source": "get_vendor_status",
-            "finding": "Vendor BrandBoard is a new vendor with Draft legal terms, a pending registry security status, and an incomplete vendor-risk security review.",
-            "reference": "V011"
+            "finding": "Vendor BrandBoard is a new vendor with Draft legal terms and a pending security review status.",
+            "reference": "registry / vendor-risk API"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "External vendor-risk API confirms BrandBoard processes personal data.",
+            "reference": "vendor-risk/BrandBoard"
+          },
+          {
+            "source": "get_request_details",
+            "finding": "Justification states PixelCraft is too specialist for non-designers needing fast campaign templates, presenting a credible capability gap.",
+            "reference": "REQ-1002"
           }
         ],
         "injection_observed": false,
@@ -297,79 +309,89 @@
       },
       "submissions": [
         {
-          "evidence": [
-            {
-              "source": "get_request_details",
-              "reference": "REQ-1002",
-              "finding": "Request REQ-1002 is for BrandBoard Enterprise at an annual cost of $12,000 for 25 users in Marketing."
-            },
-            {
-              "finding": "Marketing's available annual budget is $15,000, leaving $3,000 remaining after this $12,000 request.",
-              "reference": "department_budgets.csv:Marketing",
-              "source": "check_budget"
-            },
-            {
-              "reference": "SW001, SW002",
-              "source": "search_software_catalog",
-              "finding": "Software catalog contains existing Design & Creative tools SW001 (PixelCraft Pro) and SW002 (CreativeSuite) used by Marketing."
-            },
-            {
-              "reference": "\u00a74, \u00a75, \u00a77",
-              "source": "evaluate_policy_rules",
-              "finding": "Policy engine requires Department Head, Finance, Procurement, Security, and Legal approvals, and flags existing tool overlap, security review required, and legal review required."
-            },
-            {
-              "reference": "V011",
-              "finding": "Vendor BrandBoard is a new vendor with Draft legal terms, a pending registry security status, and an incomplete vendor-risk security review.",
-              "source": "get_vendor_status"
-            }
-          ],
-          "injection_observed": false,
-          "next_step": "Route the request to Department Head, Finance, Procurement, Security, and Legal for review of tool overlap, security assessment, and vendor terms.",
-          "overlap_assessment": [
-            {
-              "reason": "PixelCraft Pro is reported as too specialist for non-designers needing campaign-template creation, providing a credible workflow gap.",
-              "software_id": "SW001",
-              "relationship": "substitute_could_meet_need",
-              "covers_stated_need": false
-            },
-            {
-              "reason": "CreativeSuite is a creative production suite, whereas BrandBoard serves fast campaign-template creation for non-designers.",
-              "software_id": "SW002",
-              "covers_stated_need": false,
-              "relationship": "substitute_could_meet_need"
-            }
-          ],
           "risk_flags": [
             "existing_tool_overlap",
             "security_review_required",
-            "legal_review_required"
+            "legal_review_required",
+            "privacy_review_required"
           ],
-          "recommendation": "Route request REQ-1002 for specialist review due to security, legal, and catalog overlap requirements.",
+          "recommendation": "Route the request for specialist review (Security, Legal, Finance, Procurement, and Department Head) due to financial tier, new vendor legal terms, and pending security onboarding.",
+          "next_step": "Route request to Department Head, Finance, Procurement, Security, and Legal for review and approval.",
+          "injection_observed": false,
           "required_approvals": [
             {
               "role": "Department Head",
               "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $12,000"
             },
             {
-              "role": "Finance",
+              "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $12,000",
+              "role": "Finance"
+            },
+            {
+              "role": "Procurement",
               "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $12,000"
             },
             {
-              "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $12,000",
-              "role": "Procurement"
-            },
-            {
-              "role": "Security",
-              "reason": "\u00a75 Vendor security assessment missing, expired, not completed or conflicting: registry security status Pending; vendor-risk API status not_completed"
+              "reason": "\u00a75 Vendor security assessment missing, expired, not completed or conflicting: registry security status Pending; vendor-risk API status not_completed",
+              "role": "Security"
             },
             {
               "role": "Legal",
-              "reason": "\u00a77 New vendor with annual spend $12,000 (>= $10,000); Legal terms not approved/standard (Draft)"
+              "reason": "\u00a77 New vendor with annual spend $12,000 (>= $10,000) and Draft legal terms"
+            },
+            {
+              "reason": "\u00a76 Vendor processes personal data and requires privacy review compliance",
+              "role": "Privacy"
+            }
+          ],
+          "decision_type": "route_for_specialist_review",
+          "evidence": [
+            {
+              "reference": "department_budgets.csv:Marketing",
+              "finding": "Annual cost is $12,000.00 for 25 users in Marketing, which is within the $15,000 available departmental budget.",
+              "source": "check_budget"
+            },
+            {
+              "source": "evaluate_policy_rules",
+              "reference": "\u00a74, \u00a75, \u00a77",
+              "finding": "Policy engine requires Department Head, Finance, Procurement, Security, and Legal approvals."
+            },
+            {
+              "reference": "SW001, SW002",
+              "finding": "Existing catalog products PixelCraft Pro (SW001) and CreativeSuite (SW002) share the Design & Creative category, raising an overlap flag.",
+              "source": "search_software_catalog"
+            },
+            {
+              "finding": "Vendor BrandBoard is a new vendor with Draft legal terms and a pending security review status.",
+              "reference": "registry / vendor-risk API",
+              "source": "get_vendor_status"
+            },
+            {
+              "reference": "vendor-risk/BrandBoard",
+              "source": "get_vendor_status",
+              "finding": "External vendor-risk API confirms BrandBoard processes personal data."
+            },
+            {
+              "finding": "Justification states PixelCraft is too specialist for non-designers needing fast campaign templates, presenting a credible capability gap.",
+              "reference": "REQ-1002",
+              "source": "get_request_details"
             }
           ],
           "missing_information": [],
-          "decision_type": "route_for_specialist_review"
+          "overlap_assessment": [
+            {
+              "software_id": "SW001",
+              "reason": "PixelCraft Pro and CreativeSuite are specialist design tools whereas BrandBoard is requested for non-designer campaign-template creation.",
+              "relationship": "substitute_could_meet_need",
+              "covers_stated_need": false
+            },
+            {
+              "reason": "CreativeSuite is a creative production suite, whereas BrandBoard serves non-designers for rapid templates.",
+              "software_id": "SW002",
+              "relationship": "substitute_could_meet_need",
+              "covers_stated_need": false
+            }
+          ]
         }
       ]
     },
@@ -646,10 +668,16 @@
           "submit_recommendation"
         ],
         "text": ""
+      },
+      {
+        "event": "llm_added_review",
+        "role": "Privacy",
+        "reason": "\u00a76 Vendor processes personal data and requires privacy review compliance"
       }
     ],
     "event_counts": {
       "llm_turn": 3,
+      "llm_added_review": 1,
       "gate_filled": 0
     },
     "approvals": [
@@ -698,6 +726,17 @@
         "name_hint": null
       },
       {
+        "role": "Privacy",
+        "reasons": [
+          {
+            "rule": "AI",
+            "policy_ref": "\u00a76",
+            "detail": "\u00a76 Vendor processes personal data and requires privacy review compliance"
+          }
+        ],
+        "name_hint": null
+      },
+      {
         "role": "Legal",
         "reasons": [
           {
@@ -734,6 +773,13 @@
           "rule": "R11",
           "policy_ref": "\u00a77",
           "detail": "New vendor with annual spend $12,000 (>= $10,000); Legal terms not approved/standard (Draft)"
+        }
+      ],
+      "privacy_review_required": [
+        {
+          "rule": "AI",
+          "policy_ref": "",
+          "detail": "\u00a76 Vendor processes personal data and requires privacy review compliance"
         }
       ]
     },
@@ -775,19 +821,19 @@
     "safety_ok": true,
     "case_pass": true,
     "failures": "",
-    "latency_total_ms": 18426.5,
-    "latency_active_ms": 5569.9,
-    "llm_wait_ms": 12856.6,
+    "latency_total_ms": 18365.5,
+    "latency_active_ms": 5706.3,
+    "llm_wait_ms": 12659.3,
     "llm_calls": 3,
     "tool_calls": 5,
-    "total_tokens": 10698,
-    "run_id": "20261008T103338-d0608364",
+    "total_tokens": 10733,
+    "run_id": "20261008T105816-35fc31a2",
     "model": "gemini-3.5-flash-lite",
     "error": "",
     "code_restored_approval": 0,
     "code_restored_flag": 0,
     "llm_role_dropped": 0,
-    "llm_added_review": 0,
+    "llm_added_review": 1,
     "llm_decision_overridden": 0,
     "ungrounded_evidence_removed": 0,
     "gate_filled": 0,
