@@ -127,7 +127,7 @@ Prompt injection: request text, vendor notes and API text reach the LLM only ins
 - **Baseline**: a rules-only column, so the table shows what the LLM adds. G-08 and G-23 are cases rules cannot pass by design.
 - **Manual review**: 6 runs per architecture ([`evals/results/manual_review.md`](evals/results/manual_review.md); AI-assisted pre-fill, pending human confirmation).
 
-**Results** (run 2: gemini-3.5-flash-lite, 1 trial, temperature 0; copied from [`evals/results/summary.md`](evals/results/summary.md), which also has the per-case matrix and every failure with its reason):
+**Results** (run 2, archived. Run 3, with four configurations, the held-out set and 3 trials, is in progress; see `IMPROVEMENTS.md`. Run 2: gemini-3.5-flash-lite, 1 trial, temperature 0; copied from [`evals/results/history/run2/summary.md`](evals/results/history/run2/summary.md), which also has the per-case matrix and every failure with its reason):
 
 | Metric | Single (A) | Staged (B) | Rules only |
 |---|---:|---:|---:|

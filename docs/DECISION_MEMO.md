@@ -6,7 +6,7 @@ Ship **Architecture A, the single agent**. It passed more golden cases with fewe
 
 ## Evidence
 
-Same 23 golden cases, one trial, gemini-3.5-flash-lite, temperature 0 (`evals/results/summary.md`, `manual_review.md`).
+Same 23 golden cases, one trial, gemini-3.5-flash-lite, temperature 0 (`evals/results/history/run2/summary.md`, `manual_review.md`).
 
 | Metric | Single | Staged | Rules only |
 |---|---:|---:|---:|

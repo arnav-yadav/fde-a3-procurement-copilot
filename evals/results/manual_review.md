@@ -1,6 +1,6 @@
 # Manual review ("policy failures found manually")
 
-Runs read: REQ-1002 (G-02), REQ-1004 (G-04), REQ-1006 (G-06), REQ-1007 (G-07), REQ-1008 (G-08) and the vendor-API fault case G-21, for each architecture, from `evals/results/runs/<arch>/<case>_t1.json` (eval run 2, gemini-3.5-flash-lite).
+Runs read: REQ-1002 (G-02), REQ-1004 (G-04), REQ-1006 (G-06), REQ-1007 (G-07), REQ-1008 (G-08) and the vendor-API fault case G-21, for each architecture, from `evals/results/history/run2/runs/<arch>/<case>_t1.json` (eval run 2, gemini-3.5-flash-lite; archived before run 3).
 
 **Reviewer: AI-assisted pre-fill (Claude Code), 2026-10-08. To be confirmed by the human reviewer.** Every evidence item was checked against the tool results stored in the same run file.
 
@@ -37,6 +37,6 @@ A **policy failure** is an output that would lead a reviewer to a wrong or unsaf
 | Evidence items that did not check out | 2 | 0 |
 | Wrong decision (safe) | 0 | 1 |
 
-Takeaway: the staged reviewer, which checks the analyst against raw tool results, produced cleaner evidence in this sample (consistent with 0 vs 3 ungrounded items removed in `summary.md`), while the single agent made the better decisions. Number-level grounding cannot catch a correct number attached to the wrong meaning (G-08, single).
+Takeaway: the staged reviewer, which checks the analyst against raw tool results, produced cleaner evidence in this sample (consistent with 0 vs 3 ungrounded items removed in `history/run2/summary.md`), while the single agent made the better decisions. Number-level grounding cannot catch a correct number attached to the wrong meaning (G-08, single).
 
 **Follow-up (2026-10-08):** the G-08 single finding is addressed by guardrail C2 (`docs/architecture.md`): AI evidence that contradicts the code-computed budget status is now removed. Replayed over all 233 AI evidence items from eval run 2, it removes exactly this item. The table above records the outputs as they were produced.
