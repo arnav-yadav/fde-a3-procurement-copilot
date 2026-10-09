@@ -48,6 +48,7 @@ python scripts/run_one.py REQ-1008 --arch single   # (single|staged|workflow) de
 python run_local.py                         # one command: mock API :8001 + Streamlit reviewer UI :8501
 python evals/run_all.py --trials 1          # starts mock API, runs public + golden evals for both architectures
 python evals/run_all.py --no-llm            # deterministic-only run (no key needed); runtime/eval_scratch/ unless --save
+python evals/decision_rule.py --write       # apply the pre-registered §3 decision rule to the run files
 python scripts/backfill_steps.py            # add trace.steps (How this was decided) to stored run files; no LLM
 ```
 
