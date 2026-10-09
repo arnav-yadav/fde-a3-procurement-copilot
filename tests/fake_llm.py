@@ -36,6 +36,8 @@ class FakeLLM:
             raise AssertionError("FakeLLM: no scripted response left")
         if ctx is not None:
             ctx.counters["llm_calls"] += 1
+            ctx.llm_log.append({"ms": 1.0, "wait_ms": 0.0, "attempts": 1, "prompt_tokens": 100,
+                                "completion_tokens": 10, "total_tokens": 110})
         return llm_client.ChatResult(tool_message(*self.script.pop(0)), None, 1.0, 0.0, 1)
 
     def chat(self, messages, tools=None, tool_choice="auto", ctx=None):

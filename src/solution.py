@@ -17,6 +17,7 @@ from src.contracts import Architecture, EvidenceItem, ProcurementDecision, RunTe
 from src.fallback import run_rules_only
 from src.schemas import DECISION_LABELS
 from src.tools import RunContext
+from src.trace_steps import build_steps
 from src.agents import AgentFailed
 
 
@@ -121,6 +122,7 @@ def handle_request_with_trace(request_id: str, architecture: Architecture = "sin
         "tool_calls": ctx.counters["tool_calls"],
         "tokens": {k: ctx.counters[k] for k in ("prompt_tokens", "completion_tokens", "total_tokens")},
         "tool_log": ctx.tool_log,
+        "llm_log": ctx.llm_log,
         "evidence_corpus": ctx.evidence_corpus,
         "proposals": proposals,
         "policy": ctx.policy.model_dump() if ctx.policy is not None else None,
@@ -135,6 +137,7 @@ def handle_request_with_trace(request_id: str, architecture: Architecture = "sin
         "used_templates": assembly.used_templates if assembly else {},
         "error": error,
     }
+    trace["steps"] = build_steps(trace)
     return decision, trace
 
 

@@ -1,6 +1,6 @@
 """Debug one request: final decision, raw agent proposal(s) and guardrail events.
 
-Usage: python scripts/run_one.py REQ-1001 [--arch single|staged] [--rules-only] [--fixtures] [--api-down]
+Usage: python scripts/run_one.py REQ-1001 [--arch single|staged|workflow] [--rules-only] [--fixtures] [--api-down]
 Starts the mock API if it is not running. Saves the trace to runtime/traces/.
 """
 from __future__ import annotations

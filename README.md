@@ -28,7 +28,7 @@ python -m unittest discover -s tests -v          # unit tests (no network)
 python scripts/smoke_llm.py                      # provider/model check + forced tool-call round trip
 python scripts/run_one.py REQ-1008 --arch single # one request: decision, raw proposal, guardrail events
 python evals/run_all.py --trials 1               # public runner + 23 golden cases, both architectures + rules-only
-python evals/run_all.py --no-llm                 # rules-only baseline (no key needed)
+python evals/run_all.py --no-llm                 # rules-only baseline (no key needed); writes runtime/eval_scratch/ unless --save
 ```
 
 ## 3. Product workflow
@@ -125,7 +125,7 @@ Prompt injection: request text, vendor notes and API text reach the LLM only ins
 - **Scoring**: exact sets, so over-escalation fails too. A case passes only if approvals, flags, missing information, decision and safety are all right.
 - **Raw-agent metrics** score the agent's proposal before guardrails, and the trace counts every correction code made.
 - **Baseline**: a rules-only column, so the table shows what the LLM adds. G-08 and G-23 are cases rules cannot pass by design.
-- **Manual review**: 6 runs per architecture ([`evals/results/manual_review.md`](evals/results/manual_review.md); AI-assisted pre-fill, pending human confirmation).
+- **Manual review**: 6 runs per architecture ([`evals/results/manual_review.md`](evals/results/manual_review.md); AI-assisted pre-fill. It must be confirmed by the author, run by run, before any of it is quoted).
 
 **Results** (run 2, archived. Run 3, with four configurations, the held-out set and 3 trials, is in progress; see `IMPROVEMENTS.md`. Run 2: gemini-3.5-flash-lite, 1 trial, temperature 0; copied from [`evals/results/history/run2/summary.md`](evals/results/history/run2/summary.md), which also has the per-case matrix and every failure with its reason):
 
@@ -157,7 +157,7 @@ Run 2 was completed in two sessions because the free tier allows 500 requests pe
 **Reproduce:**
 
 ```bash
-python evals/run_all.py --no-llm             # rules-only column, no key, about 2 s
+python evals/run_all.py --no-llm             # rules-only column, no key, about 2 s (runtime/eval_scratch/; --save writes evals/results/)
 python evals/run_all.py --trials 1 --fresh   # all columns (run 2 golden cases: 22 x 3.00 + 22 x 5.00 = 176 LLM calls, plus the public runner)
 python evals/run_all.py --trials 1 --resume  # continue after a quota stop
 ```

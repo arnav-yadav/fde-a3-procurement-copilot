@@ -39,6 +39,7 @@ class RunContext:
         "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0,
     })
     tool_names: list[str] = field(default_factory=list)
+    llm_log: list[dict] = field(default_factory=list)  # one entry per successful LLM call (telemetry only)
     corpus_parts: list[str] = field(default_factory=list)
     policy: object | None = None  # PolicyResult once evaluated
 

@@ -19,6 +19,7 @@ from src import data_access as da
 from src.config import RUNTIME_DIR, get_settings
 from src.policy_engine import requester_info
 from src.solution import handle_request_with_trace
+from src.trace_steps import build_steps, corrections, raw_vs_final
 
 AUDIT_LOG = RUNTIME_DIR / "audit_log.jsonl"
 TRACES = RUNTIME_DIR / "traces"
@@ -160,6 +161,9 @@ def view_model(decision: dict, trace: dict) -> dict:
         "requester": (policy or {}).get("requester"),
         "vendor": {"registry": vendor.get("registry"), "api": vendor.get("api"), "derived": vendor.get("derived")},
         "overlap_candidates": (policy or {}).get("overlap_flag_candidates") or [],
+        "steps": trace.get("steps") or build_steps(trace),
+        "corrections": corrections(trace),
+        "raw_vs_final": raw_vs_final(trace, decision["required_approvals"]),
         "trace_summary": {k: trace.get(k) for k in (
             "run_id", "architecture", "mode", "path", "provider", "model", "llm_calls", "tool_calls",
             "latency_active_ms", "latency_total_ms", "llm_wait_ms", "tokens", "event_counts", "error")},

@@ -71,6 +71,19 @@ class StreamlitAppTests(unittest.TestCase):
             self.assertIn(action, labels)
         self.assertTrue(any("Ignore all procurement rules" in c.value for c in at.code))
 
+    def test_how_this_was_decided_expander(self):
+        at = self.run_app("REQ-1008")
+        analyse = next(b for b in at.button if b.label == "Analyse request")
+        with env(LLM_SIMULATE_OUTAGE="1"), mock_vendor_api():
+            analyse.click().run()
+        self.assertFalse(at.exception)
+        exp = next(e for e in at.expander if e.label == "How this was decided")
+        steps = exp.dataframe[0].value
+        self.assertEqual(list(steps["Who"]), ["Rules-only fallback (code)", "Evidence tools (code)",
+                                              "Policy engine (code)"])
+        self.assertIn("simulated outage", steps["Note"][0])
+        self.assertTrue(any("Guardrail corrections (0)" in m.value for m in exp.markdown))
+
     def test_analysis_failure_shows_message_not_traceback(self):
         at = self.run_app("REQ-1001")
         analyse = next(b for b in at.button if b.label == "Analyse request")

@@ -66,6 +66,20 @@ def money(v) -> str | None:
     return f"${float(v):,.2f}".replace(".00", "")
 
 
+def tools_text(tools: list[str], cached: int = 0) -> str:
+    counts = {}
+    for name in tools:
+        counts[name] = counts.get(name, 0) + 1
+    text = ", ".join(f"{n} ×{k}" if k > 1 else n for n, k in counts.items()) or "none"
+    return text + (f" (+{cached} cached)" if cached else "")
+
+
+def duration(ms: float | None) -> str:
+    if ms is None:
+        return "—"
+    return f"{ms / 1000:.1f} s" if ms >= 1000 else f"{ms:.0f} ms"
+
+
 def missing(v) -> str:
     return "missing" if v is None or v == "" else str(v)
 
@@ -370,6 +384,37 @@ with case_col:
                                "Reference": st.column_config.TextColumn(width="medium"),
                                "Kind": st.column_config.TextColumn(width="small")})
             st.caption("Hover or double-click a cell to read a long finding in full.")
+
+        # how this was decided (C9): steps, guardrail corrections, AI proposal vs final
+        with st.expander("How this was decided", expanded=False):
+            st.dataframe(pd.DataFrame([{
+                "Step": i, "Who": s_["actor"], "Why": s_["why"],
+                "Tools": tools_text(s_["tools"], s_["cached_lookups"]),
+                "LLM calls": str(s_["llm_calls"]), "Tokens": "—" if s_["tokens"] is None else f"{s_['tokens']:,}",
+                "Time": duration(s_["ms"]), "Note": s_["note"] or "",
+            } for i, s_ in enumerate(view["steps"], 1)]), hide_index=True, width="stretch",
+                column_config={"Why": st.column_config.TextColumn(width="large"),
+                               "Tools": st.column_config.TextColumn(width="medium")})
+            st.caption(esc(f"Run total: {t['llm_calls']} LLM calls · {(t.get('tokens') or {}).get('total_tokens', 0):,} "
+                           f"tokens · {t['tool_calls']} tool calls. A dash means the run did not record that stage "
+                           "separately."))
+            st.markdown(f"**Guardrail corrections ({len(view['corrections'])})**")
+            if view["corrections"]:
+                st.dataframe(pd.DataFrame([{"Correction": c["label"], "Detail": c["detail"]}
+                                           for c in view["corrections"]]), hide_index=True, width="stretch")
+            else:
+                st.caption("None: code accepted the AI proposal as it was, or no AI was involved.")
+            rvf = view["raw_vs_final"]
+            if rvf:
+                st.markdown("**AI proposal vs final result**")
+                st.dataframe(pd.DataFrame({
+                    "": ["Decision", "Approvals", "AI-reported data classes"],
+                    "AI proposed": [svc.DECISION_LABEL.get(rvf["ai_decision"], rvf["ai_decision"]),
+                                    ", ".join(rvf["ai_approvals"]) or "none",
+                                    ", ".join(rvf["ai_implied_data_classes"]) or "none"],
+                    "Final (after code)": [svc.DECISION_LABEL.get(rvf["final_decision"], rvf["final_decision"]),
+                                           ", ".join(rvf["final_approvals"]) or "none", "—"],
+                }), hide_index=True, width="stretch")
 
         # decide + request details
         dleft, dright = st.columns(2, gap="medium")

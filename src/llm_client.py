@@ -116,6 +116,10 @@ def chat(messages: list[dict], tools: list[dict] | None = None, tool_choice="aut
                 ctx.counters["llm_wait_ms"] += wait_ms
                 for k in ("prompt_tokens", "completion_tokens", "total_tokens"):
                     ctx.counters[k] += int((usage or {}).get(k) or 0)
+                if isinstance(getattr(ctx, "llm_log", None), list):
+                    ctx.llm_log.append({"ms": round(latency, 1), "wait_ms": round(wait_ms, 1), "attempts": attempts,
+                                        **{k: int((usage or {}).get(k) or 0)
+                                           for k in ("prompt_tokens", "completion_tokens", "total_tokens")}})
             if not resp.choices:
                 raise LLMUnavailable("provider returned no choices")
             return ChatResult(resp.choices[0].message, usage, latency, wait_ms, attempts)
