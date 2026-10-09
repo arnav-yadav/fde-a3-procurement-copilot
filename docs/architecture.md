@@ -9,11 +9,13 @@ flowchart LR
   E[Employee request] --> Q[Review queue]
   Q --> H[handle_request]
   H -->|single| A1[Procurement Agent<br/>LLM + 6 tools]
-  H -->|staged| B1[Analyst agent<br/>LLM + 4 evidence tools]
+  H -->|staged| B0[Code: fetch request] --> B1[Analyst agent<br/>LLM + 3 lookup tools]
   B1 --> PE[Policy engine<br/>deterministic code]
   PE --> B2[Policy & Risk Reviewer<br/>LLM, no tools]
+  H -->|workflow| W0[Code: fixed evidence sequence<br/>+ policy engine] --> W1[Workflow LLM<br/>1 forced call, no tools]
   A1 --> G[Guardrails + assembler<br/>code]
   B2 --> G
+  W1 --> G
   G --> D[ProcurementDecision]
   D --> R[Reviewer: evidence, approvals, flags]
   R --> C[Confirm action + reason]
@@ -63,15 +65,17 @@ All tool results are cached per run (`RunContext`), so the vendor API is called 
 
 ## Architectures
 
-| | A: single agent | B: staged (2 agents) |
-|---|---|---|
-| LLM roles | one agent with all 6 tools | Analyst (5 tools, no policy engine) → Policy & Risk Reviewer (no tools) |
-| Handoff | n/a | `EvidencePack` (need summary, implied data classes, overlap assessment, vendor observations, uncertainties, injection observation, evidence) plus the raw tool results and the policy-engine result |
-| Policy engine | called by the agent (the gate runs it if skipped) | called by code between the stages |
-| Final output | `submit_recommendation` (forced on the last turn) | reviewer's forced `submit_recommendation` |
-| Hypothesis | simplest thing that works | an independent reviewer checking the analyst against raw tool results improves grounding, overlap judgement and injection handling |
+| | Workflow + 1 LLM | A: single agent | B: staged (2 agents) |
+|---|---|---|---|
+| LLM roles | one forced call, no tools | one agent with all 6 tools | Analyst (3 lookup tools; code fetches the request) → Policy & Risk Reviewer (no tools) |
+| Who picks the tools | code, fixed order: request → budget → catalog → vendor → policy engine | the agent | analyst picks lookups; code runs the policy engine |
+| Handoff | n/a | n/a | `EvidencePack` (need summary, implied data classes with quotes, overlap assessment, vendor observations, uncertainties, gaps, unsupported claims, injection observation, evidence) plus the raw tool results and the policy-engine result; the reviewer records `analyst_disagreements` |
+| Policy engine | called by code before the LLM | called by the agent (the gate runs it if skipped) | called by code between the stages |
+| Final output | forced `submit_recommendation` (one repair) | `submit_recommendation` (forced on the last turn) | reviewer's forced `submit_recommendation` |
+| LLM calls (design) | 1 | usually 3 | usually 3 (analyst 2, reviewer 1) |
+| Hypothesis | the evidence path is fixed, so a workflow is enough and the AI only interprets | simplest agent | an independent reviewer checking the analyst against raw tool results improves grounding, overlap judgement and injection handling |
 
-Both architectures end in the same code path: completeness gate → policy engine → guardrails/assembler → `ProcurementDecision`.
+A fourth column, **rules only**, runs the same code with no LLM (the fallback path). All configurations end in the same code path: completeness gate → policy engine (re-run with any accepted AI-implied data classes, C3) → guardrails/assembler → `ProcurementDecision`. `src/contracts.py::Architecture` is unchanged; `workflow` is reachable through `handle_request_with_trace` and the eval runners.
 
 ### Stop and escalation conditions
 
@@ -90,12 +94,30 @@ Both architectures end in the same code path: completeness gate → policy engin
 
 ### Guardrails (`src/guardrails.py`)
 
-1. Approvals: policy roles are always kept; the LLM may add Security, Privacy or Legal with a non-empty reason; any other proposed role (e.g. a CFO suggested by injected text) is dropped.
-2. Flags: policy flags are always kept; the LLM may add `existing_tool_overlap`, `prompt_injection_detected` and the flag of any specialist role it added; unknown flags are dropped.
+1. Data classes and approvals (C3): the LLM reports `implied_data_classes`, each with a quote. A class is accepted only if every segment of its quote is verbatim in the request's own text (product name, justification, integrations); the policy engine is then re-run with the accepted classes, so Security, Privacy and cross-region Legal follow from code exactly as for declared data. Policy roles are always kept. The LLM cannot add a role directly: a proposed specialist role without an accepted class becomes a "Questions for the reviewer" item (`llm_review_without_class`), and any other proposed role (e.g. a CFO suggested by injected text) is dropped.
+2. Flags: policy flags are always kept; the LLM may add `existing_tool_overlap` and `prompt_injection_detected`; specialist flags follow the accepted roles; unknown flags are dropped.
 3. Missing information: policy items only, plus up to 3 LLM items when the request is going back to the requester anyway. Other LLM questions are shown to the reviewer as "Questions for the reviewer".
 4. Decision: rule precedence R12 (clarification → existing tool → specialist review → approval). See change C1 below.
 5. Recommendation and next step: the LLM's wording is used unless the decision was overridden or the output filter matches ("pre-approved", "approval granted", "purchase completed", ...), in which case a template is used.
 6. Evidence: deterministic items first, then LLM items that pass the grounding check: the source must be a tool called in this run, and every number, date and ID in the finding must appear in the tool results (numbers compared by value). Items that contradict the code-computed budget status are also removed (C2). Capped at 12.
+
+## Design rationale (Classes 12 and 13)
+
+**Where this problem sits on the ladder (single LLM call → chatbot → workflow → agent).** Evidence gathering is a known, mandatory sequence: the policy requires the budget, catalog, vendor and policy checks on every request, and in eval run 2 the single agent called the same five tools in all 22 of its runs (F1 in `IMPROVEMENTS.md`). A fixed sequence is a workflow, not an agent decision. The AI is needed only to interpret: whether an existing tool covers the stated need, what data the request's wording implies, and whether business text contains instructions. That is why run 3 measures a "workflow + 1 LLM" rung between rules-only and the agents. A chatbot was rejected: there is no multi-turn need, and clarifications go back to the requester asynchronously.
+
+**Is a second agent legitimate here (Class 13's test)?** There are two separable responsibilities with different inputs: gathering and summarising evidence (analyst) and checking it against policy and raw tool results (reviewer). So B is a real separation of duties, not a demo that only looks advanced. Whether it is worth its cost is an empirical question, answered by the reviewer helped/hurt rows (C4) and the §3 rule.
+
+**Sequential, not supervisor–worker.** A supervisor earns its keep by skipping workers that are not needed. The policy forbids skipping checks, so a supervisor would add a routing call and a new failure mode (misrouting) and save nothing.
+
+**Handoff and tool scoping.** The analyst hands over structured evidence, gaps and unsupported claims, not prose (C4), and the reviewer must state each disagreement. Each role gets only the tools it needs: the analyst three lookups (code fetches the request), the reviewer and the workflow call none (C5). In run 2 the analyst re-queried a guessed vendor in 15 of 22 runs (F3); after C5 that duplicate is gone.
+
+**Fixed-path cost.** B pays for an analyst and a reviewer on every request, including an $800 seat add-on (G-01). The workflow rung pays for one call.
+
+**What would change the decision.**
+- Free-text or email intake, where extracting the request is itself an AI task.
+- Many more evidence sources (contracts, SSO usage, invoices), where choosing what to retrieve becomes a real agent decision.
+- A reviewer that measurably fixes more than it breaks (C4 helped/hurt).
+- Volume high enough that per-request cost dominates, or low enough that latency does not matter.
 
 ## Untrusted data
 
@@ -149,6 +171,23 @@ Prompts are stored verbatim from SPEC_TECHNICAL T16 in `src/prompts.py`. Each ch
 | C7 | 2026-10-09 | Held-out set: `evals/golden_heldout.json` (H-01…H-06) and REQ-H201…H206 in `evals/fixtures/requests.json`, committed unchanged from the change pack before any C3–C6 code (commit `d4e31d7`). `evals/run_all.py --golden-set main|heldout|all`; `summary.md` reports the held-out set in its own table (never merged) and adds mean passes per trial for both sets. | Every C-change so far was motivated by the 23 main cases; re-scoring only on them would be tuning to the test set. Rules-only on held-out: 2/6, failing exactly each case's `requires_ai` aspects. Test: `tests/test_golden_deterministic.py::test_heldout_cases`. |
 | C9 | 2026-10-09 | "How this was decided": `src/trace_steps.py::build_steps(trace)` turns `tool_log` + `events` into steps (who acted, why, tools, LLM calls, tokens, time); `corrections()` lists guardrail events; `raw_vs_final()` puts the AI proposal next to the final result. Shown in a collapsed expander in `app.py` (dataframes only). New traces also store `llm_log` (one entry per LLM call: ms, wait, tokens) and `steps`; `scripts/backfill_steps.py` adds `steps` to stored run files. | Class 13: make multi-agent runs observable. Made on main after the `run3-frozen` tag; `llm_log` and `steps` are telemetry only and change no decision. Run-3 files come from the frozen code, so they have no `llm_log`: per-stage tokens for staged runs show as unknown, and single-stage runs use the run totals. Tests: `tests/test_trace_steps.py`, `tests/test_streamlit_app.py::test_how_this_was_decided_expander`. |
 | C10 | 2026-10-09 | `evals/run_all.py --no-llm` writes to `runtime/eval_scratch/` (untracked) unless `--save`; `summary.md` reports the reviewer helped/hurt counts for the held-out set in its own row (the existing row covered the main set only; the per-item list already included held-out items). Scoring and reporting only; run files are unchanged; the README states that `manual_review.md` must be confirmed by the author before it is quoted. | A deterministic check used to overwrite the committed LLM results in `evals/results/`. |
+
+## Round 2 deviations from IMPROVEMENTS.md
+
+`IMPROVEMENTS.md` is committed unchanged (commit `d4e31d7`). Where the implementation differs, it is listed here.
+
+| Item | IMPROVEMENTS.md | Implemented | Why |
+|---|---|---|---|
+| C4 helped/hurt | count reviewer disagreements and whether each helped or hurt | item-level scoring of every analyst item (overlap `covers`, implied PII) against golden-derived truth | A counterfactual re-assembly cannot score G-08 under C1 (the reviewer's own decision is kept). See C4 above |
+| C3 quote check | quote is a substring of the request's text | also accepts an elided quote (`A ... B`) when every segment is verbatim (C3a) | Found in the held-out smoke check before the freeze; disclosed in C3a |
+| C6 prompt | reuse the reviewer path with a flag | separate `SYSTEM_WORKFLOW` (the reviewer prompt with its first paragraph replaced) and its own module | The reviewer prompt refers to an analyst pack the workflow does not have |
+| C8 key disclosure | remove the second-project-key sentence from the README | kept for run 2 | It is true for run 2; removing it would hide how run 2 was completed. Run 3 used one key |
+| C8 order | implement C3–C6, then run | C3–C7 + smoke, then freeze: tag `run3-frozen`, all trials in a separate worktree; C9, C10 and tracing were built on main after the tag | No prompt, guardrail, policy-engine or agent edits during the trials |
+| C8 Groq replication | optional | not run | Time and quota |
+| C9 steps | `step_no`, actor ids, `input_ref`, `output_ref` | actor label, why, tools, LLM calls, tokens, time, note; derived on read by `build_steps(trace)` | Works on run files written by the frozen code; inputs and outputs are already in the trace |
+| C9 LangSmith | `@traceable` on stages, tools and `assemble` | same, behind `src/tracing.py` (off by default, lazy import), plus `policy_engine.evaluate` | Trials ran with it off |
+| Dropped | (suggested in review) a deterministic PII keyword rule | not built | Keyword scans of free text are brittle (false positives, missed paraphrases); C3 grounds classes in verbatim quotes instead |
+| Scoring | one reviewer helped/hurt row | separate rows for the main and held-out sets | Held-out items were otherwise missing from the counts (found while auditing trials 1–2) |
 
 ## Tracing (optional)
 
