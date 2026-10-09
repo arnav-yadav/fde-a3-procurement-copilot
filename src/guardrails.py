@@ -59,6 +59,7 @@ def output_filter_hit(text: str | None) -> bool:
 # C3: the LLM reports implied data classes with a verbatim quote; code checks the quote and applies the policy.
 _QUOTE_STRIP = "\"'“”‘’`.,;: "
 MIN_QUOTE_CHARS = 4
+_ELLIPSIS = re.compile(r"\.{3,}|…")
 
 
 def _norm_text(text: object) -> str:
@@ -77,7 +78,8 @@ def request_own_text(request_id: str) -> str:
 
 
 def ground_implied_classes(proposal, request_id: str, ctx) -> dict[str, list[str]]:
-    """Accept an implied class only if its quote is a substring of the request's own text."""
+    """Accept an implied class only if its quote (or each segment of an elided quote) is a substring of the
+    request's own text."""
     accepted: dict[str, list[str]] = {}
     items = list(getattr(proposal, "implied_data_classes", None) or []) if proposal is not None else []
     if not items:
@@ -85,7 +87,10 @@ def ground_implied_classes(proposal, request_id: str, ctx) -> dict[str, list[str
     own = request_own_text(request_id)
     for item in items:
         quote = _norm_text(item.quote).strip(_QUOTE_STRIP)
-        if len(quote) >= MIN_QUOTE_CHARS and quote in own and not matches_injection(quote):
+        # An elided quote ("A ... B") is accepted only if every segment is itself a verbatim substring.
+        segments = [seg.strip(_QUOTE_STRIP) for seg in _ELLIPSIS.split(quote)]
+        if (all(len(seg) >= MIN_QUOTE_CHARS and seg in own for seg in segments)
+                and not matches_injection(quote)):
             short = quote if len(quote) <= 80 else quote[:79] + "…"
             accepted.setdefault(item.data_class, []).append(f"AI: implied {item.data_class} (quote: '{short}')")
             ctx.event("implied_class_accepted", data_class=item.data_class, quote=item.quote)

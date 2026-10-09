@@ -97,6 +97,32 @@ class GuardrailTests(unittest.TestCase):
         self.assertEqual(a.decision.required_approvals, ["Department Head", "Procurement"])
         self.assertEqual(len(events(ctx, "implied_class_ungrounded")), 1)
 
+    def test_elided_quote_accepted_when_every_segment_is_verbatim(self):
+        # smoke check, single REQ-H206 (H-06): the model joined the integration and the justification with "..."
+        policy, ctx = run_policy("REQ-H206", extra=FIXTURES)
+        self.assertNotIn("Privacy", policy.roles)
+        p = proposal(decision_type="route_for_specialist_review",
+                     required_approvals=[{"role": r, "reason": "t"} for r in policy.roles], risk_flags=[],
+                     implied_data_classes=[{"data_class": "customer_pii",
+                                            "quote": "Snowflake customer data warehouse ... customer purchase records"}])
+        with env(EXTRA_DATA_DIR=FIXTURES), mock_vendor_api(FIXTURES):
+            a = assemble(policy, p, ctx)
+        self.assertIn("Security", a.decision.required_approvals)
+        self.assertIn("Privacy", a.decision.required_approvals)
+        self.assertEqual(len(events(ctx, "implied_class_accepted")), 1)
+
+    def test_elided_quote_rejected_when_any_segment_is_not_verbatim(self):
+        policy, ctx = run_policy("REQ-H206", extra=FIXTURES)
+        p = proposal(decision_type="route_for_approval",
+                     required_approvals=[{"role": r, "reason": "t"} for r in policy.roles], risk_flags=[],
+                     implied_data_classes=[
+                         {"data_class": "customer_pii", "quote": "Snowflake customer data warehouse … customer emails"},
+                         {"data_class": "customer_pii", "quote": "customer purchase records ... to"}])
+        with env(EXTRA_DATA_DIR=FIXTURES), mock_vendor_api(FIXTURES):
+            a = assemble(policy, p, ctx)
+        self.assertEqual(a.decision.required_approvals, policy.roles)
+        self.assertEqual(len(events(ctx, "implied_class_ungrounded")), 2)
+
     def test_quote_from_vendor_text_rejected(self):
         # SignFlow's vendor-risk record says it processes personal data; that is not the request's own text
         policy, ctx = run_policy("REQ-1001")
