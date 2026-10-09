@@ -44,7 +44,9 @@ DECISION_COLOR = {"route_for_approval": "green", "route_for_specialist_review": 
 SOURCE_LABEL = {"get_request_details": "Request", "check_budget": "Budget", "search_software_catalog": "Catalog",
                 "get_vendor_status": "Vendor", "evaluate_policy_rules": "Policy engine",
                 "lookup_policy_section": "Policy text", "copilot_analysis": "Copilot"}
-ARCH_LABEL = {"single": "Single agent", "staged": "Staged: analyst + reviewer"}
+ARCH_LABEL = {"workflow": "Workflow + 1 LLM", "single": "Single agent", "staged": "Staged: analyst + reviewer"}
+ARCHS = list(ARCH_LABEL)
+DEFAULT_ARCH = "single"  # the configuration chosen in docs/DECISION_MEMO.md
 
 _MD_SPECIAL = re.compile(r"([\\`*_{}\[\]()#+\-.!|~<>$:=&\"'])")
 
@@ -86,7 +88,7 @@ def missing(v) -> str:
 
 # ---------------------------------------------------------------- state
 ss = st.session_state
-ss.setdefault("arch", "single")
+ss.setdefault("arch", DEFAULT_ARCH)
 ss.setdefault("compare", {})
 ss.setdefault("flash", None)
 if "selected" not in ss:
@@ -246,10 +248,11 @@ with case_col:
             col.markdown(f"**{esc(v)}**" if v not in (None, "") else ":red[*missing*]")
 
         b = st.columns([3, 2, 2], vertical_alignment="bottom")
-        ss.arch = b[0].radio("Architecture", ["single", "staged"], format_func=ARCH_LABEL.get, horizontal=True,
-                             index=0 if ss.arch == "single" else 1)
+        ss.arch = b[0].radio("Architecture", ARCHS, format_func=ARCH_LABEL.get, horizontal=True,
+                             index=ARCHS.index(ss.arch) if ss.arch in ARCHS else 0)
         do_analyse = b[1].button("Re-analyse" if view else "Analyse request", type="primary", width="stretch")
-        do_compare = b[2].button("Compare both architectures", width="stretch")
+        do_compare = b[2].button("Compare architectures", width="stretch",
+                                 help="Runs all three configurations on this request (about 7 LLM calls).")
 
     if do_analyse:
         try:
@@ -263,8 +266,8 @@ with case_col:
             st.rerun()
     if do_compare:
         try:
-            with st.spinner("Running both architectures: gathering evidence twice…"):
-                order = [a for a in ("single", "staged") if a != ss.arch] + [ss.arch]  # selected one runs last = shown below
+            with st.spinner("Running all three configurations on this request…"):
+                order = [a for a in ARCHS if a != ss.arch] + [ss.arch]  # selected one runs last = shown below
                 both = {a: svc.analyse(ss.selected, a) for a in order}
         except Exception as exc:
             st.error(f"Comparison could not be completed ({type(exc).__name__}). Try again.")
@@ -287,16 +290,12 @@ with case_col:
             st.markdown("**Architecture comparison on this request**")
             st.dataframe(pd.DataFrame({
                 "": ["Decision", "Approvals", "Flags", "LLM / tool calls", "Active latency"],
-                "Single agent": [svc.DECISION_LABEL[both["single"]["decision_type"]],
-                                 ", ".join(both["single"]["decision"]["required_approvals"]),
-                                 ", ".join(both["single"]["decision"]["risk_flags"]) or "none",
-                                 f"{both['single']['trace_summary']['llm_calls']} / {both['single']['trace_summary']['tool_calls']}",
-                                 f"{both['single']['trace_summary']['latency_active_ms'] / 1000:.1f} s"],
-                "Staged": [svc.DECISION_LABEL[both["staged"]["decision_type"]],
-                           ", ".join(both["staged"]["decision"]["required_approvals"]),
-                           ", ".join(both["staged"]["decision"]["risk_flags"]) or "none",
-                           f"{both['staged']['trace_summary']['llm_calls']} / {both['staged']['trace_summary']['tool_calls']}",
-                           f"{both['staged']['trace_summary']['latency_active_ms'] / 1000:.1f} s"],
+                **{ARCH_LABEL[a]: [svc.DECISION_LABEL[both[a]["decision_type"]],
+                                   ", ".join(both[a]["decision"]["required_approvals"]),
+                                   ", ".join(both[a]["decision"]["risk_flags"]) or "none",
+                                   f"{both[a]['trace_summary']['llm_calls']} / {both[a]['trace_summary']['tool_calls']}",
+                                   f"{both[a]['trace_summary']['latency_active_ms'] / 1000:.1f} s"]
+                   for a in ARCHS if a in both},
             }), hide_index=True, width="stretch")
             st.caption("The most recent run is shown below.")
 

@@ -84,6 +84,17 @@ class StreamlitAppTests(unittest.TestCase):
         self.assertIn("simulated outage", steps["Note"][0])
         self.assertTrue(any("Guardrail corrections (0)" in m.value for m in exp.markdown))
 
+    def test_three_configurations_selectable_and_compared(self):
+        at = self.run_app("REQ-1008")
+        radio = next(r for r in at.radio if r.label == "Architecture")
+        self.assertEqual(radio.options, ["Workflow + 1 LLM", "Single agent", "Staged: analyst + reviewer"])
+        compare = next(b for b in at.button if b.label == "Compare architectures")
+        with env(LLM_SIMULATE_OUTAGE="1"), mock_vendor_api():
+            compare.click().run()
+        self.assertFalse(at.exception)
+        table = next(d.value for d in at.dataframe if "Workflow + 1 LLM" in d.value.columns)
+        self.assertEqual(list(table.columns), ["", "Workflow + 1 LLM", "Single agent", "Staged: analyst + reviewer"])
+
     def test_analysis_failure_shows_message_not_traceback(self):
         at = self.run_app("REQ-1001")
         analyse = next(b for b in at.button if b.label == "Analyse request")

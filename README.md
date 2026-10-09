@@ -63,13 +63,14 @@ Employee submits request (form, or data/requests.json)
   -> Reviewer sees, decision first: banners for anything unverified/conflicting/injected, the recommendation
      and next step, approvals grouped into business approvals and specialist reviews (each with its rule
      and policy section), risk flags by severity, missing / could-not-verify, an evidence table filterable
-     by Rule/Tool/AI, and run cost (LLM calls, tool calls, latency)
+     by Rule/Tool/AI, run cost (LLM calls, tool calls, latency), and "How this was decided" (who acted,
+     with which tools, guardrail corrections, AI proposal vs final result)
   -> Reviewer chooses: Send for approvals | Request clarification | Suggest existing tool | Hold for manual review
      The confirmation states the consequence; a reason is required when overriding the copilot
   -> runtime/audit_log.jsonl: time, request, run ID, architecture, copilot decision, action, override, reason
 ```
 
-The reviewer UI is the Streamlit app from the starter pack (`app.py`), extended to the full workflow. Routing is simulated: actions are recorded in the audit log only. The queue can be searched and filtered by status, each request has a direct link (`http://127.0.0.1:8501/?request=REQ-1007`), the latest analysis of each request survives a restart, and the layout works at phone width.
+The reviewer UI is the Streamlit app from the starter pack (`app.py`), extended to the full workflow. Routing is simulated: actions are recorded in the audit log only. The queue can be searched and filtered by status, each request has a direct link (`http://127.0.0.1:8501/?request=REQ-1007`), the latest analysis of each request survives a restart, and the layout works at phone width. The reviewer can pick the configuration (workflow + 1 LLM, single agent, staged) or run all three side by side on one request.
 
 ## 4. Architecture
 
