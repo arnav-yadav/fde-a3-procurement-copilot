@@ -84,7 +84,7 @@ def evaluate(decision: ProcurementDecision, expectations: dict) -> list[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--architecture', choices=['single','staged'], default='single')
+    parser.add_argument('--architecture', choices=['single','staged','workflow'], default='single')
     parser.add_argument('--no-start-api', action='store_true', help='do not auto-start the mock API')
     parser.add_argument('--out', default=None, help='CSV output path (default evals/results/public_<arch>.csv)')
     args = parser.parse_args()

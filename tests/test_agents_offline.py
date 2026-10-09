@@ -58,5 +58,30 @@ class StagedScopingTests(unittest.TestCase):
         self.assertEqual(offered, ["submit_recommendation"])
 
 
+class WorkflowConfigTests(unittest.TestCase):
+    def test_workflow_makes_exactly_one_forced_call_with_no_tools(self):
+        from src.agents.workflow_llm import run_workflow
+        fake = FakeLLM([[("submit_recommendation", recommendation(
+            decision_type="use_existing_tool",
+            required_approvals=[{"role": "Department Head", "reason": "t"}, {"role": "Procurement", "reason": "t"}],
+            risk_flags=["existing_tool_overlap"],
+            overlap_assessment=[{"software_id": "SW003", "relationship": "substitute_could_meet_need",
+                                 "covers_stated_need": True, "reason": "company-wide TaskFlow licence"}]))]])
+        ctx = RunContext("REQ-1008")
+        with mock_vendor_api(), fake.patched():
+            assembly, proposals = run_workflow("REQ-1008", ctx)
+        self.assertEqual(ctx.counters["llm_calls"], 1)
+        self.assertEqual([(c["kind"], c["tools"]) for c in fake.calls], [("forced", ["submit_recommendation"])])
+        self.assertEqual([e["tool"] for e in ctx.tool_log if not e["cache_hit"]][:5],
+                         ["get_request_details", "check_budget", "search_software_catalog", "get_vendor_status",
+                          "evaluate_policy_rules"])
+        self.assertTrue(all(e["initiator"] == "orchestrator" for e in ctx.tool_log))
+        user_msg = fake.calls[0]["messages"][1]["content"]
+        self.assertNotIn("Evidence pack", user_msg)
+        self.assertIn("## Raw tool results", user_msg)
+        self.assertEqual(assembly.decision_type, "use_existing_tool")
+        self.assertIn("workflow", proposals)
+
+
 if __name__ == "__main__":
     unittest.main()

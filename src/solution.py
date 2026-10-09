@@ -24,6 +24,8 @@ def _run_agent(architecture: str, request_id: str, ctx: RunContext):
     try:
         if architecture == "staged":
             from src.agents.staged_agent import run_staged as runner
+        elif architecture == "workflow":  # C6: evaluation configuration; not part of the contract's Architecture
+            from src.agents.workflow_llm import run_workflow as runner
         else:
             from src.agents.single_agent import run_single as runner
     except ImportError as exc:

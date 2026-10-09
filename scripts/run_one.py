@@ -37,7 +37,7 @@ def ensure_api() -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("request_id")
-    ap.add_argument("--arch", choices=["single", "staged"], default="single")
+    ap.add_argument("--arch", choices=["single", "staged", "workflow"], default="single")
     ap.add_argument("--rules-only", action="store_true")
     ap.add_argument("--fixtures", action="store_true", help="load evals/fixtures (EXTRA_DATA_DIR)")
     ap.add_argument("--api-down", action="store_true", help="point the vendor client at a closed port")

@@ -17,8 +17,8 @@ from src.guardrails import output_filter_hit  # noqa: E402
 from src.schemas import DECISION_LABELS  # noqa: E402
 
 LABEL_TO_TYPE = {v: k for k, v in DECISION_LABELS.items()}
-ARCH_ORDER = ["single", "staged", "rules_only"]
-ARCH_TITLE = {"single": "Single (A)", "staged": "Staged (B)", "rules_only": "Rules only"}
+ARCH_ORDER = ["rules_only", "workflow", "single", "staged"]  # Class 12 ladder: rules -> workflow+1 LLM -> agent -> 2 agents
+ARCH_TITLE = {"rules_only": "Rules only", "workflow": "Workflow + 1 LLM", "single": "Single (A)", "staged": "Staged (B)"}
 QUOTA_MARKERS = ("ratelimit", "quota", "429", "resource_exhausted", "rate limited")
 
 
@@ -39,7 +39,8 @@ def decision_type_of(decision: dict, trace: dict) -> str | None:
 
 def raw_proposal(trace: dict) -> dict | None:
     props = trace.get("proposals") or {}
-    p = props.get("reviewer") if trace.get("architecture") == "staged" else props.get("single")
+    key = {"staged": "reviewer", "workflow": "workflow"}.get(trace.get("architecture"), "single")
+    p = props.get(key)
     return p if isinstance(p, dict) and "decision_type" in p else None
 
 

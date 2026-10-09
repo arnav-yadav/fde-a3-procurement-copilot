@@ -12,7 +12,7 @@ import re
 
 from src import llm_client as llm
 from src.agents import AgentFailed
-from src.agents.common import SUBMIT_EVIDENCE_PACK, SUBMIT_REVIEW, parse_submission, tool_loop
+from src.agents.common import SUBMIT_EVIDENCE_PACK, SUBMIT_REVIEW, forced_submission, tool_loop
 from src.config import get_reference_date
 from src.data_access import norm_key
 from src.guardrails import Assembly, assemble
@@ -98,31 +98,12 @@ def run_staged(request_id: str, ctx: RunContext) -> tuple[Assembly, dict]:
             _relevant_policy_text(ctx.policy),
         )},
     ]
-    proposal: AgentProposal | None = None
     raw_reviews: list = []
     try:
-        for attempt in range(1, REVIEWER_ATTEMPTS + 1):
-            result = llm.chat_forced(review_messages, SUBMIT_REVIEW, ctx=ctx)
-            msg = result.message
-            calls = [c for c in (msg.tool_calls or []) if c.function.name == "submit_recommendation"]
-            ctx.event("llm_turn", stage="reviewer", turn=attempt, forced=True,
-                      tool_calls=[c.function.name for c in (msg.tool_calls or [])], text=(msg.content or "")[:300])
-            if not calls:
-                review_messages.append(llm.message_to_dict(msg))
-                review_messages.append({"role": "user", "content": "Call submit_recommendation now."})
-                continue
-            proposal, err, raw = parse_submission(calls[0].function.arguments, AgentProposal)
-            raw_reviews.append(raw)
-            if proposal is not None:
-                break
-            ctx.event("submission_invalid", stage="reviewer", error=(err or "")[:500])
-            review_messages.append(llm.message_to_dict(msg))
-            for c in msg.tool_calls or []:
-                review_messages.append({"role": "tool", "tool_call_id": c.id,
-                                        "content": f"Submission invalid. Fix these errors and call "
-                                                   f"submit_recommendation again:\n{err}"})
+        proposal, raw_reviews = forced_submission(ctx, review_messages, SUBMIT_REVIEW, AgentProposal, stage="reviewer",
+                                                  attempts=REVIEWER_ATTEMPTS)
     except llm.LLMUnavailable as exc:
-        proposals["reviewer"] = raw_reviews[-1] if raw_reviews else None
+        proposals["reviewer"] = None
         raise AgentFailed(f"reviewer stage failed: {exc}", salvage=pack.evidence, proposals=proposals) from exc
 
     proposals["reviewer"] = proposal.model_dump() if proposal else (raw_reviews[-1] if raw_reviews else None)

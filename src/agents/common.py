@@ -193,3 +193,31 @@ def tool_loop(ctx: RunContext, messages: list[dict], tool_names: list[str], subm
         if submission is not None:
             return submission, raw_submissions
     return None, raw_submissions
+
+
+def forced_submission(ctx: RunContext, messages: list[dict], submit_tool: dict, model_cls: type[BaseModel],
+                      stage: str, attempts: int = 2) -> tuple[BaseModel | None, list]:
+    """One forced call to `submit_tool` (no other tools), with one repair attempt. Raises LLMUnavailable."""
+    name = submit_tool["function"]["name"]
+    raw_submissions: list = []
+    for attempt in range(1, attempts + 1):
+        result = llm.chat_forced(messages, submit_tool, ctx=ctx)
+        msg = result.message
+        calls = [c for c in (msg.tool_calls or []) if c.function.name == name]
+        ctx.event("llm_turn", stage=stage, turn=attempt, forced=True,
+                  tool_calls=[c.function.name for c in (msg.tool_calls or [])], text=(msg.content or "")[:300],
+                  tools_exposed={"count": 1, "schema_chars": len(json.dumps([submit_tool]))})
+        if not calls:
+            messages.append(llm.message_to_dict(msg))
+            messages.append({"role": "user", "content": f"Call {name} now."})
+            continue
+        model, err, raw = parse_submission(calls[0].function.arguments, model_cls)
+        raw_submissions.append(raw)
+        if model is not None:
+            return model, raw_submissions
+        ctx.event("submission_invalid", stage=stage, error=(err or "")[:500])
+        messages.append(llm.message_to_dict(msg))
+        for c in msg.tool_calls or []:
+            messages.append({"role": "tool", "tool_call_id": c.id,
+                             "content": f"Submission invalid. Fix these errors and call {name} again:\n{err}"})
+    return None, raw_submissions
