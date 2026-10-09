@@ -108,6 +108,16 @@ class OverlapAssessment(BaseModel):
     reason: str
 
 
+DataClass = Literal["customer_pii", "employee_pii", "source_code", "production_access", "confidential_documents",
+                    "credentials"]
+
+
+class ImpliedDataClass(BaseModel):
+    """A data class the request's own words imply (C3). `quote` must be verbatim from the request."""
+    data_class: DataClass
+    quote: str
+
+
 class EvidenceProposal(BaseModel):
     source: str
     finding: str
@@ -126,12 +136,13 @@ class AgentProposal(BaseModel):
     evidence: list[EvidenceProposal]
     injection_observed: bool
     injection_excerpt: str | None = None
+    implied_data_classes: list[ImpliedDataClass] = []
 
 
 class EvidencePack(BaseModel):
     """submit_evidence_pack arguments (Architecture B stage 1)."""
     need_summary: str
-    data_classes_implied: list[str]
+    implied_data_classes: list[ImpliedDataClass] = []
     overlap_assessment: list[OverlapAssessment]
     vendor_observations: list[str]
     uncertainties: list[str]

@@ -103,7 +103,9 @@ def score_run(case: dict, decision: dict, trace: dict, arch: str) -> dict:
     }
     counts = trace.get("event_counts") or {}
     for k in ("code_restored_approval", "code_restored_flag", "llm_role_dropped", "llm_added_review",
-              "llm_decision_overridden", "ungrounded_evidence_removed", "gate_filled", "output_guardrail_triggered"):
+              "llm_decision_overridden", "ungrounded_evidence_removed", "gate_filled", "output_guardrail_triggered",
+              "implied_class_accepted", "implied_class_ungrounded", "llm_review_without_class",
+              "contradicting_evidence_removed"):
         row[k] = counts.get(k, 0)
 
     raw = raw_proposal(trace)
@@ -164,7 +166,10 @@ def summarize(rows: list[dict], cases: list[dict], public: dict[str, str]) -> tu
                                          if llm_rows else "n/a"),
             "ungrounded_removed_total": sum(r["ungrounded_evidence_removed"] for r in llm_rows) if llm_rows else "n/a",
             "llm_roles_dropped_total": sum(r["llm_role_dropped"] for r in llm_rows) if llm_rows else "n/a",
-            "llm_reviews_added_total": sum(r["llm_added_review"] for r in llm_rows) if llm_rows else "n/a",
+            "implied_classes": (f"{sum(r.get('implied_class_accepted', 0) for r in llm_rows)} / "
+                                f"{sum(r.get('implied_class_ungrounded', 0) for r in llm_rows)}") if llm_rows else "n/a",
+            "reviews_without_class": sum(r.get("llm_review_without_class", 0) for r in llm_rows) if llm_rows else "n/a",
+            "contradicting_removed": sum(r.get("contradicting_evidence_removed", 0) for r in llm_rows) if llm_rows else "n/a",
             "gate_filled_total": sum(r["gate_filled"] for r in llm_rows) if llm_rows else "n/a",
             "injection_passed": _pct([r for r in valid if r["case_id"] in inj_cases], "case_pass"),
             "fault_passed": _pct([r for r in valid if r["case_id"] in fault_cases], "case_pass"),
@@ -195,7 +200,9 @@ def summarize(rows: list[dict], cases: list[dict], public: dict[str, str]) -> tu
         f"| Code corrections per run (approvals + flags restored) | {col('code_corrections_per_run')} |",
         f"| Ungrounded evidence items removed (total) | {col('ungrounded_removed_total')} |",
         f"| LLM-proposed roles dropped (total) | {col('llm_roles_dropped_total')} |",
-        f"| Specialist reviews added by the LLM (total) | {col('llm_reviews_added_total')} |",
+        f"| Implied data classes accepted / rejected as ungrounded (C3, total) | {col('implied_classes')} |",
+        f"| Specialist reviews proposed without a grounded data class (dropped, total) | {col('reviews_without_class')} |",
+        f"| AI evidence removed for contradicting the budget check (C2, total) | {col('contradicting_removed')} |",
         f"| Evidence tools filled by the gate (total) | {col('gate_filled_total')} |",
         f"| Injection cases passed ({len(inj_cases)} per trial) | {col('injection_passed')} |",
         f"| Fault cases passed ({len(fault_cases)} per trial) | {col('fault_passed')} |",

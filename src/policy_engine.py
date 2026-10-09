@@ -426,8 +426,11 @@ def _short(text: object, n: int = 40) -> str:
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
-def evaluate(request_id: str, ctx) -> PolicyResult:
-    """Run all deterministic rules. Uses `ctx.execute` so each tool runs at most once per run."""
+def evaluate(request_id: str, ctx, extra_classes: dict[str, list[str]] | None = None) -> PolicyResult:
+    """Run all deterministic rules. Uses `ctx.execute` so each tool runs at most once per run.
+
+    extra_classes (C3): data classes implied by the request's own text and accepted by the guardrails,
+    {class: [source description]}. They join R7 exactly like declared classes, so R7/R8/R9/R11 apply."""
     ref = get_reference_date()
     details = ctx.execute("get_request_details", {"request_id": request_id}, initiator="orchestrator")
     if details.get("status") != "ok":
@@ -590,6 +593,9 @@ def evaluate(request_id: str, ctx) -> PolicyResult:
         c = integration_class(integ)
         if c:
             classes.setdefault(c, []).append(f"integration '{_short(integ)}'")
+    for c, sources in (extra_classes or {}).items():
+        for src in sources:
+            classes.setdefault(c, []).append(src)
     class_names = [c for c in ("source_code", "production_access", "confidential_documents", "employee_pii",
                                "customer_pii", "credentials") if c in classes]
     if class_names:

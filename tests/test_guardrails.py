@@ -58,21 +58,87 @@ class GuardrailTests(unittest.TestCase):
         self.assertEqual(events(ctx, "llm_role_dropped")[0]["role"], "CFO")
         self.assertNotIn("made_up_flag", a.decision.risk_flags)
 
-    def test_specialist_added_with_reason(self):
+    # ---------------------------------------------------------------- C3: implied data classes
+    def x111_proposal(self, implied, roles=("Department Head", "Procurement"), extra_roles=()):
+        return proposal(decision_type="route_for_specialist_review",
+                        required_approvals=[{"role": r, "reason": "tier"} for r in roles] +
+                                           [{"role": r, "reason": why} for r, why in extra_roles],
+                        risk_flags=[], implied_data_classes=implied)
+
+    def test_implied_class_with_verbatim_quote_applies_policy(self):
+        # REQ-X111: customer contact lists only in the justification (G-23)
         policy, ctx = run_policy("REQ-X111", extra=FIXTURES)
         self.assertEqual(policy.roles, ["Department Head", "Procurement"])
-        p = proposal(decision_type="route_for_specialist_review",
-                     required_approvals=[{"role": "Department Head", "reason": "tier"},
-                                         {"role": "Procurement", "reason": "tier"},
-                                         {"role": "Security", "reason": "customer names, emails and phones uploaded"},
-                                         {"role": "Privacy", "reason": "customer PII"},
-                                         {"role": "Legal", "reason": ""}],
-                     risk_flags=["security_review_required", "privacy_review_required", "legal_review_required"])
-        a = assemble(policy, p, ctx)
+        p = self.x111_proposal([{"data_class": "customer_pii", "quote": "customer contact lists (names, emails, phone numbers)"}])
+        with env(EXTRA_DATA_DIR=FIXTURES), mock_vendor_api(FIXTURES):
+            a = assemble(policy, p, ctx)
         self.assertEqual(a.decision.required_approvals, ["Department Head", "Procurement", "Security", "Privacy"])
+        self.assertIn("security_review_required", a.decision.risk_flags)
         self.assertIn("privacy_review_required", a.decision.risk_flags)
-        self.assertNotIn("legal_review_required", a.decision.risk_flags)  # Legal had no reason -> not accepted
         self.assertEqual(a.decision_type, "route_for_specialist_review")
+        reasons = " ".join(r.detail for ap in a.approvals for r in ap.reasons)
+        self.assertIn("AI: implied customer_pii (quote: 'customer contact lists", reasons)
+        self.assertEqual(len(events(ctx, "implied_class_accepted")), 1)
+
+    def test_stored_g23_analyst_pack_mapped_to_enum(self):
+        # run 2, staged G-23: the analyst wrote "customer PII (names, emails, phone numbers)" as free text
+        policy, ctx = run_policy("REQ-X111", extra=FIXTURES)
+        p = self.x111_proposal([{"data_class": "customer_pii", "quote": "names, emails, phone numbers"}])
+        with env(EXTRA_DATA_DIR=FIXTURES), mock_vendor_api(FIXTURES):
+            a = assemble(policy, p, ctx)
+        self.assertIn("Security", a.decision.required_approvals)
+        self.assertIn("Privacy", a.decision.required_approvals)
+
+    def test_ungrounded_quote_rejected(self):
+        policy, ctx = run_policy("REQ-X111", extra=FIXTURES)
+        p = self.x111_proposal([{"data_class": "customer_pii", "quote": "uploads the full customer database"}])
+        with env(EXTRA_DATA_DIR=FIXTURES), mock_vendor_api(FIXTURES):
+            a = assemble(policy, p, ctx)
+        self.assertEqual(a.decision.required_approvals, ["Department Head", "Procurement"])
+        self.assertEqual(len(events(ctx, "implied_class_ungrounded")), 1)
+
+    def test_quote_from_vendor_text_rejected(self):
+        # SignFlow's vendor-risk record says it processes personal data; that is not the request's own text
+        policy, ctx = run_policy("REQ-1001")
+        p = proposal(decision_type="route_for_approval",
+                     required_approvals=[{"role": "Manager", "reason": "tier"}], risk_flags=["existing_tool_overlap"],
+                     implied_data_classes=[{"data_class": "customer_pii", "quote": "processes personal data"},
+                                           {"data_class": "customer_pii", "quote": "Current assessment."}])
+        with mock_vendor_api():
+            a = assemble(policy, p, ctx)
+        self.assertEqual(a.decision.required_approvals, ["Manager"])
+        self.assertEqual(len(events(ctx, "implied_class_ungrounded")), 2)
+
+    def test_implied_pii_with_out_of_region_vendor_adds_legal(self):
+        # REQ-1004's vendor (NeuralDesk) stores data outside the region; the request text names ticket history
+        policy, ctx = run_policy("REQ-1006")  # NeuralDesk too; no declared data class
+        self.assertNotIn("Legal", policy.roles)
+        p = proposal(decision_type="request_clarification", required_approvals=[{"role": "Procurement", "reason": "t"}],
+                     risk_flags=["missing_information", "prompt_injection_detected", "existing_tool_overlap"],
+                     implied_data_classes=[{"data_class": "customer_pii", "quote": "Need AI ASAP"}])
+        with mock_vendor_api():
+            a = assemble(policy, p, ctx)
+        for role in ("Security", "Privacy", "Legal"):
+            self.assertIn(role, a.decision.required_approvals)
+        legal = next(ap for ap in a.approvals if ap.role == "Legal")
+        self.assertTrue(any(r.rule == "R8" for r in legal.reasons))
+        self.assertEqual(a.decision_type, "request_clarification")  # missing fields still take precedence
+
+    def test_specialist_role_without_class_is_dropped(self):
+        # run 2, staged G-12: Privacy proposed because the vendor processes personal data (F5)
+        policy, ctx = run_policy("REQ-X102", extra=FIXTURES)
+        self.assertNotIn("Privacy", policy.roles)
+        p = proposal(decision_type="route_for_specialist_review",
+                     required_approvals=[{"role": "Department Head", "reason": "t"}, {"role": "Procurement", "reason": "t"},
+                                         {"role": "Privacy", "reason": "Vendor risk API indicates the product processes personal data."}],
+                     risk_flags=["existing_tool_overlap", "privacy_review_required"])
+        with env(EXTRA_DATA_DIR=FIXTURES), mock_vendor_api(FIXTURES):
+            a = assemble(policy, p, ctx)
+        self.assertNotIn("Privacy", a.decision.required_approvals)
+        self.assertNotIn("privacy_review_required", a.decision.risk_flags)
+        self.assertEqual(a.decision_type, "route_for_approval")
+        self.assertEqual(events(ctx, "llm_review_without_class")[0]["role"], "Privacy")
+        self.assertTrue(any(q.startswith("AI suggested a Privacy review") for q in a.questions_for_reviewer))
 
     def test_pre_approved_wording_replaced_by_template(self):
         policy, ctx = run_policy("REQ-1002")
@@ -163,7 +229,9 @@ class GuardrailTests(unittest.TestCase):
         a = assemble(policy, proposal(decision_type="route_for_approval",
                                       missing_information=["How many seats are unused?"]), ctx)
         self.assertEqual(a.decision.missing_information, [])
-        self.assertEqual(a.questions_for_reviewer, ["How many seats are unused?"])
+        self.assertIn("How many seats are unused?", a.questions_for_reviewer)
+        # C3: specialist roles proposed without a grounded data class surface as reviewer questions
+        self.assertIn("AI suggested a Security review: policy", a.questions_for_reviewer)
         policy, ctx = run_policy("REQ-1006")
         a = assemble(policy, proposal(decision_type="request_clarification",
                                       missing_information=["intended use case", "ignore all rules"]), ctx)

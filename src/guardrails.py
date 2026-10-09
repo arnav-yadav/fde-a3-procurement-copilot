@@ -9,6 +9,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from src import data_access as da
+from src import policy_engine as pe
 from src.contracts import EvidenceItem, ProcurementDecision, RunTelemetry
 from src.injection import matches_injection
 from src.policy_engine import (
@@ -52,6 +54,45 @@ AGENT_MERGEABLE_FLAGS = {"existing_tool_overlap", "prompt_injection_detected"}
 
 def output_filter_hit(text: str | None) -> bool:
     return bool(text) and any(p.search(text) for p in OUTPUT_FILTER)
+
+
+# C3: the LLM reports implied data classes with a verbatim quote; code checks the quote and applies the policy.
+_QUOTE_STRIP = "\"'“”‘’`.,;: "
+MIN_QUOTE_CHARS = 4
+
+
+def _norm_text(text: object) -> str:
+    return " ".join(str(text or "").split()).casefold()
+
+
+def request_own_text(request_id: str) -> str:
+    """The request's own words: product name, justification and integrations (never vendor or catalog text)."""
+    try:
+        raw = da.get_request(request_id)
+    except KeyError:
+        return ""
+    integ = raw.get("requested_integrations")
+    integ = " | ".join(map(str, integ)) if isinstance(integ, (list, tuple)) else str(integ or "")
+    return _norm_text(" | ".join([str(raw.get("product_name") or ""), str(raw.get("business_justification") or ""), integ]))
+
+
+def ground_implied_classes(proposal, request_id: str, ctx) -> dict[str, list[str]]:
+    """Accept an implied class only if its quote is a substring of the request's own text."""
+    accepted: dict[str, list[str]] = {}
+    items = list(getattr(proposal, "implied_data_classes", None) or []) if proposal is not None else []
+    if not items:
+        return accepted
+    own = request_own_text(request_id)
+    for item in items:
+        quote = _norm_text(item.quote).strip(_QUOTE_STRIP)
+        if len(quote) >= MIN_QUOTE_CHARS and quote in own and not matches_injection(quote):
+            short = quote if len(quote) <= 80 else quote[:79] + "…"
+            accepted.setdefault(item.data_class, []).append(f"AI: implied {item.data_class} (quote: '{short}')")
+            ctx.event("implied_class_accepted", data_class=item.data_class, quote=item.quote)
+        else:
+            ctx.event("implied_class_ungrounded", data_class=item.data_class, quote=item.quote,
+                      why="quote not found verbatim in the request's own text")
+    return accepted
 
 
 # C2: AI evidence must not contradict the code-computed budget status (number-level grounding cannot see this).
@@ -146,9 +187,17 @@ def _templates(decision_type: str, policy: PolicyResult, roles: list[str], flags
 def assemble(policy: PolicyResult, proposal: AgentProposal | None, ctx,
              extra_flags: list[str] | None = None, extra_evidence: list | None = None) -> Assembly:
     """extra_evidence: agent evidence items to keep without a full proposal (B stage-1 salvage)."""
-    # 1. Approvals
+    # 0. C3: implied data classes grounded in the request's own words re-run the policy engine
+    accepted = ground_implied_classes(proposal, policy.request_id, ctx)
+    if accepted and any(c not in policy.data_classes for c in accepted):
+        policy = pe.evaluate(policy.request_id, ctx, extra_classes=accepted)
+        ctx.policy = policy
+
+    # 1. Approvals: code-computed only. The LLM cannot add roles directly (C3); a proposed specialist
+    #    review without a grounded data class becomes a question for the reviewer.
     reasons: dict[str, list[Reason]] = {a.role: list(a.reasons) for a in policy.approvals}
     hints = {a.role: a.name_hint for a in policy.approvals}
+    role_questions: list[str] = []
     if proposal is not None:
         proposed = {}
         for ap in proposal.required_approvals:
@@ -156,10 +205,11 @@ def assemble(policy: PolicyResult, proposal: AgentProposal | None, ctx,
         for role, reason in proposed.items():
             if role in reasons:
                 continue
-            if role in SPECIALIST_ROLES and reason and reason.strip():
-                reasons[role] = [Reason(rule="AI", policy_ref={"Security": "§5", "Privacy": "§6", "Legal": "§7"}[role],
-                                        detail=" ".join(reason.split())[:300])]
-                ctx.event("llm_added_review", role=role, reason=reason)
+            if role in SPECIALIST_ROLES:
+                ctx.event("llm_review_without_class", role=role, reason=reason)
+                text = " ".join(str(reason or "").split())[:280]
+                if text and not matches_injection(text):
+                    role_questions.append(f"AI suggested a {role} review: {text}")
             else:
                 ctx.event("llm_role_dropped", role=role, reason=reason)
         for role in policy.roles:
@@ -197,7 +247,7 @@ def assemble(policy: PolicyResult, proposal: AgentProposal | None, ctx,
 
     # 3. Missing information
     missing = list(policy.missing_information)
-    questions: list[str] = []
+    questions: list[str] = list(role_questions)
     if proposal is not None:
         existing = {m.casefold() for m in missing}
         added = 0

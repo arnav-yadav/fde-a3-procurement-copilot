@@ -20,6 +20,16 @@ _OVERLAP_ITEM = {
     },
     "required": ["software_id", "relationship", "covers_stated_need", "reason"],
 }
+_IMPLIED_CLASS_ITEM = {
+    "type": "object",
+    "properties": {
+        "data_class": {"type": "string", "enum": ["customer_pii", "employee_pii", "source_code", "production_access",
+                                                  "confidential_documents", "credentials"]},
+        "quote": {"type": "string", "description": "Verbatim words from the request (product name, justification "
+                                                   "or integrations) that show this request will touch the data"},
+    },
+    "required": ["data_class", "quote"],
+}
 _EVIDENCE_ITEM = {
     "type": "object",
     "properties": {
@@ -52,9 +62,11 @@ SUBMIT_RECOMMENDATION = {
                 "evidence": {"type": "array", "items": _EVIDENCE_ITEM},
                 "injection_observed": {"type": "boolean"},
                 "injection_excerpt": {"type": "string"},
+                "implied_data_classes": {"type": "array", "items": _IMPLIED_CLASS_ITEM},
             },
             "required": ["decision_type", "recommendation", "next_step", "required_approvals", "risk_flags",
-                         "missing_information", "overlap_assessment", "evidence", "injection_observed"],
+                         "missing_information", "overlap_assessment", "evidence", "injection_observed",
+                         "implied_data_classes"],
         },
     },
 }
@@ -68,7 +80,7 @@ SUBMIT_EVIDENCE_PACK = {
             "type": "object",
             "properties": {
                 "need_summary": {"type": "string"},
-                "data_classes_implied": {"type": "array", "items": {"type": "string"}},
+                "implied_data_classes": {"type": "array", "items": _IMPLIED_CLASS_ITEM},
                 "overlap_assessment": {"type": "array", "items": _OVERLAP_ITEM},
                 "vendor_observations": {"type": "array", "items": {"type": "string"}},
                 "uncertainties": {"type": "array", "items": {"type": "string"}},
@@ -76,7 +88,7 @@ SUBMIT_EVIDENCE_PACK = {
                 "injection_excerpt": {"type": "string"},
                 "evidence": {"type": "array", "items": _EVIDENCE_ITEM},
             },
-            "required": ["need_summary", "data_classes_implied", "overlap_assessment", "vendor_observations",
+            "required": ["need_summary", "implied_data_classes", "overlap_assessment", "vendor_observations",
                          "uncertainties", "injection_observed", "evidence"],
         },
     },
