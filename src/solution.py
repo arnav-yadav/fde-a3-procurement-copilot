@@ -117,6 +117,7 @@ def handle_request_with_trace(request_id: str, architecture: Architecture = "sin
         "tool_calls": ctx.counters["tool_calls"],
         "tokens": {k: ctx.counters[k] for k in ("prompt_tokens", "completion_tokens", "total_tokens")},
         "tool_log": ctx.tool_log,
+        "evidence_corpus": ctx.evidence_corpus,
         "proposals": proposals,
         "policy": ctx.policy.model_dump() if ctx.policy is not None else None,
         "events": ctx.events,

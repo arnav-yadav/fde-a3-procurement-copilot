@@ -12,7 +12,7 @@ import re
 
 from src import llm_client as llm
 from src.agents import AgentFailed
-from src.agents.common import SUBMIT_EVIDENCE_PACK, SUBMIT_RECOMMENDATION, parse_submission, tool_loop
+from src.agents.common import SUBMIT_EVIDENCE_PACK, SUBMIT_REVIEW, parse_submission, tool_loop
 from src.config import get_reference_date
 from src.data_access import norm_key
 from src.guardrails import Assembly, assemble
@@ -102,7 +102,7 @@ def run_staged(request_id: str, ctx: RunContext) -> tuple[Assembly, dict]:
     raw_reviews: list = []
     try:
         for attempt in range(1, REVIEWER_ATTEMPTS + 1):
-            result = llm.chat_forced(review_messages, SUBMIT_RECOMMENDATION, ctx=ctx)
+            result = llm.chat_forced(review_messages, SUBMIT_REVIEW, ctx=ctx)
             msg = result.message
             calls = [c for c in (msg.tool_calls or []) if c.function.name == "submit_recommendation"]
             ctx.event("llm_turn", stage="reviewer", turn=attempt, forced=True,

@@ -137,6 +137,15 @@ class AgentProposal(BaseModel):
     injection_observed: bool
     injection_excerpt: str | None = None
     implied_data_classes: list[ImpliedDataClass] = []
+    analyst_disagreements: list["AnalystDisagreement"] = []  # staged reviewer only (C4)
+
+
+class AnalystDisagreement(BaseModel):
+    """One analyst item the staged reviewer did not accept (C4). Trace only; not in the contract."""
+    item: str            # software_id of an overlap entry, or a data class
+    analyst_said: str
+    reviewer_says: str
+    reason: str
 
 
 class EvidencePack(BaseModel):
@@ -149,3 +158,8 @@ class EvidencePack(BaseModel):
     injection_observed: bool
     injection_excerpt: str | None = None
     evidence: list[EvidenceProposal]
+    gaps: list[str] = []                # what the request needs that the evidence does not show (C4)
+    unsupported_claims: list[str] = []  # statements in request/vendor text no tool result supports (C4)
+
+
+AgentProposal.model_rebuild()

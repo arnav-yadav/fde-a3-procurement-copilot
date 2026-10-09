@@ -1,6 +1,7 @@
 """Shared agent plumbing: submit-tool schemas and the tool-calling loop."""
 from __future__ import annotations
 
+import copy
 import json
 
 from pydantic import BaseModel, ValidationError
@@ -87,12 +88,27 @@ SUBMIT_EVIDENCE_PACK = {
                 "injection_observed": {"type": "boolean"},
                 "injection_excerpt": {"type": "string"},
                 "evidence": {"type": "array", "items": _EVIDENCE_ITEM},
+                "gaps": {"type": "array", "items": {"type": "string"}},
+                "unsupported_claims": {"type": "array", "items": {"type": "string"}},
             },
             "required": ["need_summary", "implied_data_classes", "overlap_assessment", "vendor_observations",
-                         "uncertainties", "injection_observed", "evidence"],
+                         "uncertainties", "injection_observed", "evidence", "gaps", "unsupported_claims"],
         },
     },
 }
+
+
+# Staged reviewer: submit_recommendation plus an explicit record of disagreements with the analyst (C4).
+SUBMIT_REVIEW = copy.deepcopy(SUBMIT_RECOMMENDATION)
+SUBMIT_REVIEW["function"]["parameters"]["properties"]["analyst_disagreements"] = {
+    "type": "array",
+    "description": "One entry per analyst overlap entry or implied data class you do NOT accept. Empty if you agree with all.",
+    "items": {"type": "object", "properties": {
+        "item": {"type": "string", "description": "software_id of the overlap entry, or the data class"},
+        "analyst_said": {"type": "string"}, "reviewer_says": {"type": "string"}, "reason": {"type": "string"}},
+        "required": ["item", "analyst_said", "reviewer_says", "reason"]},
+}
+SUBMIT_REVIEW["function"]["parameters"]["required"].append("analyst_disagreements")
 
 
 def parse_submission(raw_args: str | None, model_cls: type[BaseModel]) -> tuple[BaseModel | None, str | None, object]:

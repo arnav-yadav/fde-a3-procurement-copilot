@@ -43,6 +43,66 @@ def raw_proposal(trace: dict) -> dict | None:
     return p if isinstance(p, dict) and "decision_type" in p else None
 
 
+# ---------------------------------------------------------------- C4: reviewer vs analyst, item by item
+PII_CLASSES = {"customer_pii", "employee_pii"}
+PII_ABSENT_CONTROLS = {"G-12", "H-02"}  # negative controls: the request involves no personal data
+
+
+def overlap_truth(case: dict) -> bool | None:
+    acceptable = case["decision_type"]["acceptable"]
+    if acceptable == ["use_existing_tool"]:
+        return True
+    if "use_existing_tool" not in acceptable:
+        return False
+    return None  # both acceptable (e.g. G-02): no truth
+
+
+def pii_truth(case: dict) -> bool | None:
+    if "approvals" in case.get("requires_ai", []):
+        return True  # G-23, H-01, H-06: PII implied only by the request's text
+    if case["case_id"] in PII_ABSENT_CONTROLS:
+        return False
+    return None
+
+
+def _covers(assessments, sid) -> bool:
+    return any(a.get("software_id") == sid and a.get("covers_stated_need") is True for a in assessments or [])
+
+
+def _has_pii(classes) -> bool:
+    return any(isinstance(c, dict) and c.get("data_class") in PII_CLASSES for c in classes or [])
+
+
+def reviewer_items(case: dict, trace: dict) -> list[dict]:
+    """Score each analyst item the reviewer could change against golden-derived truth (no re-assembly).
+    helped = reviewer matches truth and analyst doesn't; hurt = reverse; neutral = both match or both miss;
+    unknown = no truth for this item."""
+    props = trace.get("proposals") or {}
+    analyst, reviewer = props.get("analyst"), props.get("reviewer")
+    if not isinstance(analyst, dict) or not isinstance(reviewer, dict):
+        return []
+    items = []
+
+    def verdict(truth, a_val, r_val):
+        if truth is None:
+            return "unknown"
+        a_ok, r_ok = a_val == truth, r_val == truth
+        return "helped" if r_ok and not a_ok else ("hurt" if a_ok and not r_ok else "neutral")
+
+    sids = {a.get("software_id") for src in (analyst, reviewer) for a in (src.get("overlap_assessment") or [])}
+    truth = overlap_truth(case)
+    for sid in sorted(x for x in sids if x):
+        a_val = _covers(analyst.get("overlap_assessment"), sid)
+        r_val = _covers(reviewer.get("overlap_assessment"), sid)
+        items.append({"case_id": case["case_id"], "item": f"overlap {sid} covers_stated_need", "analyst": a_val,
+                      "reviewer": r_val, "truth": truth, "verdict": verdict(truth, a_val, r_val)})
+    a_pii, r_pii, truth = _has_pii(analyst.get("implied_data_classes")), _has_pii(reviewer.get("implied_data_classes")), pii_truth(case)
+    if a_pii or r_pii or truth is not None:
+        items.append({"case_id": case["case_id"], "item": "implied PII", "analyst": a_pii, "reviewer": r_pii,
+                      "truth": truth, "verdict": verdict(truth, a_pii, r_pii)})
+    return items
+
+
 def run_status(case: dict, trace: dict, arch: str) -> str:
     """valid | invalid_llm_quota (infrastructure, excluded from agent scores)."""
     if arch == "rules_only" or case["fault"] == "llm_unavailable":
@@ -108,6 +168,11 @@ def score_run(case: dict, decision: dict, trace: dict, arch: str) -> dict:
               "contradicting_evidence_removed"):
         row[k] = counts.get(k, 0)
 
+    items = reviewer_items(case, trace) if arch == "staged" else []
+    row["reviewer_items"] = items
+    for v in ("helped", "hurt", "neutral", "unknown"):
+        row[f"reviewer_{v}"] = sum(i["verdict"] == v for i in items) if arch == "staged" else None
+
     raw = raw_proposal(trace)
     if raw is not None:
         raw_roles = {a.get("role") for a in raw.get("required_approvals") or []}
@@ -171,6 +236,9 @@ def summarize(rows: list[dict], cases: list[dict], public: dict[str, str]) -> tu
             "reviews_without_class": sum(r.get("llm_review_without_class", 0) for r in llm_rows) if llm_rows else "n/a",
             "contradicting_removed": sum(r.get("contradicting_evidence_removed", 0) for r in llm_rows) if llm_rows else "n/a",
             "gate_filled_total": sum(r["gate_filled"] for r in llm_rows) if llm_rows else "n/a",
+            "reviewer_vs_analyst": (" / ".join(str(sum(r.get(f"reviewer_{v}") or 0 for r in valid))
+                                               for v in ("helped", "hurt", "neutral", "unknown"))
+                                    if a == "staged" else "n/a"),
             "injection_passed": _pct([r for r in valid if r["case_id"] in inj_cases], "case_pass"),
             "fault_passed": _pct([r for r in valid if r["case_id"] in fault_cases], "case_pass"),
             "avg_active_ms": _avg(valid, "latency_active_ms"),
@@ -204,6 +272,7 @@ def summarize(rows: list[dict], cases: list[dict], public: dict[str, str]) -> tu
         f"| Specialist reviews proposed without a grounded data class (dropped, total) | {col('reviews_without_class')} |",
         f"| AI evidence removed for contradicting the budget check (C2, total) | {col('contradicting_removed')} |",
         f"| Evidence tools filled by the gate (total) | {col('gate_filled_total')} |",
+        f"| Reviewer vs analyst, item level vs golden: helped / hurt / neutral / unknown | {col('reviewer_vs_analyst')} |",
         f"| Injection cases passed ({len(inj_cases)} per trial) | {col('injection_passed')} |",
         f"| Fault cases passed ({len(fault_cases)} per trial) | {col('fault_passed')} |",
         f"| Avg active latency (ms) | {col('avg_active_ms')} |",
@@ -231,6 +300,13 @@ def summarize(rows: list[dict], cases: list[dict], public: dict[str, str]) -> tu
                 parts.append("quota" if r["status"] != "valid" else ("PASS" if r["case_pass"] else "FAIL"))
             cells.append(" ".join(parts))
         lines.append(f"| {cid} | {req_of[cid]} | " + " | ".join(cells) + " |")
+    scored = [i for r in rows if r["architecture"] == "staged" and r["status"] == "valid"
+              for i in (r.get("reviewer_items") or []) if i["verdict"] != "unknown"]
+    if scored:
+        lines += ["", "## Reviewer vs analyst (staged, items with a golden-derived truth)", "",
+                  "| Case | Item | Analyst | Reviewer | Truth | Verdict |", "|---|---|---|---|---|---|"]
+        for i in sorted(scored, key=lambda i: (i["case_id"], i["item"])):
+            lines.append(f"| {i['case_id']} | {i['item']} | {i['analyst']} | {i['reviewer']} | {i['truth']} | {i['verdict']} |")
     lines += ["", "## Failures", ""]
     fails = [r for r in rows if r["status"] == "valid" and not r["case_pass"]]
     if not fails:

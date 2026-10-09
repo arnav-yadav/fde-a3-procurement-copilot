@@ -37,6 +37,26 @@ class StagedScopingTests(unittest.TestCase):
         self.assertEqual(turns[0]["tools_exposed"]["count"], 4)
         self.assertEqual(assembly.decision.required_approvals, ["Department Head", "Procurement"])
 
+    def test_handoff_v2_reaches_the_trace(self):
+        pack = {**PACK, "overlap_assessment": [{"software_id": "SW003", "relationship": "substitute_could_meet_need",
+                                                "covers_stated_need": True, "reason": "company-wide licence"}],
+                "gaps": ["No stated reason the existing licence is insufficient"],
+                "unsupported_claims": ["Marketing needs its own tracker"]}
+        review = recommendation(decision_type="route_for_approval",
+                                required_approvals=[{"role": "Department Head", "reason": "t"}, {"role": "Procurement", "reason": "t"}],
+                                risk_flags=["existing_tool_overlap"],
+                                overlap_assessment=[{"software_id": "SW003", "relationship": "same_product_expansion",
+                                                     "covers_stated_need": False, "reason": "Pro tier"}],
+                                analyst_disagreements=[{"item": "SW003", "analyst_said": "covers the need",
+                                                        "reviewer_says": "does not cover", "reason": "Pro tier"}])
+        fake = FakeLLM([LOOKUPS, [("submit_evidence_pack", pack)], [("submit_recommendation", review)]])
+        with mock_vendor_api(), fake.patched():
+            _, proposals = run_staged("REQ-1008", RunContext("REQ-1008"))
+        self.assertEqual(proposals["analyst"]["unsupported_claims"], ["Marketing needs its own tracker"])
+        self.assertEqual(proposals["reviewer"]["analyst_disagreements"][0]["item"], "SW003")
+        offered = fake.calls[2]["tools"]
+        self.assertEqual(offered, ["submit_recommendation"])
+
 
 if __name__ == "__main__":
     unittest.main()
