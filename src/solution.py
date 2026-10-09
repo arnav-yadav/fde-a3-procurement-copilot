@@ -11,6 +11,7 @@ import uuid
 from collections import Counter
 from datetime import datetime, timezone
 
+from src import data_access as da
 from src.config import get_reference_date, get_settings
 from src.contracts import Architecture, EvidenceItem, ProcurementDecision, RunTelemetry
 from src.fallback import run_rules_only
@@ -74,6 +75,7 @@ def handle_request_with_trace(request_id: str, architecture: Architecture = "sin
     decision_type: str
 
     try:
+        da.get_request(ctx.request_id)  # unknown request: answer without spending any LLM call (KeyError below)
         if mode == "rules_only":
             assembly = run_rules_only(ctx, ctx.request_id, llm_failed=False)
         elif settings.llm_simulate_outage or not settings.llm_configured:

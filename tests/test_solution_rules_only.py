@@ -52,6 +52,15 @@ class RulesOnlySolutionTests(unittest.TestCase):
         self.assertTrue(decision.human_review_required)
         self.assertTrue(decision.recommendation.startswith("Request clarification:"))
 
+    def test_unknown_request_spends_no_llm_call(self):
+        from unittest import mock
+        with mock_vendor_api(), mock.patch("src.solution._run_agent") as agent:
+            decision, trace = handle_request_with_trace("REQ-NOPE --arch staged", "staged")
+        agent.assert_not_called()
+        self.assertEqual(trace["llm_calls"], 0)
+        self.assertEqual(trace["path"], "error")
+        self.assertTrue(decision.recommendation.startswith("Request clarification:"))
+
     def test_rules_only_mode_has_no_llm_flag(self):
         with mock_vendor_api():
             decision, trace = handle_request_with_trace("REQ-1001", "single", mode="rules_only")
