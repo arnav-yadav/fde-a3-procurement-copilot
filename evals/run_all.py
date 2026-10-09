@@ -1,6 +1,7 @@
 """One-command evaluation (T14).
 
-python evals/run_all.py [--trials N] [--architectures single,staged] [--no-llm] [--cases G-01,...]
+python evals/run_all.py [--trials N] [--architectures workflow,single,staged] [--no-llm] [--cases G-01,...]
+                        [--golden-set main|heldout|all]
                         [--skip-public] [--resume] [--fresh]
 
 - Starts the mock API on EVAL_API_PORT (default 8011) with EXTRA_DATA_DIR=evals/fixtures.
@@ -95,7 +96,9 @@ def golden_run(case: dict, arch: str, trial: int, base_url: str) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--trials", type=int, default=1)
-    ap.add_argument("--architectures", default="single,staged")
+    ap.add_argument("--architectures", default="workflow,single,staged")
+    ap.add_argument("--golden-set", choices=["main", "heldout", "all"], default="all",
+                    help="main = golden_cases.json (23), heldout = golden_heldout.json (6); reported separately")
     ap.add_argument("--no-llm", action="store_true", help="rules-only baseline only (no key needed)")
     ap.add_argument("--cases", default="", help="comma-separated golden case IDs")
     ap.add_argument("--skip-public", action="store_true")
@@ -106,7 +109,10 @@ def main() -> None:
     archs = ["rules_only"] if args.no_llm else [a for a in args.architectures.split(",") if a] + ["rules_only"]
     archs = [a for a in ARCH_ORDER if a in archs]
     cases = json.loads((ROOT / "evals" / "golden_cases.json").read_text(encoding="utf-8"))
-    selected = [c for c in cases if not args.cases or c["case_id"] in args.cases.split(",")]
+    heldout_path = ROOT / "evals" / "golden_heldout.json"
+    heldout = json.loads(heldout_path.read_text(encoding="utf-8")) if heldout_path.is_file() else []
+    pool = {"main": cases, "heldout": heldout, "all": cases + heldout}[args.golden_set]
+    selected = [c for c in pool if not args.cases or c["case_id"] in args.cases.split(",")]
 
     RESULTS.mkdir(parents=True, exist_ok=True)
     if args.fresh:
@@ -160,7 +166,7 @@ def main() -> None:
     rows = load_run_files(RUNS)
     write_csv(rows, RESULTS / "golden_runs.csv")
     public = {a: public_result(RESULTS / f"public_{a}.csv") for a in ARCH_ORDER}
-    summary, md = summarize(rows, cases, public)
+    summary, md = summarize(rows, cases, public, heldout)
     models = sorted({r["model"] for r in rows if r["architecture"] != "rules_only" and r.get("model")
                      and r["status"] == "valid" and r["path"] == "llm"})
     summary["models"] = models

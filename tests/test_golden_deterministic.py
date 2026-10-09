@@ -13,6 +13,7 @@ from src.tools import RunContext
 from tests.helpers import FIXTURES, env, mock_vendor_api
 
 GOLDEN = json.loads((ROOT / "evals" / "golden_cases.json").read_text(encoding="utf-8"))
+HELDOUT = json.loads((ROOT / "evals" / "golden_heldout.json").read_text(encoding="utf-8"))
 
 
 def within(actual: set, spec: dict, ignore: set = frozenset()) -> bool:
@@ -23,7 +24,15 @@ def within(actual: set, spec: dict, ignore: set = frozenset()) -> bool:
 class GoldenDeterministicTests(unittest.TestCase):
     def test_all_golden_cases(self):
         self.assertEqual(len(GOLDEN), 23)
-        for g in GOLDEN:
+        self.check(GOLDEN)
+
+    def test_heldout_cases(self):
+        """Pre-registered held-out set (C7): rules-only fails exactly the requires_ai aspects."""
+        self.assertEqual([c["case_id"] for c in HELDOUT], ["H-01", "H-02", "H-03", "H-04", "H-05", "H-06"])
+        self.check(HELDOUT)
+
+    def check(self, cases):
+        for g in cases:
             with self.subTest(case=g["case_id"]):
                 with env(EXTRA_DATA_DIR=FIXTURES), mock_vendor_api(FIXTURES, outage=g["fault"] == "vendor_api_down"):
                     p = pe.evaluate(g["request_id"], RunContext(g["request_id"]))
