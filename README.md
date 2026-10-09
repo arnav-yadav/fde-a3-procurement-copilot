@@ -27,7 +27,7 @@ Other commands:
 python -m unittest discover -s tests -v          # unit tests (no network)
 python scripts/smoke_llm.py                      # provider/model check + forced tool-call round trip
 python scripts/run_one.py REQ-1008 --arch single # one request: decision, raw proposal, guardrail events
-python evals/run_all.py --trials 1               # public runner + 23 golden cases, both architectures + rules-only
+python evals/run_all.py --trials 3 --resume      # public runner + 23 main + 6 held-out cases: workflow, single, staged + rules-only
 python evals/run_all.py --no-llm                 # rules-only baseline (no key needed); writes runtime/eval_scratch/ unless --save
 ```
 
@@ -78,25 +78,36 @@ flowchart LR
   E[Employee request] --> Q[Review queue]
   Q --> H[handle_request]
   H -->|single| A1[Procurement Agent<br/>LLM + 6 tools]
-  H -->|staged| B1[Analyst agent<br/>LLM + 4 evidence tools]
+  H -->|staged| B0[Code: fetch request] --> B1[Analyst agent<br/>LLM + 3 lookup tools]
   B1 --> PE[Policy engine<br/>deterministic code]
   PE --> B2[Policy & Risk Reviewer<br/>LLM, no tools]
+  H -->|workflow| W0[Code: fixed evidence sequence<br/>+ policy engine] --> W1[Workflow LLM<br/>1 forced call, no tools]
   A1 --> G[Guardrails + assembler<br/>code]
   B2 --> G
+  W1 --> G
   G --> D[ProcurementDecision]
   D --> R[Reviewer: evidence, approvals, flags]
   R --> C[Confirm action + reason]
   C --> L[(audit_log.jsonl)]
 ```
 
-| | A: single agent | B: staged (2 agents) |
-|---|---|---|
-| LLM roles | one agent with all 6 tools | Analyst (evidence tools + policy text) → Policy & Risk Reviewer (no tools) |
-| Policy engine | a tool the agent calls (code runs it if skipped) | called by code between the stages |
-| Handoff | none | `EvidencePack` + the raw tool results + the policy-engine result |
-| Idea being tested | simplest design | an independent reviewer that checks the analyst against raw tool results improves grounding and judgement |
+Four configurations, one rung apart on the Class 12 ladder:
 
-Both end in the same code: completeness gate → policy engine → guardrails → `ProcurementDecision` (`src/solution.py::handle_request`). Any LLM failure falls back to the rule-based result with the flag `llm_unavailable`. More detail, including every deviation from the spec: [`docs/architecture.md`](docs/architecture.md).
+```mermaid
+flowchart LR
+  R[Rules only<br/>0 LLM calls] --> W[Workflow + 1 LLM<br/>code gathers, 1 call interprets]
+  W --> A[A: single agent<br/>agent picks tools, ~3 calls]
+  A --> B[B: staged<br/>analyst + reviewer, ~3 calls]
+```
+
+| | Workflow + 1 LLM | A: single agent | B: staged (2 agents) |
+|---|---|---|---|
+| LLM roles | one forced call, no tools | one agent with all 6 tools | Analyst (3 lookup tools; code fetches the request) → Policy & Risk Reviewer (no tools) |
+| Policy engine | called by code before the LLM | a tool the agent calls (code runs it if skipped) | called by code between the stages |
+| Handoff | none | none | `EvidencePack` (evidence, implied data classes with quotes, gaps, unsupported claims) + the raw tool results + the policy-engine result; the reviewer records its disagreements |
+| Idea being tested | the evidence path is fixed, so the AI only needs to interpret | simplest agent | an independent reviewer that checks the analyst against raw tool results improves grounding and judgement |
+
+**Rules only** is the same code with no LLM (also the fallback path). All end in the same code: completeness gate → policy engine → guardrails → `ProcurementDecision` (`src/solution.py::handle_request`; `workflow` is reachable through `handle_request_with_trace` and the eval runners, the contract is unchanged). Why a workflow rung, why sequential stages and not a supervisor, and what would change the decision: [`docs/architecture.md`, Design rationale](docs/architecture.md#design-rationale-classes-12-and-13). Any LLM failure falls back to the rule-based result with the flag `llm_unavailable`. More detail, including every deviation from the spec: [`docs/architecture.md`](docs/architecture.md).
 
 ## 5. Tools and agents
 
@@ -112,10 +123,10 @@ Both end in the same code: completeness gate → policy engine → guardrails �
 | Decided by | What |
 |---|---|
 | Code | financial tier, budget, review currency (365 days), registry/API conflict, Security/Privacy/Legal triggers, required fields, injection scan, final merge |
-| LLM | does an existing tool already meet the need; data classes implied only by free text (it may add Security/Privacy/Legal with a reason, never remove); recommendation and next-step wording |
+| LLM | does an existing tool already meet the need; data classes implied only by free text, each with a verbatim quote (code then applies Security/Privacy/Legal; the LLM cannot add or remove a role itself); recommendation and next-step wording |
 | Human | every routing action, approval and exception |
 
-Guardrails (`src/guardrails.py`): code-computed approvals and flags are always kept; LLM-proposed roles other than Security/Privacy/Legal are dropped; LLM evidence is kept only if its source tool ran, every number, date and ID in it appears in the tool results, and it does not contradict the code's budget check; wording that claims approval or purchase is replaced by a template; `human_review_required` is always true.
+Guardrails (`src/guardrails.py`): code-computed approvals and flags are always kept; an AI-implied data class counts only if its quote appears word for word in the request's own text, and then the policy engine re-runs with it; a specialist review the AI proposes without such a class becomes a question for the reviewer; any other AI-proposed role is dropped; LLM evidence is kept only if its source tool ran, every number, date and ID in it appears in the tool results, and it does not contradict the code's budget check; wording that claims approval or purchase is replaced by a template; `human_review_required` is always true.
 
 Prompt injection: request text, vendor notes and API text reach the LLM only inside tool results marked as untrusted data, a deterministic scanner flags embedded instructions independently of the LLM, and the UI renders all business text as plain text (Markdown-escaped, never HTML; tested with link, image, formula and `<img onerror>` payloads).
 
