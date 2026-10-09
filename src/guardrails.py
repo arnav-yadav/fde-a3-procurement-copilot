@@ -20,6 +20,7 @@ from src.schemas import (
     DECISION_LABELS, SPECIALIST_FLAG, SPECIALIST_ROLES, AgentProposal, EvidenceRecord, PolicyResult, Reason,
     RoleApproval, order_flags, order_roles,
 )
+from src.tracing import traced
 
 MAX_EVIDENCE = 12
 MAX_ADDED_MISSING = 3
@@ -189,6 +190,7 @@ def _templates(decision_type: str, policy: PolicyResult, roles: list[str], flags
             f"Send the evidence pack to {_join(roles)}.")
 
 
+@traced("guardrails.assemble")
 def assemble(policy: PolicyResult, proposal: AgentProposal | None, ctx,
              extra_flags: list[str] | None = None, extra_evidence: list | None = None) -> Assembly:
     """extra_evidence: agent evidence items to keep without a full proposal (B stage-1 salvage)."""

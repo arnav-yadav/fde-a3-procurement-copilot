@@ -7,6 +7,7 @@ import time
 from dataclasses import dataclass
 
 from src.config import get_settings
+from src.tracing import maybe_wrap, tracing_enabled
 
 MAX_RETRY_AFTER_SECONDS = 60.0
 
@@ -49,10 +50,10 @@ _client_cache: dict = {}
 
 def _client(settings):
     from openai import OpenAI
-    key = (settings.llm_base_url, settings.llm_api_key, settings.llm_timeout_seconds)
+    key = (settings.llm_base_url, settings.llm_api_key, settings.llm_timeout_seconds, tracing_enabled())
     if key not in _client_cache:
-        _client_cache[key] = OpenAI(base_url=settings.llm_base_url, api_key=settings.llm_api_key,
-                                    timeout=settings.llm_timeout_seconds, max_retries=0)
+        _client_cache[key] = maybe_wrap(OpenAI(base_url=settings.llm_base_url, api_key=settings.llm_api_key,
+                                               timeout=settings.llm_timeout_seconds, max_retries=0))
     return _client_cache[key]
 
 

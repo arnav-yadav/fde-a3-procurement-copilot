@@ -9,6 +9,7 @@ from pydantic import BaseModel, ValidationError
 from src import llm_client as llm
 from src.schemas import AGENT_ALLOWED_FLAGS, ROLE_ORDER
 from src.tools import RunContext, llm_content
+from src.tracing import traced
 
 _OVERLAP_ITEM = {
     "type": "object",
@@ -130,6 +131,7 @@ def parse_submission(raw_args: str | None, model_cls: type[BaseModel]) -> tuple[
         return None, exc.json(include_url=False)[:2000], data
 
 
+@traced(lambda *a, **k: k.get("stage", "agent"))
 def tool_loop(ctx: RunContext, messages: list[dict], tool_names: list[str], submit_tool: dict,
               model_cls: type[BaseModel], max_turns: int, nudge: str, stage: str) -> tuple[BaseModel | None, list]:
     """Run the LLM with tools until it submits a valid `submit_tool` call.
@@ -195,6 +197,7 @@ def tool_loop(ctx: RunContext, messages: list[dict], tool_names: list[str], subm
     return None, raw_submissions
 
 
+@traced(lambda *a, **k: k.get("stage", "agent"))
 def forced_submission(ctx: RunContext, messages: list[dict], submit_tool: dict, model_cls: type[BaseModel],
                       stage: str, attempts: int = 2) -> tuple[BaseModel | None, list]:
     """One forced call to `submit_tool` (no other tools), with one repair attempt. Raises LLMUnavailable."""

@@ -17,6 +17,7 @@ from src.schemas import (
     FLAG_ORDER, SPECIALIST_FLAG, EvidenceRecord, PolicyResult, Reason, RoleApproval, order_flags, order_roles,
 )
 from src.vendor_client import get_vendor_risk_classified
+from src.tracing import traced
 
 REVIEW_VALID_DAYS = 365
 
@@ -426,6 +427,7 @@ def _short(text: object, n: int = 40) -> str:
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
+@traced("policy_engine.evaluate")
 def evaluate(request_id: str, ctx, extra_classes: dict[str, list[str]] | None = None) -> PolicyResult:
     """Run all deterministic rules. Uses `ctx.execute` so each tool runs at most once per run.
 

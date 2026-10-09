@@ -7,6 +7,7 @@ conservative manual-review decision.
 from __future__ import annotations
 
 import time
+import os
 import uuid
 from collections import Counter
 from datetime import datetime, timezone
@@ -17,6 +18,7 @@ from src.contracts import Architecture, EvidenceItem, ProcurementDecision, RunTe
 from src.fallback import run_rules_only
 from src.schemas import DECISION_LABELS
 from src.tools import RunContext
+from src.tracing import traced
 from src.trace_steps import build_steps
 from src.agents import AgentFailed
 
@@ -63,6 +65,13 @@ def _error_decision(request_id: str, exc: Exception, ctx: RunContext) -> tuple[P
     ), decision_type
 
 
+def _trace_meta(request_id, architecture="single", mode="llm") -> dict:
+    s = get_settings()
+    return {"request_id": request_id, "architecture": architecture, "mode": mode, "provider": s.llm_provider,
+            "model": s.model_name, "case_id": os.getenv("EVAL_CASE_ID")}
+
+
+@traced("handle_request", metadata=_trace_meta)
 def handle_request_with_trace(request_id: str, architecture: Architecture = "single",
                               mode: str = "llm") -> tuple[ProcurementDecision, dict]:
     started = time.perf_counter()

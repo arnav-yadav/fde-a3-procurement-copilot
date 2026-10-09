@@ -50,6 +50,11 @@ def check_imports() -> None:
             + ". Run: python -m pip install -r requirements.txt"
         )
     ok("Required starter packages import successfully")
+    try:  # optional: LangSmith tracing (off unless LANGSMITH_TRACING=true and LANGSMITH_API_KEY are set)
+        importlib.import_module("langsmith")
+        ok("Optional package langsmith imports (tracing is off unless LANGSMITH_TRACING=true)")
+    except ImportError:
+        print("[INFO] Optional package langsmith is not installed; tracing stays off (pip install -r requirements.txt)")
 
 
 def check_data() -> None:

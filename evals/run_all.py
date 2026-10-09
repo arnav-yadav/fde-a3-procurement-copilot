@@ -74,7 +74,7 @@ def run_public(arch: str, env: dict) -> None:
 def golden_run(case: dict, arch: str, trial: int, base_url: str) -> dict:
     from src.solution import handle_request_with_trace
 
-    fault_env: dict = {"VENDOR_RISK_BASE_URL": base_url, "LLM_SIMULATE_OUTAGE": None}
+    fault_env: dict = {"VENDOR_RISK_BASE_URL": base_url, "LLM_SIMULATE_OUTAGE": None, "EVAL_CASE_ID": case["case_id"]}
     if case["fault"] == "vendor_api_down":
         fault_env["VENDOR_RISK_BASE_URL"] = DEAD_API
     if case["fault"] == "llm_unavailable":

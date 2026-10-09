@@ -31,6 +31,29 @@ python evals/run_all.py --trials 1               # public runner + 23 golden cas
 python evals/run_all.py --no-llm                 # rules-only baseline (no key needed); writes runtime/eval_scratch/ unless --save
 ```
 
+### Tracing
+
+- **Local trace, always on.** Every run stores its tool calls, guardrail events, per-call LLM log (`llm_log`) and the steps derived from them (`steps`: who acted, why, tools, LLM calls, tokens, time) in `runtime/traces/`. The reviewer UI shows them under **How this was decided**, followed by the guardrail corrections and the AI proposal next to the final result. Eval run files keep the same trace.
+- **LangSmith, optional and off by default.** It is used only for tracing; no agent framework is involved. To turn it on, run `python -m pip install -r requirements.txt` and set these in `.env`:
+
+  ```
+  LANGSMITH_TRACING=true
+  LANGSMITH_API_KEY=<your key>
+  LANGSMITH_PROJECT=procurement-copilot
+  LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+  ```
+
+  Each request becomes one trace: `handle_request` (metadata: request, architecture, mode, provider, model, case ID in evals), then a span per stage (`single`, `analyst`, `reviewer`, `workflow`) containing its LLM calls, plus `policy_engine.evaluate`, `guardrails.assemble` and one span per tool. Without the key, or with `LANGSMITH_TRACING` unset or false, nothing is imported or sent. The unit tests force it off, and the eval trials ran with it off.
+- **Demo traces** (about 21 LLM calls):
+
+  ```bash
+  python scripts/run_one.py REQ-1006 --arch single     # also --arch staged, --arch workflow
+  python scripts/run_one.py REQ-1008 --arch single     # also --arch staged, --arch workflow
+  python scripts/run_one.py REQ-X111 --fixtures --arch single   # --fixtures sets EXTRA_DATA_DIR=evals/fixtures
+  ```
+
+  Screenshots: _(to be added: staged trace for REQ-1008; workflow trace for REQ-X111)_. Shared trace link: _(to be added)_.
+
 ## 3. Product workflow
 
 ```

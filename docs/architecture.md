@@ -150,6 +150,12 @@ Prompts are stored verbatim from SPEC_TECHNICAL T16 in `src/prompts.py`. Each ch
 | C9 | 2026-10-09 | "How this was decided": `src/trace_steps.py::build_steps(trace)` turns `tool_log` + `events` into steps (who acted, why, tools, LLM calls, tokens, time); `corrections()` lists guardrail events; `raw_vs_final()` puts the AI proposal next to the final result. Shown in a collapsed expander in `app.py` (dataframes only). New traces also store `llm_log` (one entry per LLM call: ms, wait, tokens) and `steps`; `scripts/backfill_steps.py` adds `steps` to stored run files. | Class 13: make multi-agent runs observable. Made on main after the `run3-frozen` tag; `llm_log` and `steps` are telemetry only and change no decision. Run-3 files come from the frozen code, so they have no `llm_log`: per-stage tokens for staged runs show as unknown, and single-stage runs use the run totals. Tests: `tests/test_trace_steps.py`, `tests/test_streamlit_app.py::test_how_this_was_decided_expander`. |
 | C10 | 2026-10-09 | `evals/run_all.py --no-llm` writes to `runtime/eval_scratch/` (untracked) unless `--save`; the README states that `manual_review.md` must be confirmed by the author before it is quoted. | A deterministic check used to overwrite the committed LLM results in `evals/results/`. |
 
+## Tracing (optional)
+
+`src/tracing.py` adds optional LangSmith tracing. It is off unless `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` are both set (read at call time); otherwise `traced()` is a plain call and `maybe_wrap()` returns the OpenAI client unchanged, and `langsmith` is never imported. When on, it traces `handle_request_with_trace`, each agent stage (`tool_loop` / `forced_submission`, named by stage), each tool run in `RunContext.execute`, `policy_engine.evaluate` and `guardrails.assemble`, and the LLM calls through `wrap_openai`. The `RunContext` is not sent as an input. It changes no decision (`tests/test_tracing.py` compares outputs with tracing on and off). It was added on main after the `run3-frozen` tag; run-3 trials ran without it.
+
+It is off by default because tracing sends prompts, request text and tool results to a third party. The data in this project is synthetic, so the demo traces are safe to share. In production, sending purchase requests to a hosted tracing service would need a Privacy review, or a self-hosted deployment.
+
 ## Other deviations from the spec
 
 | Item | Spec | Implemented | Why |
