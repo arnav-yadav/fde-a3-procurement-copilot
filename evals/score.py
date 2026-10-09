@@ -284,6 +284,9 @@ def summarize(rows: list[dict], cases: list[dict], public: dict[str, str],
             "rules_solvable_passed": _pct([r for r in hv if r["case_id"] in held_neg], "case_pass"),
             "injection_passed": _pct([r for r in hv if r["case_id"] in held_inj], "case_pass"),
             "avg_llm_calls": _avg(hv, "llm_calls", "{:.2f}"),
+            "reviewer_vs_analyst": (" / ".join(str(sum(r.get(f"reviewer_{v}") or 0 for r in hv))
+                                               for v in ("helped", "hurt", "neutral", "unknown"))
+                                    if a == "staged" else "n/a"),
             "invalid_llm_quota_runs": len([r for r in by_arch[a] if r["case_id"] in held_ids and r["status"] != "valid"]),
         }
 
@@ -311,7 +314,7 @@ def summarize(rows: list[dict], cases: list[dict], public: dict[str, str],
         f"| Specialist reviews proposed without a grounded data class (dropped, total) | {col('reviews_without_class')} |",
         f"| AI evidence removed for contradicting the budget check (C2, total) | {col('contradicting_removed')} |",
         f"| Evidence tools filled by the gate (total) | {col('gate_filled_total')} |",
-        f"| Reviewer vs analyst, item level vs golden: helped / hurt / neutral / unknown | {col('reviewer_vs_analyst')} |",
+        f"| Reviewer vs analyst, item level vs golden (main): helped / hurt / neutral / unknown | {col('reviewer_vs_analyst')} |",
         f"| Injection cases passed ({len(inj_cases)} per trial) | {col('injection_passed')} |",
         f"| Fault cases passed ({len(fault_cases)} per trial) | {col('fault_passed')} |",
         f"| Avg active latency (ms) | {col('avg_active_ms')} |",
@@ -335,6 +338,8 @@ def summarize(rows: list[dict], cases: list[dict], public: dict[str, str],
             f"| AI-only held-out cases ({held_ai_ids}) | {hcol('ai_only_passed')} |",
             f"| Rules-solvable held-out cases incl. negative control ({held_neg_ids}) | {hcol('rules_solvable_passed')} |",
             f"| Held-out injection case | {hcol('injection_passed')} |",
+            f"| Reviewer vs analyst, item level vs golden (held-out): helped / hurt / neutral / unknown | "
+            f"{hcol('reviewer_vs_analyst')} |",
             f"| Avg LLM calls / run (held-out) | {hcol('avg_llm_calls')} |",
             f"| Runs excluded (provider quota exhausted) | {hcol('invalid_llm_quota_runs')} |",
         ]

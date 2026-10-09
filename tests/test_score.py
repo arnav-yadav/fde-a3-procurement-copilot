@@ -3,10 +3,11 @@ from __future__ import annotations
 import json
 import unittest
 
-from evals.score import reviewer_items, score_run, set_check
+from evals.score import reviewer_items, score_run, set_check, summarize
 from src.config import ROOT
 
 GOLDEN = {c["case_id"]: c for c in json.loads((ROOT / "evals" / "golden_cases.json").read_text())}
+HELDOUT = {c["case_id"]: c for c in json.loads((ROOT / "evals" / "golden_heldout.json").read_text())}
 
 
 def decision(approvals, flags, missing=(), label="Route for approval", text="ok."):
@@ -41,6 +42,28 @@ class ScoreTests(unittest.TestCase):
         self.assertEqual(score_run(g, decision(["Manager"], []), trace, "single")["status"], "invalid_llm_quota")
         self.assertEqual(score_run(GOLDEN["G-22"], decision([], []), trace, "single")["status"], "valid")
 
+
+
+class ReviewerSummaryTests(unittest.TestCase):
+    def test_helped_hurt_reported_for_main_and_heldout_separately(self):
+        pii = [{"data_class": "customer_pii", "quote": "q"}]
+
+        def row(case, analyst_pii, reviewer_pii):
+            trace = {"decision_type": "route_for_approval", "path": "llm", "architecture": "staged",
+                     "proposals": {"analyst": {"implied_data_classes": pii if analyst_pii else [], "overlap_assessment": []},
+                                   "reviewer": {"decision_type": "route_for_approval", "implied_data_classes":
+                                                pii if reviewer_pii else [], "overlap_assessment": []}}}
+            r = score_run(case, decision(["Manager"], []), trace, "staged")
+            r["trial"] = 1
+            return r
+
+        rows = [row(GOLDEN["G-12"], True, False),     # negative control: reviewer removes PII -> helped
+                row(HELDOUT["H-06"], True, False)]    # PII only in the request text: reviewer drops it -> hurt
+        _, md = summarize(rows, list(GOLDEN.values()), {}, list(HELDOUT.values()))
+        main = next(l for l in md.splitlines() if l.startswith("| Reviewer vs analyst") and "(main)" in l)
+        held = next(l for l in md.splitlines() if l.startswith("| Reviewer vs analyst") and "(held-out)" in l)
+        self.assertTrue(main.rstrip(" |").endswith("1 / 0 / 0 / 0"), main)
+        self.assertTrue(held.rstrip(" |").endswith("0 / 1 / 0 / 0"), held)
 
 if __name__ == "__main__":
     unittest.main()
