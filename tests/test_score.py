@@ -44,6 +44,19 @@ class ScoreTests(unittest.TestCase):
 
 
 
+class OverlapTruthTests(unittest.TestCase):
+    def test_reuse_case_with_several_candidates_has_no_per_candidate_truth(self):
+        g = GOLDEN["G-08"]  # use_existing_tool is the only acceptable decision
+        one = {"software_id": "SW003", "relationship": "same_product_expansion", "covers_stated_need": True, "reason": "r"}
+        other = {**one, "software_id": "SW099", "covers_stated_need": False}
+        trace = {"proposals": {"analyst": {"overlap_assessment": [one, other], "implied_data_classes": []},
+                               "reviewer": {"overlap_assessment": [one], "implied_data_classes": []}}}
+        verdicts = {i["item"]: i["verdict"] for i in reviewer_items(g, trace) if i["item"].startswith("overlap")}
+        self.assertEqual(verdicts, {"overlap SW003 covers_stated_need": "unknown",
+                                    "overlap SW099 covers_stated_need": "unknown"})
+        trace["proposals"]["analyst"]["overlap_assessment"] = [one]
+        self.assertEqual([i["verdict"] for i in reviewer_items(g, trace) if i["item"].startswith("overlap")], ["neutral"])
+
 class ReviewerSummaryTests(unittest.TestCase):
     def test_helped_hurt_reported_for_main_and_heldout_separately(self):
         pii = [{"data_class": "customer_pii", "quote": "q"}]

@@ -91,8 +91,11 @@ def reviewer_items(case: dict, trace: dict) -> list[dict]:
         return "helped" if r_ok and not a_ok else ("hurt" if a_ok and not r_ok else "neutral")
 
     sids = {a.get("software_id") for src in (analyst, reviewer) for a in (src.get("overlap_assessment") or [])}
+    sids = sorted(x for x in sids if x)
     truth = overlap_truth(case)
-    for sid in sorted(x for x in sids if x):
+    if truth is True and len(sids) > 1:  # golden says some candidate covers the need, not which one
+        truth = None
+    for sid in sids:
         a_val = _covers(analyst.get("overlap_assessment"), sid)
         r_val = _covers(reviewer.get("overlap_assessment"), sid)
         items.append({"case_id": case["case_id"], "item": f"overlap {sid} covers_stated_need", "analyst": a_val,

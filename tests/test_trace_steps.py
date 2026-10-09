@@ -56,6 +56,17 @@ class BuildStepsTests(unittest.TestCase):
         self.assertEqual((steps[3]["llm_calls"], steps[3]["tokens"], steps[3]["tools"]), (1, 110, []))
         self.assertEqual(json.loads(json.dumps(steps)), steps)  # JSON-safe for the stored trace
 
+    def test_staged_gate_fill_gets_its_own_step_after_the_analyst(self):
+        # the analyst skips check_budget; the completeness gate runs it before the policy engine
+        trace = run("staged", [LOOKUPS[1:], [("submit_evidence_pack", PACK)],
+                               [("submit_recommendation", recommendation(required_approvals=TIER,
+                                                                         risk_flags=["existing_tool_overlap"]))]])
+        steps = trace["steps"]
+        self.assertEqual(actors(steps), ["Orchestrator (code)", "Analyst agent (LLM)", "Completeness gate (code)",
+                                         "Policy engine (code)", "Policy and risk reviewer (LLM)", "Guardrails (code)"])
+        self.assertEqual(steps[0]["tools"], ["get_request_details"])
+        self.assertEqual(steps[2]["tools"], ["check_budget"])
+
     def test_trace_without_llm_log(self):
         # stored before llm_log existed: a two-stage run cannot split tokens; a one-stage run uses the totals
         trace = run("staged", [LOOKUPS, [("submit_evidence_pack", PACK)],

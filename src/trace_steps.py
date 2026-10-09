@@ -108,9 +108,11 @@ def build_steps(trace: dict) -> list[dict]:
     fresh = [e for e in code if not e.get("cache_hit")]
     cached = sum(1 for e in code if e.get("cache_hit"))
     single_llm = arch == "single" and path == "llm"
-    gate = [e for e in fresh if e.get("initiator") == "gate"] if single_llm else []
+    gate = [e for e in fresh if e.get("initiator") == "gate"] if path == "llm" else []
     policy_runs = [e for e in fresh if e.get("tool") == POLICY_TOOL]
     gather = [e for e in fresh if e.get("tool") != POLICY_TOOL and e not in gate]
+    gate_step = _step("Completeness gate (code)", "code", "Runs any evidence tool the agent skipped for this request.",
+                      _names(gate), ms=_ms(gate))
 
     def llm_step(stage: str) -> dict:
         actor, why = LLM_STAGE.get(stage, (f"{stage} (LLM)", "LLM stage."))
@@ -131,14 +133,15 @@ def build_steps(trace: dict) -> list[dict]:
     if path == "llm" and arch == "single":
         steps.append(llm_step("single"))
         if gate:
-            steps.append(_step("Completeness gate (code)", "code",
-                               "Runs any evidence tool the agent skipped for this request.", _names(gate), ms=_ms(gate)))
+            steps.append(gate_step)
         steps.append(policy_step)
     elif path == "llm" and arch == "staged":
-        if gather:  # older traces: the analyst fetched the request itself
+        if gather:  # run-2 traces have none: the analyst fetched the request itself before C5
             steps.append(_step("Orchestrator (code)", "code", "Fetches the request and hands it to the analyst.",
                                _names(gather), ms=_ms(gather)))
         steps.append(llm_step("analyst"))
+        if gate:
+            steps.append(gate_step)
         steps.append(policy_step)
         steps.append(llm_step("reviewer"))
     elif path == "llm" and arch == "workflow":
