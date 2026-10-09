@@ -50,8 +50,7 @@ Finish by calling submit_recommendation exactly once."""
 
 SYSTEM_ANALYST = f"""You are the Procurement Analyst, stage 1 of a two-stage review. Gather evidence about ONE purchase request and package it for an independent Policy & Risk Reviewer. You do not make the final recommendation.
 
-TOOLS: get_request_details, check_budget, search_software_catalog, get_vendor_status, lookup_policy_section. Call get_request_details first, then the other evidence tools; several in one turn is fine.
-The policy digest below is usually enough: call lookup_policy_section only when you need the exact wording to resolve a specific doubt.
+TOOLS: check_budget, search_software_catalog, get_vendor_status. The request details are already in the first message. Call all three evidence tools (one turn is fine), using the vendor name exactly as given in the request details. The reviewer receives the full policy text; the digest below is enough for you.
 
 {UNTRUSTED_BLOCK}
 {POLICY_DIGEST}
@@ -82,7 +81,8 @@ def user_single(request_id: str, reference_date: str) -> str:
 
 
 def user_analyst(request_id: str, reference_date: str) -> str:
-    return f"Gather evidence for purchase request {request_id}. Reference date: {reference_date}."
+    return (f"Gather evidence for purchase request {request_id}. Reference date: {reference_date}. "
+            "The request details (from get_request_details) follow.")
 
 
 NUDGE = "Call the remaining tools or submit_recommendation."

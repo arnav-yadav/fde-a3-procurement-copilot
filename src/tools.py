@@ -220,7 +220,17 @@ TOOLS: dict[str, Tool] = {t.name: t for t in [
          _lookup_policy_section),
 ]}
 
-EVIDENCE_TOOLS = ["get_request_details", "check_budget", "search_software_catalog", "get_vendor_status"]
+# Tool repositories (C5; Class 13: each agent gets only the tools it needs).
+COMMON_TOOLS = ["get_request_details"]                                          # every role reads the request
+LOOKUP_TOOLS = ["check_budget", "search_software_catalog", "get_vendor_status"]  # evidence lookups
+POLICY_TOOLS = ["evaluate_policy_rules", "lookup_policy_section"]               # policy engine + policy text
+EVIDENCE_TOOLS = COMMON_TOOLS + LOOKUP_TOOLS                                    # what the completeness gate checks
+AGENT_TOOLS = {
+    "single": COMMON_TOOLS + LOOKUP_TOOLS + POLICY_TOOLS,  # one agent does everything (6 tools)
+    "analyst": LOOKUP_TOOLS,                              # request details are pre-fetched by code
+    "reviewer": [],                                       # judges evidence, no tools
+    "workflow": [],                                       # code gathers everything, one LLM call
+}
 
 
 def tool_schemas(names: list[str]) -> list[dict]:

@@ -133,12 +133,14 @@ def tool_loop(ctx: RunContext, messages: list[dict], tool_names: list[str], subm
         forced = force_next or turn >= max_turns
         if turn > max_turns and not force_next:
             break
+        exposed = [submit_tool] if forced else all_tools
         result = llm.chat_forced(messages, submit_tool, ctx=ctx) if forced else llm.chat(messages, all_tools, ctx=ctx)
         msg = result.message
         messages.append(llm.message_to_dict(msg))
         calls = msg.tool_calls or []
         ctx.event("llm_turn", stage=stage, turn=turn, forced=forced,
-                  tool_calls=[c.function.name for c in calls], text=(msg.content or "")[:300])
+                  tool_calls=[c.function.name for c in calls], text=(msg.content or "")[:300],
+                  tools_exposed={"count": len(exposed), "schema_chars": len(json.dumps(exposed))})
         if not calls:
             messages.append({"role": "user", "content": nudge})
             continue

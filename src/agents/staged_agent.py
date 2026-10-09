@@ -18,9 +18,9 @@ from src.data_access import norm_key
 from src.guardrails import Assembly, assemble
 from src.prompts import NUDGE_ANALYST, SYSTEM_ANALYST, SYSTEM_REVIEWER, reviewer_message, user_analyst
 from src.schemas import AgentProposal, EvidencePack
-from src.tools import EVIDENCE_TOOLS, RunContext, completeness_gate, policy_sections
+from src.tools import AGENT_TOOLS, EVIDENCE_TOOLS, RunContext, completeness_gate, llm_content, policy_sections
 
-ANALYST_TOOLS = EVIDENCE_TOOLS + ["lookup_policy_section"]
+ANALYST_TOOLS = AGENT_TOOLS["analyst"]
 ANALYST_MAX_TURNS = 5
 REVIEWER_ATTEMPTS = 2  # first try + one repair
 
@@ -67,10 +67,14 @@ def _relevant_policy_text(policy) -> str:
 def run_staged(request_id: str, ctx: RunContext) -> tuple[Assembly, dict]:
     proposals: dict = {}
 
-    # Stage 1: analyst
+    # Stage 1: analyst. Code fetches the request first (C5), so the analyst never guesses the vendor name.
+    details = ctx.execute("get_request_details", {"request_id": request_id}, initiator="orchestrator")
+    if details.get("status") != "ok":
+        raise AgentFailed(f"request details unavailable: {details.get('error')}", proposals=proposals)
     messages = [
         {"role": "system", "content": SYSTEM_ANALYST},
-        {"role": "user", "content": user_analyst(request_id, get_reference_date().isoformat())},
+        {"role": "user", "content": user_analyst(request_id, get_reference_date().isoformat()) + "\n\n"
+                                    + llm_content(details)},
     ]
     pack, raw_packs = tool_loop(ctx, messages, ANALYST_TOOLS, SUBMIT_EVIDENCE_PACK, EvidencePack,
                                 ANALYST_MAX_TURNS, NUDGE_ANALYST, stage="analyst")

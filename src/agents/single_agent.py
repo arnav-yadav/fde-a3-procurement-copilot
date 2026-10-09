@@ -7,7 +7,7 @@ from src.config import get_reference_date
 from src.guardrails import Assembly, assemble
 from src.prompts import NUDGE, SYSTEM_SINGLE, user_single
 from src.schemas import AgentProposal
-from src.tools import TOOLS, RunContext, completeness_gate
+from src.tools import AGENT_TOOLS, RunContext, completeness_gate
 
 MAX_TURNS = 6
 
@@ -17,7 +17,7 @@ def run_single(request_id: str, ctx: RunContext) -> tuple[Assembly, dict]:
         {"role": "system", "content": SYSTEM_SINGLE},
         {"role": "user", "content": user_single(request_id, get_reference_date().isoformat())},
     ]
-    proposal, raw = tool_loop(ctx, messages, list(TOOLS), SUBMIT_RECOMMENDATION, AgentProposal,
+    proposal, raw = tool_loop(ctx, messages, AGENT_TOOLS["single"], SUBMIT_RECOMMENDATION, AgentProposal,
                               MAX_TURNS, NUDGE, stage="single")
     proposals = {"single": raw[-1] if raw else None, "submissions": raw}
     if proposal is None:
