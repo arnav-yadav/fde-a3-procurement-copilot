@@ -1,11 +1,18 @@
-[theme]
+# Light and dark themes: the reviewer switches between them (or follows the system setting) in the
+# top-right menu, Settings -> Theme. Streamlit has no in-page theme API, and a CSS override would not
+# reach the data tables (canvas-rendered) and would need raw HTML, which app.py does not use.
+[theme.light]
 primaryColor = "#2d55c8"
+
+[theme.dark]
+primaryColor = "#7b9cff"
 
 [server]
 headless = true
 
 [client]
-toolbarMode = "minimal"
+# "viewer": the menu shows viewer options (theme, print) and hides developer ones (rerun, clear cache, deploy)
+toolbarMode = "viewer"
 
 [browser]
 gatherUsageStats = false

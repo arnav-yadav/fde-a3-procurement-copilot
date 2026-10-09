@@ -70,7 +70,7 @@ Employee submits request (form, or data/requests.json)
   -> runtime/audit_log.jsonl: time, request, run ID, architecture, copilot decision, action, override, reason
 ```
 
-The reviewer UI is the Streamlit app from the starter pack (`app.py`), extended to the full workflow. Routing is simulated: actions are recorded in the audit log only. The queue can be searched and filtered by status, each request has a direct link (`http://127.0.0.1:8501/?request=REQ-1007`), the latest analysis of each request survives a restart, and the layout works at phone width. The reviewer can pick the configuration (workflow + 1 LLM, single agent, staged) or run all three side by side on one request.
+The reviewer UI is the Streamlit app from the starter pack (`app.py`), extended to the full workflow. Routing is simulated: actions are recorded in the audit log only. The queue can be searched and filtered by status, each request has a direct link (`http://127.0.0.1:8501/?request=REQ-1007`), the latest analysis of each request survives a restart, and the layout works at phone width. The reviewer can pick the configuration (workflow + 1 LLM, single agent, staged) or run all three side by side on one request. Light and dark themes: top-right menu → Settings → Theme (or follow the system setting).
 
 ## 4. Architecture
 
