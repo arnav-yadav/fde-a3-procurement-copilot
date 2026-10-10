@@ -1,0 +1,667 @@
+{
+  "case": "G-08",
+  "architecture": "staged",
+  "trial": 2,
+  "decision": {
+    "request_id": "REQ-1008",
+    "recommendation": "Route for approval: Route the request to the Department Head and Procurement for financial approval and evaluation of existing tool overlap with SW003.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E001 Sarah Lee (Marketing, IC4); annual cost $8,000; users 15; data access internal_marketing",
+        "reference": "employees.csv:E001"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $8,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Marketing available software budget $15,000; request $8,000 -> within budget ($7,000 left)",
+        "reference": "department_budgets.csv:Marketing"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW003 TaskFlow (Project Management, Company-wide, 180 seats, Approved) matches by same_category, same_vendor -> overlap; last purchase PO-2501 $36,000",
+        "reference": "software_catalog.csv:SW003"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V003 TaskFlow: procurement Approved, security Approved (review 2026-06-03, 119 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V003"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-06-03, stores data outside region no, processes personal data yes",
+        "reference": "GET /vendor-risk/TaskFlow"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Marketing department has $7,000.0 available budget remaining after accounting for the $8,000.0 requested cost ($180,000.0 annual budget minus $165,000.0 committed).",
+        "reference": null
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "Catalog candidate SW003 (TaskFlow) exists in the Project Management category and raises an overlap flag.",
+        "reference": null
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "Software candidate SW003 is licensed company-wide with 180 licensed seats and purchase history PO-2501.",
+        "reference": null
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor TaskFlow is registered and approved in the internal vendor registry with security review date 2026-06-03.",
+        "reference": null
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "External vendor-risk API confirms TaskFlow has a low risk level, approved security review on 2026-06-03, and stores data within the region.",
+        "reference": null
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Procurement"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "existing_tool_overlap"
+    ],
+    "next_step": "Route the request to the Department Head and Procurement for review of the overlap with SW003 and financial approval.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 3,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261009T132010-0a61ad1b",
+    "request_id": "REQ-1008",
+    "architecture": "staged",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_approval",
+    "latency_total_ms": 18168.3,
+    "llm_wait_ms": 12113.2,
+    "latency_active_ms": 6055.1,
+    "llm_ms": 6029.2,
+    "tool_ms": 8.9,
+    "llm_calls": 3,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 8845,
+      "completion_tokens": 1200,
+      "total_tokens": 10045
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.7,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.8,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "TaskFlow"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 4.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "TaskFlow"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 1.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1008"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-1008\", \"facts\": {\"requester_id\": \"E001\", \"annual_cost_usd\": 8000.0, \"user_count\": 15, \"data_access_level\": \"internal_marketing\", \"integrations_count\": 1, \"urgency_informational_only\": \"normal\"}, \"untrusted_text\": {\"product_name\": \"TaskFlow Pro\", \"vendor_name\": \"TaskFlow\", \"category\": \"Project Management\", \"business_justification\": \"Marketing wants a task tracker for campaign launches.\", \"requested_integrations\": [\"SSO\"], \"raw_data_access_level\": \"internal_marketing\"}, \"requester\": {\"id\": \"E001\", \"name\": \"Sarah Lee\", \"department\": \"Marketing\", \"level\": \"IC4\", \"manager_hint\": \"David Chen\", \"department_head_hint\": \"David Chen (Director, Marketing)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"department\": \"Marketing\", \"annual_cost\": 8000.0, \"available_usd\": 15000.0, \"committed_usd\": 165000.0, \"annual_budget_usd\": 180000.0, \"within_budget\": true, \"remaining_after_usd\": 7000.0, \"reference\": \"department_budgets.csv:Marketing\"}\n{\"status\": \"ok\", \"request_category\": \"Project Management\", \"keywords_used\": [], \"candidates\": [{\"software_id\": \"SW003\", \"product_name\": \"TaskFlow\", \"vendor_name\": \"TaskFlow\", \"category\": \"Project Management\", \"status\": \"Approved\", \"licensed_seats\": 180, \"scope\": \"Company-wide\", \"annual_cost_usd\": 36000.0, \"match\": [\"same_category\", \"same_vendor\"], \"raises_overlap_flag\": true, \"purchase_history\": [{\"purchase_id\": \"PO-2501\", \"purchase_date\": \"2026-06-22\", \"department\": \"Operations\", \"annual_amount_usd\": \"36000\", \"status\": \"Approved\"}], \"untrusted_text\": {\"notes\": \"Project and task management\"}}], \"overlap_flag_candidates\": [\"SW003\"], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"TaskFlow\", \"reference_date\": \"2026-09-30\", \"registry\": {\"vendor_id\": \"V003\", \"vendor_name\": \"TaskFlow\", \"procurement_status\": \"Approved\", \"security_status\": \"Approved\", \"security_review_date\": \"2026-06-03\", \"legal_terms_status\": \"Approved\"}, \"api\": {\"outcome\": \"ok\", \"status_code\": 200, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/TaskFlow\", \"error\": null, \"record\": {\"vendor_name\": \"TaskFlow\", \"risk_level\": \"low\", \"security_review_status\": \"approved\", \"last_review_date\": \"2026-06-03\", \"processes_personal_data\": true, \"stores_data_outside_region\": false}}, \"derived\": {\"registered\": true, \"registry_class\": \"approved\", \"registry_review_date\": \"2026-06-03\", \"registry_age_days\": 119, \"registry_current\": true, \"api_outcome\": \"ok\", \"api_class\": \"approved\", \"api_review_date\": \"2026-06-03\", \"api_age_days\": 119, \"expired\": false, \"conflict\": false, \"cleared\": true, \"new_vendor\": false, \"procurement_status\": \"Approved\", \"legal_terms_status\": \"Approved\", \"legal_terms_approved\": true, \"stores_data_outside_region\": false, \"processes_personal_data\": true}, \"untrusted_text\": {\"registry_notes\": \"Standard vendor\", \"api_notes\": \"Current assessment.\"}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-1008\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Department Head\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $8,000\"]}, {\"role\": \"Procurement\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $8,000\"]}], \"risk_flags\": [\"existing_tool_overlap\"], \"flag_details\": {\"existing_tool_overlap\": [\"Existing catalog product(s) in the same category/product: SW003 TaskFlow\"]}, \"missing_information\": [], \"request_fields_missing\": false, \"financial_tier\": \"$1,000.01-$10,000\", \"data_classes\": [], \"overlap_flag_candidates\": [\"SW003\"], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_approval\"}",
+    "proposals": {
+      "analyst": {
+        "need_summary": "Marketing department needs a task tracking tool (TaskFlow Pro) for managing marketing campaign launches.",
+        "implied_data_classes": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW003",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": true,
+            "reason": "SW003 is the exact same product/vendor (TaskFlow) already licensed company-wide for project management, which could potentially cover the stated need if seats are available."
+          }
+        ],
+        "vendor_observations": [
+          "The internal vendor registry and external vendor-risk service both show TaskFlow as fully approved with a recent security review date of 2026-06-03 and no conflicts."
+        ],
+        "uncertainties": [
+          "Seat availability under the existing company-wide TaskFlow deployment (SW003)."
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Marketing department has $7,000.0 available budget remaining after accounting for the $8,000.0 requested cost ($180,000.0 annual budget minus $165,000.0 committed).",
+            "reference": "department_budgets.csv:Marketing"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog candidate SW003 (TaskFlow) exists in the Project Management category and raises an overlap flag.",
+            "reference": "SW003"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Software candidate SW003 is licensed company-wide with 180 licensed seats and a purchase history of PO-2501.",
+            "reference": "SW003"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor TaskFlow is registered and approved in the internal vendor registry with security review date 2026-06-03.",
+            "reference": "V003"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "External vendor-risk API confirms TaskFlow has a low risk level, approved security review on 2026-06-03, and stores data within the region.",
+            "reference": "TaskFlow api record"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Registry and vendor-risk service are in full agreement with no conflicts or expired reviews.",
+            "reference": "derived status"
+          }
+        ],
+        "gaps": [
+          "Whether existing company-wide TaskFlow (SW003) seats are fully utilized or available for the Marketing team's campaign launch needs without purchasing a new instance/seats."
+        ],
+        "unsupported_claims": [
+          "TaskFlow Pro specific edition distinctions versus the base TaskFlow product licensed in the catalog."
+        ]
+      },
+      "reviewer": {
+        "decision_type": "route_for_approval",
+        "recommendation": "Route the request to the Department Head and Procurement for financial approval and evaluation of existing tool overlap with SW003.",
+        "next_step": "Route the request to the Department Head and Procurement for review of the overlap with SW003 and financial approval.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $8,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $8,000"
+          }
+        ],
+        "risk_flags": [
+          "existing_tool_overlap"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW003",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": true,
+            "reason": "SW003 is the exact same product/vendor (TaskFlow) already licensed company-wide for project management, which could potentially cover the stated need if seats are available."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Marketing department has $7,000.0 available budget remaining after accounting for the $8,000.0 requested cost ($180,000.0 annual budget minus $165,000.0 committed).",
+            "reference": null
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog candidate SW003 (TaskFlow) exists in the Project Management category and raises an overlap flag.",
+            "reference": null
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Software candidate SW003 is licensed company-wide with 180 licensed seats and purchase history PO-2501.",
+            "reference": null
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor TaskFlow is registered and approved in the internal vendor registry with security review date 2026-06-03.",
+            "reference": null
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "External vendor-risk API confirms TaskFlow has a low risk level, approved security review on 2026-06-03, and stores data within the region.",
+            "reference": null
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "implied_data_classes": [],
+        "analyst_disagreements": []
+      }
+    },
+    "policy": {
+      "request_id": "REQ-1008",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $8,000"
+            }
+          ],
+          "name_hint": "David Chen (Director, Marketing)"
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $8,000"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "existing_tool_overlap"
+      ],
+      "flag_reasons": {
+        "existing_tool_overlap": [
+          {
+            "rule": "R5",
+            "policy_ref": "\u00a73",
+            "detail": "Existing catalog product(s) in the same category/product: SW003 TaskFlow"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$1,000.01-$10,000",
+      "data_classes": [],
+      "data_class_sources": {},
+      "overlap_flag_candidates": [
+        "SW003"
+      ],
+      "requester": {
+        "id": "E001",
+        "name": "Sarah Lee",
+        "department": "Marketing",
+        "level": "IC4",
+        "manager_hint": "David Chen",
+        "department_head_hint": "David Chen (Director, Marketing)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Marketing",
+        "annual_cost": 8000.0,
+        "available_usd": 15000.0,
+        "committed_usd": 165000.0,
+        "annual_budget_usd": 180000.0,
+        "within_budget": true,
+        "remaining_after_usd": 7000.0,
+        "reference": "department_budgets.csv:Marketing"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "TaskFlow",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V003",
+          "vendor_name": "TaskFlow",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-06-03",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/TaskFlow",
+          "error": null,
+          "record": {
+            "vendor_name": "TaskFlow",
+            "risk_level": "low",
+            "security_review_status": "approved",
+            "last_review_date": "2026-06-03",
+            "processes_personal_data": true,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-06-03",
+          "registry_age_days": 119,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-06-03",
+          "api_age_days": 119,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": true
+        },
+        "untrusted_text": {
+          "registry_notes": "Standard vendor",
+          "api_notes": "Current assessment."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E001 Sarah Lee (Marketing, IC4); annual cost $8,000; users 15; data access internal_marketing",
+          "reference": "employees.csv:E001",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $8,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Marketing available software budget $15,000; request $8,000 -> within budget ($7,000 left)",
+          "reference": "department_budgets.csv:Marketing",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW003 TaskFlow (Project Management, Company-wide, 180 seats, Approved) matches by same_category, same_vendor -> overlap; last purchase PO-2501 $36,000",
+          "reference": "software_catalog.csv:SW003",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V003 TaskFlow: procurement Approved, security Approved (review 2026-06-03, 119 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V003",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-06-03, stores data outside region no, processes personal data yes",
+          "reference": "GET /vendor-risk/TaskFlow",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "reviewer",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 1,
+          "schema_chars": 3206
+        }
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 3,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $8,000"
+          }
+        ],
+        "name_hint": "David Chen (Director, Marketing)"
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $8,000"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "existing_tool_overlap": [
+        {
+          "rule": "R5",
+          "policy_ref": "\u00a73",
+          "detail": "Existing catalog product(s) in the same category/product: SW003 TaskFlow"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-08",
+    "request_id": "REQ-1008",
+    "architecture": "staged",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "decision",
+    "tests": "existing_tool",
+    "decision_type": "route_for_approval",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": false,
+    "safety_ok": true,
+    "case_pass": false,
+    "failures": "decision: got route_for_approval, acceptable ['use_existing_tool']",
+    "latency_total_ms": 18168.3,
+    "latency_active_ms": 6055.1,
+    "llm_wait_ms": 12113.2,
+    "llm_calls": 3,
+    "tool_calls": 5,
+    "total_tokens": 10045,
+    "run_id": "20261009T132010-0a61ad1b",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 0,
+    "implied_class_ungrounded": 0,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [
+      {
+        "case_id": "G-08",
+        "item": "overlap SW003 covers_stated_need",
+        "analyst": true,
+        "reviewer": true,
+        "truth": true,
+        "verdict": "neutral"
+      }
+    ],
+    "reviewer_helped": 0,
+    "reviewer_hurt": 0,
+    "reviewer_neutral": 1,
+    "reviewer_unknown": 0,
+    "raw_decision_ok": false,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 2
+  }
+}

@@ -1,0 +1,12 @@
+
+Public evaluation - architecture=staged
+
+PASS  PUB-01  Low-value approved vendor  (14781 ms)
+PASS  PUB-02  Existing alternatives + new vendor  (18130 ms)
+PASS  PUB-03  Sensitive source-code access  (18140 ms)
+PASS  PUB-04  Budget shortfall + new sensitive vendor  (18840 ms)
+PASS  PUB-05  Incomplete request + prompt injection  (17020 ms)
+PASS  PUB-06  Vendor-risk API unavailable  (17981 ms)
+
+Minimum checks passed: 6/6
+Results written to: evals/results/public_staged.csv

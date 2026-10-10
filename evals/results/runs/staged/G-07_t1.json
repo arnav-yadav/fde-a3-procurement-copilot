@@ -1,0 +1,833 @@
+{
+  "case": "G-07",
+  "architecture": "staged",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-1007",
+    "recommendation": "Route for specialist review: Route the request for specialist review due to expired vendor security assessment, conflicting vendor evidence, production cloud account integration, and software catalog overlap.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $24,000; users 25; data access production_telemetry",
+        "reference": "employees.csv:E002"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $24,000 -> tier $10,000.01-$25,000 -> Department Head, Finance, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Engineering available software budget $26,000; request $24,000 -> within budget ($2,000 left)",
+        "reference": "department_budgets.csv:Engineering"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW005 SignalWatch (Observability, Engineering, 80 seats, Approved) matches by same_category, same_vendor -> overlap; last purchase PO-2418 $80,000",
+        "reference": "software_catalog.csv:SW005"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V005 SignalWatch: procurement Approved, security Approved (review 2025-07-01, 456 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V005"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status expired, last review 2025-07-01, stores data outside region no, processes personal data no",
+        "reference": "GET /vendor-risk/SignalWatch"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Security review expired: registry review 2025-07-01 expired on 2026-07-01 (456 days old); vendor-risk API status expired (review 2025-07-01)",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Conflicting vendor evidence: registry says Approved (2025-07-01) vs vendor-risk API says expired (2025-07-01)",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Data classes: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')",
+        "reference": "Policy \u00a75, \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired; Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Engineering department has an available budget of $26,000.00 and an annual request cost of $24,000.00.",
+        "reference": "department_budgets.csv:Engineering"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "Catalog candidate SW005 (SignalWatch) exists in the same Observability category.",
+        "reference": "search_software_catalog"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Finance",
+      "Procurement",
+      "Security"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "existing_tool_overlap",
+      "security_review_required",
+      "vendor_review_expired",
+      "conflicting_vendor_evidence"
+    ],
+    "next_step": "Route the request for Department Head, Finance, Procurement, and Security specialist review.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 3,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261009T125550-efbf6266",
+    "request_id": "REQ-1007",
+    "architecture": "staged",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 17883.1,
+    "llm_wait_ms": 10385.4,
+    "latency_active_ms": 7497.7,
+    "llm_ms": 7472.5,
+    "tool_ms": 8.2,
+    "llm_calls": 3,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 9340,
+      "completion_tokens": 1445,
+      "total_tokens": 10785
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.8,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "SignalWatch"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 4.0,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "SignalWatch"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 1.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1007"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-1007\", \"facts\": {\"requester_id\": \"E002\", \"annual_cost_usd\": 24000.0, \"user_count\": 25, \"data_access_level\": \"production_telemetry\", \"integrations_count\": 1, \"urgency_informational_only\": \"high\"}, \"untrusted_text\": {\"product_name\": \"SignalWatch Advanced\", \"vendor_name\": \"SignalWatch\", \"category\": \"Observability\", \"business_justification\": \"Advanced incident analytics for production services.\", \"requested_integrations\": [\"Production cloud account\"], \"raw_data_access_level\": \"production_telemetry\"}, \"requester\": {\"id\": \"E002\", \"name\": \"Arjun Mehta\", \"department\": \"Engineering\", \"level\": \"IC5\", \"manager_hint\": \"Maya Rao\", \"department_head_hint\": \"Maya Rao (Director, Engineering)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"department\": \"Engineering\", \"annual_cost\": 24000.0, \"available_usd\": 26000.0, \"committed_usd\": 274000.0, \"annual_budget_usd\": 300000.0, \"within_budget\": true, \"remaining_after_usd\": 2000.0, \"reference\": \"department_budgets.csv:Engineering\"}\n{\"status\": \"ok\", \"request_category\": \"Observability\", \"keywords_used\": [], \"candidates\": [{\"software_id\": \"SW005\", \"product_name\": \"SignalWatch\", \"vendor_name\": \"SignalWatch\", \"category\": \"Observability\", \"status\": \"Approved\", \"licensed_seats\": 80, \"scope\": \"Engineering\", \"annual_cost_usd\": 80000.0, \"match\": [\"same_category\", \"same_vendor\"], \"raises_overlap_flag\": true, \"purchase_history\": [{\"purchase_id\": \"PO-2418\", \"purchase_date\": \"2026-03-01\", \"department\": \"Engineering\", \"annual_amount_usd\": \"80000\", \"status\": \"Approved\"}], \"untrusted_text\": {\"notes\": \"Production monitoring\"}}], \"overlap_flag_candidates\": [\"SW005\"], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"SignalWatch\", \"reference_date\": \"2026-09-30\", \"registry\": {\"vendor_id\": \"V005\", \"vendor_name\": \"SignalWatch\", \"procurement_status\": \"Approved\", \"security_status\": \"Approved\", \"security_review_date\": \"2025-07-01\", \"legal_terms_status\": \"Approved\"}, \"api\": {\"outcome\": \"ok\", \"status_code\": 200, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/SignalWatch\", \"error\": null, \"record\": {\"vendor_name\": \"SignalWatch\", \"risk_level\": \"medium\", \"security_review_status\": \"expired\", \"last_review_date\": \"2025-07-01\", \"processes_personal_data\": false, \"stores_data_outside_region\": false}}, \"derived\": {\"registered\": true, \"registry_class\": \"approved\", \"registry_review_date\": \"2025-07-01\", \"registry_age_days\": 456, \"registry_current\": false, \"api_outcome\": \"ok\", \"api_class\": \"expired\", \"api_review_date\": \"2025-07-01\", \"api_age_days\": 456, \"expired\": true, \"conflict\": true, \"cleared\": false, \"new_vendor\": false, \"procurement_status\": \"Approved\", \"legal_terms_status\": \"Approved\", \"legal_terms_approved\": true, \"stores_data_outside_region\": false, \"processes_personal_data\": false}, \"untrusted_text\": {\"registry_notes\": \"Registry has not yet been refreshed with latest review state\", \"api_notes\": \"Reassessment required before expanded production access.\"}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-1007\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Department Head\", \"reasons\": [\"\\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000\"]}, {\"role\": \"Finance\", \"reasons\": [\"\\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000\"]}, {\"role\": \"Procurement\", \"reasons\": [\"\\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000\"]}, {\"role\": \"Security\", \"reasons\": [\"\\u00a75 Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired\", \"\\u00a75 Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')\"]}], \"risk_flags\": [\"existing_tool_overlap\", \"security_review_required\", \"vendor_review_expired\", \"conflicting_vendor_evidence\"], \"flag_details\": {\"existing_tool_overlap\": [\"Existing catalog product(s) in the same category/product: SW005 SignalWatch\"], \"vendor_review_expired\": [\"registry review 2025-07-01 expired on 2026-07-01 (456 days old); vendor-risk API status expired (review 2025-07-01)\"], \"conflicting_vendor_evidence\": [\"registry says Approved (2025-07-01) vs vendor-risk API says expired (2025-07-01)\"]}, \"missing_information\": [], \"request_fields_missing\": false, \"financial_tier\": \"$10,000.01-$25,000\", \"data_classes\": [\"production_access\"], \"overlap_flag_candidates\": [\"SW005\"], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_specialist_review\"}",
+    "proposals": {
+      "analyst": {
+        "need_summary": "Acquire SignalWatch Advanced for 25 users in Engineering to provide advanced incident analytics for production services with production cloud account integration.",
+        "implied_data_classes": [
+          {
+            "data_class": "production_access",
+            "quote": "Production cloud account"
+          }
+        ],
+        "overlap_assessment": [
+          {
+            "software_id": "SW005",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "Catalog product SW005 is existing SignalWatch (baseline production monitoring), whereas the request is for SignalWatch Advanced providing advanced incident analytics."
+          }
+        ],
+        "vendor_observations": [
+          "Internal registry lists SignalWatch as approved with security review from 2025-07-01, but the external vendor-risk API marks the security review as expired and notes reassessment is required before expanded production access, resulting in a conflict."
+        ],
+        "uncertainties": [
+          "Vendor security review age is 456 days (expired under 365-day policy threshold) and internal registry conflicts with the vendor-risk service assessment."
+        ],
+        "injection_observed": false,
+        "injection_excerpt": "",
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Engineering department has an available budget of $26,000.00, and the request cost of $24,000.00 is within budget (remaining after: $2,000.00).",
+            "reference": "department_budgets.csv:Engineering"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog candidate SW005 (SignalWatch) exists in the same category (Observability) with same vendor, licensed seats 80, annual cost $80,000.00, and raises an overlap flag.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Internal registry shows vendor SignalWatch as Approved with security review date 2025-07-01 and legal terms approved.",
+            "reference": "vendor_registry"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "External vendor-risk service shows vendor SignalWatch security review status is expired (last review date 2025-07-01, age 456 days, exceeding 365 days threshold) and notes reassessment required before expanded production access.",
+            "reference": "vendor_risk_api"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Registry vs vendor-risk service disagreement (conflict): registry lists security_status as Approved (registry_current: false) while API lists security_review_status as expired (expired: true).",
+            "reference": "vendor_status_derived"
+          }
+        ],
+        "gaps": [
+          "Security review status is expired according to the vendor-risk service (456 days old) and conflicts with the internal registry.",
+          "Clarity needed on whether existing catalog license SW005 covers the advanced incident analytics need or if an additional distinct product tier/seats are required."
+        ],
+        "unsupported_claims": []
+      },
+      "reviewer": {
+        "decision_type": "route_for_specialist_review",
+        "recommendation": "Route the request for specialist review due to expired vendor security assessment, conflicting vendor evidence, production cloud account integration, and software catalog overlap.",
+        "next_step": "Route the request for Department Head, Finance, Procurement, and Security specialist review.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
+          },
+          {
+            "role": "Finance",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $10,000.01-$25,000 for annual cost $24,000"
+          },
+          {
+            "role": "Security",
+            "reason": "\u00a75 Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired"
+          },
+          {
+            "role": "Security",
+            "reason": "\u00a75 Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')"
+          }
+        ],
+        "risk_flags": [
+          "existing_tool_overlap",
+          "security_review_required",
+          "vendor_review_expired",
+          "conflicting_vendor_evidence"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW005",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "Catalog product SW005 is baseline production monitoring, whereas the request is for SignalWatch Advanced providing advanced incident analytics."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Engineering department has an available budget of $26,000.00 and an annual request cost of $24,000.00.",
+            "reference": "department_budgets.csv:Engineering"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog candidate SW005 (SignalWatch) exists in the same Observability category.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Internal registry shows vendor SignalWatch as Approved with security review date 2025-07-01.",
+            "reference": "vendor_registry"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "External vendor-risk service shows vendor SignalWatch security review status as expired (last review date 2025-07-01, age 456 days).",
+            "reference": "vendor_risk_api"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Registry vs vendor-risk service disagreement: registry lists security_status as Approved while API lists security_review_status as expired.",
+            "reference": "vendor_status_derived"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "implied_data_classes": [
+          {
+            "data_class": "production_access",
+            "quote": "Production cloud account"
+          }
+        ],
+        "analyst_disagreements": []
+      }
+    },
+    "policy": {
+      "request_id": "REQ-1007",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $24,000"
+            }
+          ],
+          "name_hint": "Maya Rao (Director, Engineering)"
+        },
+        {
+          "role": "Finance",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $24,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $10,000.01-$25,000 for annual cost $24,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R6",
+              "policy_ref": "\u00a75",
+              "detail": "Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired"
+            },
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a75",
+              "detail": "Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "existing_tool_overlap",
+        "security_review_required",
+        "vendor_review_expired",
+        "conflicting_vendor_evidence"
+      ],
+      "flag_reasons": {
+        "existing_tool_overlap": [
+          {
+            "rule": "R5",
+            "policy_ref": "\u00a73",
+            "detail": "Existing catalog product(s) in the same category/product: SW005 SignalWatch"
+          }
+        ],
+        "vendor_review_expired": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a75",
+            "detail": "registry review 2025-07-01 expired on 2026-07-01 (456 days old); vendor-risk API status expired (review 2025-07-01)"
+          }
+        ],
+        "conflicting_vendor_evidence": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a75",
+            "detail": "registry says Approved (2025-07-01) vs vendor-risk API says expired (2025-07-01)"
+          }
+        ],
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired; Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$10,000.01-$25,000",
+      "data_classes": [
+        "production_access"
+      ],
+      "data_class_sources": {
+        "production_access": [
+          "data_access_level 'production_telemetry'",
+          "integration 'Production cloud account'"
+        ]
+      },
+      "overlap_flag_candidates": [
+        "SW005"
+      ],
+      "requester": {
+        "id": "E002",
+        "name": "Arjun Mehta",
+        "department": "Engineering",
+        "level": "IC5",
+        "manager_hint": "Maya Rao",
+        "department_head_hint": "Maya Rao (Director, Engineering)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Engineering",
+        "annual_cost": 24000.0,
+        "available_usd": 26000.0,
+        "committed_usd": 274000.0,
+        "annual_budget_usd": 300000.0,
+        "within_budget": true,
+        "remaining_after_usd": 2000.0,
+        "reference": "department_budgets.csv:Engineering"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "SignalWatch",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V005",
+          "vendor_name": "SignalWatch",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2025-07-01",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/SignalWatch",
+          "error": null,
+          "record": {
+            "vendor_name": "SignalWatch",
+            "risk_level": "medium",
+            "security_review_status": "expired",
+            "last_review_date": "2025-07-01",
+            "processes_personal_data": false,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2025-07-01",
+          "registry_age_days": 456,
+          "registry_current": false,
+          "api_outcome": "ok",
+          "api_class": "expired",
+          "api_review_date": "2025-07-01",
+          "api_age_days": 456,
+          "expired": true,
+          "conflict": true,
+          "cleared": false,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": false
+        },
+        "untrusted_text": {
+          "registry_notes": "Registry has not yet been refreshed with latest review state",
+          "api_notes": "Reassessment required before expanded production access."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $24,000; users 25; data access production_telemetry",
+          "reference": "employees.csv:E002",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $24,000 -> tier $10,000.01-$25,000 -> Department Head, Finance, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Engineering available software budget $26,000; request $24,000 -> within budget ($2,000 left)",
+          "reference": "department_budgets.csv:Engineering",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW005 SignalWatch (Observability, Engineering, 80 seats, Approved) matches by same_category, same_vendor -> overlap; last purchase PO-2418 $80,000",
+          "reference": "software_catalog.csv:SW005",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V005 SignalWatch: procurement Approved, security Approved (review 2025-07-01, 456 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V005",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status expired, last review 2025-07-01, stores data outside region no, processes personal data no",
+          "reference": "GET /vendor-risk/SignalWatch",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Security review expired: registry review 2025-07-01 expired on 2026-07-01 (456 days old); vendor-risk API status expired (review 2025-07-01)",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Conflicting vendor evidence: registry says Approved (2025-07-01) vs vendor-risk API says expired (2025-07-01)",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Data classes: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')",
+          "reference": "Policy \u00a75, \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired; Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "reviewer",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 1,
+          "schema_chars": 3206
+        }
+      },
+      {
+        "event": "implied_class_accepted",
+        "data_class": "production_access",
+        "quote": "Production cloud account"
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 3,
+      "implied_class_accepted": 1,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $24,000"
+          }
+        ],
+        "name_hint": "Maya Rao (Director, Engineering)"
+      },
+      {
+        "role": "Finance",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $24,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $10,000.01-$25,000 for annual cost $24,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired"
+          },
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "existing_tool_overlap": [
+        {
+          "rule": "R5",
+          "policy_ref": "\u00a73",
+          "detail": "Existing catalog product(s) in the same category/product: SW005 SignalWatch"
+        }
+      ],
+      "vendor_review_expired": [
+        {
+          "rule": "R6",
+          "policy_ref": "\u00a75",
+          "detail": "registry review 2025-07-01 expired on 2026-07-01 (456 days old); vendor-risk API status expired (review 2025-07-01)"
+        }
+      ],
+      "conflicting_vendor_evidence": [
+        {
+          "rule": "R6",
+          "policy_ref": "\u00a75",
+          "detail": "registry says Approved (2025-07-01) vs vendor-risk API says expired (2025-07-01)"
+        }
+      ],
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Vendor security assessment missing, expired, not completed or conflicting: review expired; registry and vendor-risk API conflict; vendor-risk API status expired; Sensitive data/access: production_access (data_access_level 'production_telemetry', integration 'Production cloud account')"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-07",
+    "request_id": "REQ-1007",
+    "architecture": "staged",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "conflicting_vendor,expired_vendor,security_sensitive",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 17883.1,
+    "latency_active_ms": 7497.7,
+    "llm_wait_ms": 10385.4,
+    "llm_calls": 3,
+    "tool_calls": 5,
+    "total_tokens": 10785,
+    "run_id": "20261009T125550-efbf6266",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 1,
+    "implied_class_ungrounded": 0,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [
+      {
+        "case_id": "G-07",
+        "item": "overlap SW005 covers_stated_need",
+        "analyst": false,
+        "reviewer": false,
+        "truth": false,
+        "verdict": "neutral"
+      }
+    ],
+    "reviewer_helped": 0,
+    "reviewer_hurt": 0,
+    "reviewer_neutral": 1,
+    "reviewer_unknown": 0,
+    "raw_decision_ok": true,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 1
+  }
+}

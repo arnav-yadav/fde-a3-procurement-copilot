@@ -1,0 +1,12 @@
+
+Public evaluation - architecture=single
+
+PASS  PUB-01  Low-value approved vendor  (14484 ms)
+PASS  PUB-02  Existing alternatives + new vendor  (18679 ms)
+PASS  PUB-03  Sensitive source-code access  (18303 ms)
+PASS  PUB-04  Budget shortfall + new sensitive vendor  (17848 ms)
+PASS  PUB-05  Incomplete request + prompt injection  (23397 ms)
+PASS  PUB-06  Vendor-risk API unavailable  (24255 ms)
+
+Minimum checks passed: 6/6
+Results written to: evals/results/public_single.csv

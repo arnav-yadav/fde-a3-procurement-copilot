@@ -1,0 +1,12 @@
+
+Public evaluation - architecture=workflow
+
+PASS  PUB-01  Low-value approved vendor  (3053 ms)
+PASS  PUB-02  Existing alternatives + new vendor  (6132 ms)
+PASS  PUB-03  Sensitive source-code access  (5913 ms)
+PASS  PUB-04  Budget shortfall + new sensitive vendor  (6039 ms)
+PASS  PUB-05  Incomplete request + prompt injection  (5929 ms)
+PASS  PUB-06  Vendor-risk API unavailable  (5738 ms)
+
+Minimum checks passed: 6/6
+Results written to: evals/results/public_workflow.csv

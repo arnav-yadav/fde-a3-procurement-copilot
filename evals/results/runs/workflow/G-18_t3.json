@@ -1,0 +1,658 @@
+{
+  "case": "G-18",
+  "architecture": "workflow",
+  "trial": 3,
+  "decision": {
+    "request_id": "REQ-X108",
+    "recommendation": "Route for specialist review: Route the request for specialist review by Security and Privacy, alongside Department Head and Procurement approvals, because the tool integrates with Workday and processes employee PII.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $4,500; users 60; data access internal_documents",
+        "reference": "employees.csv:E002"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $4,500 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Engineering available software budget $26,000; request $4,500 -> within budget ($21,500 left)",
+        "reference": "department_budgets.csv:Engineering"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V902 TeamPulse: procurement Approved, security Approved (review 2026-04-01, 182 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V902"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-04-01, stores data outside region no, processes personal data yes",
+        "reference": "GET /vendor-risk/TeamPulse"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Data classes: employee_pii (integration 'HRIS (Workday)')",
+        "reference": "Policy \u00a75, \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Sensitive data/access: employee_pii (integration 'HRIS (Workday)')",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Privacy review required: Processes employee_pii",
+        "reference": "Policy \u00a76"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Annual cost of TeamPulse Surveys is $4,500.00, which is within the Engineering department available budget of $26,000.00.",
+        "reference": "check_budget"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "No software catalog overlap candidates were found for category Employee Engagement.",
+        "reference": "search_software_catalog"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor TeamPulse is registered, approved, and has a current security review date of 2026-04-01.",
+        "reference": "get_vendor_status"
+      },
+      {
+        "source": "copilot_analysis",
+        "finding": "Request involves an HRIS (Workday) integration, triggering employee PII handling.",
+        "reference": "\u00a75, \u00a76"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Procurement",
+      "Security",
+      "Privacy"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "security_review_required",
+      "privacy_review_required"
+    ],
+    "next_step": "Route the request to Department Head, Procurement, Security, and Privacy for specialist and financial review.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 1,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261010T075539-616bcb9e",
+    "request_id": "REQ-X108",
+    "architecture": "workflow",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 6323.0,
+    "llm_wait_ms": 3879.6,
+    "latency_active_ms": 2443.4,
+    "llm_ms": 2429.0,
+    "tool_ms": 6.7,
+    "llm_calls": 1,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 3327,
+      "completion_tokens": 543,
+      "total_tokens": 3870
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X108"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.6,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X108"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.6,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X108"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.6,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "TeamPulse"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 4.0,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X108"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X108"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X108"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "TeamPulse"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-X108"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.9,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X108"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-X108\", \"facts\": {\"requester_id\": \"E002\", \"annual_cost_usd\": 4500.0, \"user_count\": 60, \"data_access_level\": \"internal_documents\", \"integrations_count\": 1, \"urgency_informational_only\": \"normal\"}, \"untrusted_text\": {\"product_name\": \"TeamPulse Surveys\", \"vendor_name\": \"TeamPulse\", \"category\": \"Employee Engagement\", \"business_justification\": \"Quarterly engagement surveys for the engineering org, synced with our HR system.\", \"requested_integrations\": [\"HRIS (Workday)\"], \"raw_data_access_level\": \"internal_documents\"}, \"requester\": {\"id\": \"E002\", \"name\": \"Arjun Mehta\", \"department\": \"Engineering\", \"level\": \"IC5\", \"manager_hint\": \"Maya Rao\", \"department_head_hint\": \"Maya Rao (Director, Engineering)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"department\": \"Engineering\", \"annual_cost\": 4500.0, \"available_usd\": 26000.0, \"committed_usd\": 274000.0, \"annual_budget_usd\": 300000.0, \"within_budget\": true, \"remaining_after_usd\": 21500.0, \"reference\": \"department_budgets.csv:Engineering\"}\n{\"status\": \"ok\", \"request_category\": \"Employee Engagement\", \"keywords_used\": [], \"candidates\": [], \"overlap_flag_candidates\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"TeamPulse\", \"reference_date\": \"2026-09-30\", \"registry\": {\"vendor_id\": \"V902\", \"vendor_name\": \"TeamPulse\", \"procurement_status\": \"Approved\", \"security_status\": \"Approved\", \"security_review_date\": \"2026-04-01\", \"legal_terms_status\": \"Approved\"}, \"api\": {\"outcome\": \"ok\", \"status_code\": 200, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/TeamPulse\", \"error\": null, \"record\": {\"vendor_name\": \"TeamPulse\", \"risk_level\": \"low\", \"security_review_status\": \"approved\", \"last_review_date\": \"2026-04-01\", \"processes_personal_data\": true, \"stores_data_outside_region\": false}}, \"derived\": {\"registered\": true, \"registry_class\": \"approved\", \"registry_review_date\": \"2026-04-01\", \"registry_age_days\": 182, \"registry_current\": true, \"api_outcome\": \"ok\", \"api_class\": \"approved\", \"api_review_date\": \"2026-04-01\", \"api_age_days\": 182, \"expired\": false, \"conflict\": false, \"cleared\": true, \"new_vendor\": false, \"procurement_status\": \"Approved\", \"legal_terms_status\": \"Approved\", \"legal_terms_approved\": true, \"stores_data_outside_region\": false, \"processes_personal_data\": true}, \"untrusted_text\": {\"registry_notes\": \"Standard vendor\", \"api_notes\": \"Current assessment.\"}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-X108\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Department Head\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $4,500\"]}, {\"role\": \"Procurement\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $4,500\"]}, {\"role\": \"Security\", \"reasons\": [\"\\u00a75 Sensitive data/access: employee_pii (integration 'HRIS (Workday)')\"]}, {\"role\": \"Privacy\", \"reasons\": [\"\\u00a76 Processes employee_pii\"]}], \"risk_flags\": [\"security_review_required\", \"privacy_review_required\"], \"flag_details\": {}, \"missing_information\": [], \"request_fields_missing\": false, \"financial_tier\": \"$1,000.01-$10,000\", \"data_classes\": [\"employee_pii\"], \"overlap_flag_candidates\": [], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_specialist_review\"}",
+    "proposals": {
+      "workflow": {
+        "decision_type": "route_for_specialist_review",
+        "recommendation": "Route the request for specialist review by Security and Privacy, alongside Department Head and Procurement approvals, because the tool integrates with Workday and processes employee PII.",
+        "next_step": "Route the request to Department Head, Procurement, Security, and Privacy for specialist and financial review.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $4,500"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $4,500"
+          },
+          {
+            "role": "Security",
+            "reason": "\u00a75 Sensitive data/access: employee_pii (integration 'HRIS (Workday)')"
+          },
+          {
+            "role": "Privacy",
+            "reason": "\u00a76 Processes employee_pii"
+          }
+        ],
+        "risk_flags": [
+          "security_review_required",
+          "privacy_review_required"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Annual cost of TeamPulse Surveys is $4,500.00, which is within the Engineering department available budget of $26,000.00.",
+            "reference": "check_budget"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "No software catalog overlap candidates were found for category Employee Engagement.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor TeamPulse is registered, approved, and has a current security review date of 2026-04-01.",
+            "reference": "get_vendor_status"
+          },
+          {
+            "source": "copilot_analysis",
+            "finding": "Request involves an HRIS (Workday) integration, triggering employee PII handling.",
+            "reference": "\u00a75, \u00a76"
+          },
+          {
+            "source": "copilot_analysis",
+            "finding": "Required approvals include Department Head, Procurement, Security, and Privacy due to cost tier and employee PII access.",
+            "reference": "\u00a74, \u00a75, \u00a76"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "implied_data_classes": [
+          {
+            "data_class": "employee_pii",
+            "quote": "synced with our HR system. Requested integrations: HRIS (Workday)"
+          }
+        ],
+        "analyst_disagreements": []
+      }
+    },
+    "policy": {
+      "request_id": "REQ-X108",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $4,500"
+            }
+          ],
+          "name_hint": "Maya Rao (Director, Engineering)"
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $4,500"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a75",
+              "detail": "Sensitive data/access: employee_pii (integration 'HRIS (Workday)')"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Privacy",
+          "reasons": [
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a76",
+              "detail": "Processes employee_pii"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "security_review_required",
+        "privacy_review_required"
+      ],
+      "flag_reasons": {
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: employee_pii (integration 'HRIS (Workday)')"
+          }
+        ],
+        "privacy_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a76",
+            "detail": "Processes employee_pii"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$1,000.01-$10,000",
+      "data_classes": [
+        "employee_pii"
+      ],
+      "data_class_sources": {
+        "employee_pii": [
+          "integration 'HRIS (Workday)'"
+        ]
+      },
+      "overlap_flag_candidates": [],
+      "requester": {
+        "id": "E002",
+        "name": "Arjun Mehta",
+        "department": "Engineering",
+        "level": "IC5",
+        "manager_hint": "Maya Rao",
+        "department_head_hint": "Maya Rao (Director, Engineering)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Engineering",
+        "annual_cost": 4500.0,
+        "available_usd": 26000.0,
+        "committed_usd": 274000.0,
+        "annual_budget_usd": 300000.0,
+        "within_budget": true,
+        "remaining_after_usd": 21500.0,
+        "reference": "department_budgets.csv:Engineering"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "TeamPulse",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V902",
+          "vendor_name": "TeamPulse",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-04-01",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/TeamPulse",
+          "error": null,
+          "record": {
+            "vendor_name": "TeamPulse",
+            "risk_level": "low",
+            "security_review_status": "approved",
+            "last_review_date": "2026-04-01",
+            "processes_personal_data": true,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-04-01",
+          "registry_age_days": 182,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-04-01",
+          "api_age_days": 182,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": true
+        },
+        "untrusted_text": {
+          "registry_notes": "Standard vendor",
+          "api_notes": "Current assessment."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $4,500; users 60; data access internal_documents",
+          "reference": "employees.csv:E002",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $4,500 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Engineering available software budget $26,000; request $4,500 -> within budget ($21,500 left)",
+          "reference": "department_budgets.csv:Engineering",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V902 TeamPulse: procurement Approved, security Approved (review 2026-04-01, 182 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V902",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-04-01, stores data outside region no, processes personal data yes",
+          "reference": "GET /vendor-risk/TeamPulse",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Data classes: employee_pii (integration 'HRIS (Workday)')",
+          "reference": "Policy \u00a75, \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Sensitive data/access: employee_pii (integration 'HRIS (Workday)')",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Privacy review required: Processes employee_pii",
+          "reference": "Policy \u00a76",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "workflow",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 1,
+          "schema_chars": 2702
+        }
+      },
+      {
+        "event": "implied_class_ungrounded",
+        "data_class": "employee_pii",
+        "quote": "synced with our HR system. Requested integrations: HRIS (Workday)",
+        "why": "quote not found verbatim in the request's own text"
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 1,
+      "implied_class_ungrounded": 1,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $4,500"
+          }
+        ],
+        "name_hint": "Maya Rao (Director, Engineering)"
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $4,500"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: employee_pii (integration 'HRIS (Workday)')"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Privacy",
+        "reasons": [
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a76",
+            "detail": "Processes employee_pii"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Sensitive data/access: employee_pii (integration 'HRIS (Workday)')"
+        }
+      ],
+      "privacy_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a76",
+          "detail": "Processes employee_pii"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-18",
+    "request_id": "REQ-X108",
+    "architecture": "workflow",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "security_sensitive",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 6323.0,
+    "latency_active_ms": 2443.4,
+    "llm_wait_ms": 3879.6,
+    "llm_calls": 1,
+    "tool_calls": 5,
+    "total_tokens": 3870,
+    "run_id": "20261010T075539-616bcb9e",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 0,
+    "implied_class_ungrounded": 1,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [],
+    "reviewer_helped": null,
+    "reviewer_hurt": null,
+    "reviewer_neutral": null,
+    "reviewer_unknown": null,
+    "raw_decision_ok": true,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 3
+  }
+}

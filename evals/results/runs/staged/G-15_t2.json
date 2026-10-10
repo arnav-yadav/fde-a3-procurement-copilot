@@ -1,0 +1,874 @@
+{
+  "case": "G-15",
+  "architecture": "staged",
+  "trial": 2,
+  "decision": {
+    "request_id": "REQ-X105",
+    "recommendation": "Route for specialist review: Route the request for specialist review due to insufficient budget, missing vendor registration, and data access requirements.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E005 Mia Thompson (Customer Success, IC4); annual cost $9,000; users 10; data access customer_pii",
+        "reference": "employees.csv:E005"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $9,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Customer Success available software budget $7,000; request $9,000 -> exceeds budget by $2,000",
+        "reference": "department_budgets.csv:Customer Success"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor 'ChurnRadar Inc' not found in vendor registry: treated as new vendor with unknown terms",
+        "reference": "vendors.csv"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API has no record for this vendor (HTTP 404): no external assessment exists",
+        "reference": "GET /vendor-risk/ChurnRadar Inc"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Data classes: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')",
+        "reference": "Policy \u00a75, \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Finance review required: Budget exception: request $9,000 exceeds available $7,000",
+        "reference": "Policy \u00a72"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: vendor not registered; Sensitive data/access: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Privacy review required: Processes customer_pii",
+        "reference": "Policy \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Legal review required: Legal terms not approved/standard (not registered)",
+        "reference": "Policy \u00a77"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Customer Success department available budget is $7,000.00, while requested annual cost is $9,000.00",
+        "reference": "department_budgets.csv:Customer Success"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "No existing licensed catalog products found in category Customer Analytics or matching request keywords",
+        "reference": "software_catalog.csv"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Finance",
+      "Procurement",
+      "Security",
+      "Privacy",
+      "Legal"
+    ],
+    "missing_information": [
+      "vendor-risk record (not found)"
+    ],
+    "risk_flags": [
+      "budget_insufficient",
+      "security_review_required",
+      "privacy_review_required",
+      "legal_review_required",
+      "vendor_not_registered"
+    ],
+    "next_step": "Route the request to Department Head, Finance, Procurement, Security, Privacy, and Legal for review.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 3,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261009T132540-d44b82a5",
+    "request_id": "REQ-X105",
+    "architecture": "staged",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 17792.7,
+    "llm_wait_ms": 11244.6,
+    "latency_active_ms": 6548.1,
+    "llm_ms": 6524.8,
+    "tool_ms": 9.2,
+    "llm_calls": 3,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 8697,
+      "completion_tokens": 1212,
+      "total_tokens": 9909
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.7,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 2.0,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.9,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "ChurnRadar Inc"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 4.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "ChurnRadar Inc"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 1.2,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X105"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-X105\", \"facts\": {\"requester_id\": \"E005\", \"annual_cost_usd\": 9000.0, \"user_count\": 10, \"data_access_level\": \"customer_pii\", \"integrations_count\": 1, \"urgency_informational_only\": \"high\"}, \"untrusted_text\": {\"product_name\": \"ChurnRadar\", \"vendor_name\": \"ChurnRadar Inc\", \"category\": \"Customer Analytics\", \"business_justification\": \"Predict which customer accounts are likely to churn using support-ticket history.\", \"requested_integrations\": [\"HelpDeskly\"], \"raw_data_access_level\": \"customer_pii\"}, \"requester\": {\"id\": \"E005\", \"name\": \"Mia Thompson\", \"department\": \"Customer Success\", \"level\": \"IC4\", \"manager_hint\": \"Robert King\", \"department_head_hint\": \"Robert King (Director, Go To Market)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"insufficient\", \"department\": \"Customer Success\", \"annual_cost\": 9000.0, \"available_usd\": 7000.0, \"committed_usd\": 133000.0, \"annual_budget_usd\": 140000.0, \"within_budget\": false, \"remaining_after_usd\": -2000.0, \"reference\": \"department_budgets.csv:Customer Success\"}\n{\"status\": \"ok\", \"request_category\": \"Customer Analytics\", \"keywords_used\": [], \"candidates\": [], \"overlap_flag_candidates\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"ChurnRadar Inc\", \"reference_date\": \"2026-09-30\", \"registry\": null, \"api\": {\"outcome\": \"not_found\", \"status_code\": 404, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/ChurnRadar%20Inc\", \"error\": \"No vendor-risk record for 'ChurnRadar Inc'\", \"record\": null}, \"derived\": {\"registered\": false, \"registry_class\": null, \"registry_review_date\": null, \"registry_age_days\": null, \"registry_current\": false, \"api_outcome\": \"not_found\", \"api_class\": null, \"api_review_date\": null, \"api_age_days\": null, \"expired\": false, \"conflict\": false, \"cleared\": false, \"new_vendor\": true, \"procurement_status\": null, \"legal_terms_status\": null, \"legal_terms_approved\": false, \"stores_data_outside_region\": null, \"processes_personal_data\": null}, \"untrusted_text\": {\"registry_notes\": null, \"api_notes\": null}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-X105\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Department Head\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $9,000\"]}, {\"role\": \"Finance\", \"reasons\": [\"\\u00a72 Budget exception: request $9,000 exceeds available $7,000\"]}, {\"role\": \"Procurement\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $9,000\"]}, {\"role\": \"Security\", \"reasons\": [\"\\u00a75 Vendor security assessment missing, expired, not completed or conflicting: vendor not registered\", \"\\u00a75 Sensitive data/access: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')\"]}, {\"role\": \"Privacy\", \"reasons\": [\"\\u00a76 Processes customer_pii\"]}, {\"role\": \"Legal\", \"reasons\": [\"\\u00a77 Legal terms not approved/standard (not registered)\"]}], \"risk_flags\": [\"budget_insufficient\", \"security_review_required\", \"privacy_review_required\", \"legal_review_required\", \"vendor_not_registered\"], \"flag_details\": {\"budget_insufficient\": [\"Request $9,000 > available $7,000\"], \"vendor_not_registered\": [\"Vendor 'ChurnRadar Inc' is not in the vendor registry\"]}, \"missing_information\": [\"vendor-risk record (not found)\"], \"request_fields_missing\": false, \"financial_tier\": \"$1,000.01-$10,000\", \"data_classes\": [\"customer_pii\"], \"overlap_flag_candidates\": [], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_specialist_review\"}",
+    "proposals": {
+      "analyst": {
+        "need_summary": "Purchase a subscription to ChurnRadar to predict customer churn using support-ticket history with HelpDeskly integration.",
+        "implied_data_classes": [
+          {
+            "data_class": "customer_pii",
+            "quote": "Predict which customer accounts are likely to churn using support-ticket history."
+          }
+        ],
+        "overlap_assessment": [],
+        "vendor_observations": [
+          "ChurnRadar Inc is a new vendor, absent from both the internal vendor registry and the external vendor-risk service (404 Not Found), with no security review, registry class, or legal terms approval."
+        ],
+        "uncertainties": [
+          "Vendor risk profile, data security controls, and compliance status are completely unknown because ChurnRadar Inc is not registered or found in vendor risk databases.",
+          "Whether support-ticket history integration touches employee or customer PII beyond what is declared."
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Customer Success department available budget is $7,000.00, while requested annual cost is $9,000.00 (within_budget: false)",
+            "reference": "department_budgets.csv:Customer Success"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "No existing licensed catalog products found in category Customer Analytics or matching request keywords",
+            "reference": "software_catalog.csv"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor ChurnRadar Inc is not present in the internal vendor registry and not found in the external vendor-risk service (new_vendor: true, registered: false)",
+            "reference": "vendor_registry.csv / vendor_risk_api"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Legal terms status for ChurnRadar Inc is unapproved / new vendor with $9,000 annual spend",
+            "reference": "vendor_registry.csv / vendor_risk_api"
+          }
+        ],
+        "gaps": [
+          "Security assessment and review for ChurnRadar Inc are missing (vendor not in registry or risk service)",
+          "Legal review and terms approval for new vendor ChurnRadar Inc are missing",
+          "Sufficient department budget to cover the $9,000 annual cost (shortfall of $2,000)"
+        ],
+        "unsupported_claims": [
+          "None identified in request text."
+        ]
+      },
+      "reviewer": {
+        "decision_type": "route_for_specialist_review",
+        "recommendation": "Route the request for specialist review due to insufficient budget, missing vendor registration, and data access requirements.",
+        "next_step": "Route the request to Department Head, Finance, Procurement, Security, Privacy, and Legal for review.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $9,000"
+          },
+          {
+            "role": "Finance",
+            "reason": "\u00a72 Budget exception: request $9,000 exceeds available $7,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $9,000"
+          },
+          {
+            "role": "Security",
+            "reason": "\u00a75 Vendor security assessment missing, expired, not completed or conflicting: vendor not registered"
+          },
+          {
+            "role": "Security",
+            "reason": "\u00a75 Sensitive data/access: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')"
+          },
+          {
+            "role": "Privacy",
+            "reason": "\u00a76 Processes customer_pii"
+          },
+          {
+            "role": "Legal",
+            "reason": "\u00a77 Legal terms not approved/standard (not registered)"
+          }
+        ],
+        "risk_flags": [
+          "budget_insufficient",
+          "security_review_required",
+          "privacy_review_required",
+          "legal_review_required",
+          "vendor_not_registered"
+        ],
+        "missing_information": [
+          "vendor-risk record (not found)"
+        ],
+        "overlap_assessment": [],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Customer Success department available budget is $7,000.00, while requested annual cost is $9,000.00",
+            "reference": "department_budgets.csv:Customer Success"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "No existing licensed catalog products found in category Customer Analytics or matching request keywords",
+            "reference": "software_catalog.csv"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor ChurnRadar Inc is not present in the internal vendor registry and not found in the external vendor-risk service",
+            "reference": "vendor_registry.csv / vendor_risk_api"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Legal terms status for ChurnRadar Inc is unapproved / new vendor with $9,000 annual spend",
+            "reference": "vendor_registry.csv / vendor_risk_api"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": "null",
+        "implied_data_classes": [
+          {
+            "data_class": "customer_pii",
+            "quote": "Predict which customer accounts are likely to churn using support-ticket history."
+          }
+        ],
+        "analyst_disagreements": []
+      }
+    },
+    "policy": {
+      "request_id": "REQ-X105",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $9,000"
+            }
+          ],
+          "name_hint": "Robert King (Director, Go To Market)"
+        },
+        {
+          "role": "Finance",
+          "reasons": [
+            {
+              "rule": "R3",
+              "policy_ref": "\u00a72",
+              "detail": "Budget exception: request $9,000 exceeds available $7,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $9,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R6",
+              "policy_ref": "\u00a75",
+              "detail": "Vendor security assessment missing, expired, not completed or conflicting: vendor not registered"
+            },
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a75",
+              "detail": "Sensitive data/access: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Privacy",
+          "reasons": [
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a76",
+              "detail": "Processes customer_pii"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Legal",
+          "reasons": [
+            {
+              "rule": "R9",
+              "policy_ref": "\u00a77",
+              "detail": "Legal terms not approved/standard (not registered)"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "budget_insufficient",
+        "security_review_required",
+        "privacy_review_required",
+        "legal_review_required",
+        "vendor_not_registered"
+      ],
+      "flag_reasons": {
+        "budget_insufficient": [
+          {
+            "rule": "R3",
+            "policy_ref": "\u00a72",
+            "detail": "Request $9,000 > available $7,000"
+          }
+        ],
+        "vendor_not_registered": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a77",
+            "detail": "Vendor 'ChurnRadar Inc' is not in the vendor registry"
+          }
+        ],
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: vendor not registered; Sensitive data/access: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')"
+          }
+        ],
+        "privacy_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a76",
+            "detail": "Processes customer_pii"
+          }
+        ],
+        "legal_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a77",
+            "detail": "Legal terms not approved/standard (not registered)"
+          }
+        ]
+      },
+      "missing_information": [
+        "vendor-risk record (not found)"
+      ],
+      "request_fields_missing": false,
+      "tier": "$1,000.01-$10,000",
+      "data_classes": [
+        "customer_pii"
+      ],
+      "data_class_sources": {
+        "customer_pii": [
+          "data_access_level 'customer_pii'",
+          "integration 'HelpDeskly'"
+        ]
+      },
+      "overlap_flag_candidates": [],
+      "requester": {
+        "id": "E005",
+        "name": "Mia Thompson",
+        "department": "Customer Success",
+        "level": "IC4",
+        "manager_hint": "Robert King",
+        "department_head_hint": "Robert King (Director, Go To Market)"
+      },
+      "budget": {
+        "status": "insufficient",
+        "department": "Customer Success",
+        "annual_cost": 9000.0,
+        "available_usd": 7000.0,
+        "committed_usd": 133000.0,
+        "annual_budget_usd": 140000.0,
+        "within_budget": false,
+        "remaining_after_usd": -2000.0,
+        "reference": "department_budgets.csv:Customer Success"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "ChurnRadar Inc",
+        "reference_date": "2026-09-30",
+        "registry": null,
+        "api": {
+          "outcome": "not_found",
+          "status_code": 404,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/ChurnRadar%20Inc",
+          "error": "No vendor-risk record for 'ChurnRadar Inc'",
+          "record": null
+        },
+        "derived": {
+          "registered": false,
+          "registry_class": null,
+          "registry_review_date": null,
+          "registry_age_days": null,
+          "registry_current": false,
+          "api_outcome": "not_found",
+          "api_class": null,
+          "api_review_date": null,
+          "api_age_days": null,
+          "expired": false,
+          "conflict": false,
+          "cleared": false,
+          "new_vendor": true,
+          "procurement_status": null,
+          "legal_terms_status": null,
+          "legal_terms_approved": false,
+          "stores_data_outside_region": null,
+          "processes_personal_data": null
+        },
+        "untrusted_text": {
+          "registry_notes": null,
+          "api_notes": null
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E005 Mia Thompson (Customer Success, IC4); annual cost $9,000; users 10; data access customer_pii",
+          "reference": "employees.csv:E005",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $9,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Customer Success available software budget $7,000; request $9,000 -> exceeds budget by $2,000",
+          "reference": "department_budgets.csv:Customer Success",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor 'ChurnRadar Inc' not found in vendor registry: treated as new vendor with unknown terms",
+          "reference": "vendors.csv",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API has no record for this vendor (HTTP 404): no external assessment exists",
+          "reference": "GET /vendor-risk/ChurnRadar Inc",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Data classes: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')",
+          "reference": "Policy \u00a75, \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Finance review required: Budget exception: request $9,000 exceeds available $7,000",
+          "reference": "Policy \u00a72",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: vendor not registered; Sensitive data/access: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Privacy review required: Processes customer_pii",
+          "reference": "Policy \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Legal review required: Legal terms not approved/standard (not registered)",
+          "reference": "Policy \u00a77",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "reviewer",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 1,
+          "schema_chars": 3206
+        }
+      },
+      {
+        "event": "implied_class_accepted",
+        "data_class": "customer_pii",
+        "quote": "Predict which customer accounts are likely to churn using support-ticket history."
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 3,
+      "implied_class_accepted": 1,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $9,000"
+          }
+        ],
+        "name_hint": "Robert King (Director, Go To Market)"
+      },
+      {
+        "role": "Finance",
+        "reasons": [
+          {
+            "rule": "R3",
+            "policy_ref": "\u00a72",
+            "detail": "Budget exception: request $9,000 exceeds available $7,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $9,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: vendor not registered"
+          },
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Privacy",
+        "reasons": [
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a76",
+            "detail": "Processes customer_pii"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Legal",
+        "reasons": [
+          {
+            "rule": "R9",
+            "policy_ref": "\u00a77",
+            "detail": "Legal terms not approved/standard (not registered)"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "budget_insufficient": [
+        {
+          "rule": "R3",
+          "policy_ref": "\u00a72",
+          "detail": "Request $9,000 > available $7,000"
+        }
+      ],
+      "vendor_not_registered": [
+        {
+          "rule": "R6",
+          "policy_ref": "\u00a77",
+          "detail": "Vendor 'ChurnRadar Inc' is not in the vendor registry"
+        }
+      ],
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Vendor security assessment missing, expired, not completed or conflicting: vendor not registered; Sensitive data/access: customer_pii (data_access_level 'customer_pii', integration 'HelpDeskly')"
+        }
+      ],
+      "privacy_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a76",
+          "detail": "Processes customer_pii"
+        }
+      ],
+      "legal_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a77",
+          "detail": "Legal terms not approved/standard (not registered)"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-15",
+    "request_id": "REQ-X105",
+    "architecture": "staged",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "new_vendor,budget,security_sensitive",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 17792.7,
+    "latency_active_ms": 6548.1,
+    "llm_wait_ms": 11244.6,
+    "llm_calls": 3,
+    "tool_calls": 5,
+    "total_tokens": 9909,
+    "run_id": "20261009T132540-d44b82a5",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 1,
+    "implied_class_ungrounded": 0,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [
+      {
+        "case_id": "G-15",
+        "item": "implied PII",
+        "analyst": true,
+        "reviewer": true,
+        "truth": null,
+        "verdict": "unknown"
+      }
+    ],
+    "reviewer_helped": 0,
+    "reviewer_hurt": 0,
+    "reviewer_neutral": 0,
+    "reviewer_unknown": 1,
+    "raw_decision_ok": true,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 2
+  }
+}

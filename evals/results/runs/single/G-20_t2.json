@@ -1,0 +1,694 @@
+{
+  "case": "G-20",
+  "architecture": "single",
+  "trial": 2,
+  "decision": {
+    "request_id": "REQ-X110",
+    "recommendation": "Route for specialist review: Route purchase request REQ-X110 for Department Head, Procurement, and Legal review due to financial tier and new vendor spend thresholds.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E001 Sarah Lee (Marketing, IC4); annual cost $10,000; users 20; data access internal_marketing",
+        "reference": "employees.csv:E001"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $10,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Marketing available software budget $15,000; request $10,000 -> within budget ($5,000 left)",
+        "reference": "department_budgets.csv:Marketing"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V903 Formwise: procurement New, security Approved (review 2026-05-01, 152 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V903"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-05-01, stores data outside region no, processes personal data no",
+        "reference": "GET /vendor-risk/Formwise"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Legal review required: New vendor with annual spend $10,000 (>= $10,000)",
+        "reference": "Policy \u00a77"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Annual cost is $10,000.00, which fits within the Marketing available budget of $15,000.00.",
+        "reference": "department_budgets.csv:Marketing"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "No existing licensed products in the Forms & Surveys category overlap with this request.",
+        "reference": "REQ-X110"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Formwise is registered as a new vendor with a low risk level and approved security review dated 2026-05-01.",
+        "reference": "V903"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Policy requires Department Head and Procurement approvals for costs between $1,000.01 and $10,000.",
+        "reference": "\u00a74"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Policy requires Legal review for new vendors with annual spend of $10,000 or greater.",
+        "reference": "\u00a77"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Procurement",
+      "Legal"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "legal_review_required"
+    ],
+    "next_step": "Route the request to Department Head, Procurement, and Legal for review.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 4,
+      "tool_calls": 7,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "search_software_catalog",
+        "evaluate_policy_rules",
+        "lookup_policy_section"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261009T132916-dc775fdd",
+    "request_id": "REQ-X110",
+    "architecture": "single",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 24411.3,
+    "llm_wait_ms": 17022.7,
+    "latency_active_ms": 7388.6,
+    "llm_ms": 7354.5,
+    "tool_ms": 15.1,
+    "llm_calls": 4,
+    "tool_calls": 7,
+    "tokens": {
+      "prompt_tokens": 13142,
+      "completion_tokens": 639,
+      "total_tokens": 13781
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X110"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X110"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 2.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X110",
+          "keywords": [
+            "forms",
+            "surveys"
+          ]
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "Formwise"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 6.2,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X110"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X110"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X110"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.8,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "Formwise"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-X110"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.3,
+        "cache_hit": false
+      },
+      {
+        "tool": "lookup_policy_section",
+        "args": {
+          "section": 4
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X110"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-X110\", \"facts\": {\"requester_id\": \"E001\", \"annual_cost_usd\": 10000.0, \"user_count\": 20, \"data_access_level\": \"internal_marketing\", \"integrations_count\": 0, \"urgency_informational_only\": \"normal\"}, \"untrusted_text\": {\"product_name\": \"Formwise Pro\", \"vendor_name\": \"Formwise\", \"category\": \"Forms & Surveys\", \"business_justification\": \"Internal request forms for campaign briefs and asset approvals.\", \"requested_integrations\": [], \"raw_data_access_level\": \"internal_marketing\"}, \"requester\": {\"id\": \"E001\", \"name\": \"Sarah Lee\", \"department\": \"Marketing\", \"level\": \"IC4\", \"manager_hint\": \"David Chen\", \"department_head_hint\": \"David Chen (Director, Marketing)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"department\": \"Marketing\", \"annual_cost\": 10000.0, \"available_usd\": 15000.0, \"committed_usd\": 165000.0, \"annual_budget_usd\": 180000.0, \"within_budget\": true, \"remaining_after_usd\": 5000.0, \"reference\": \"department_budgets.csv:Marketing\"}\n{\"status\": \"ok\", \"request_category\": \"Forms & Surveys\", \"keywords_used\": [\"forms\", \"surveys\"], \"candidates\": [], \"overlap_flag_candidates\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"Formwise\", \"reference_date\": \"2026-09-30\", \"registry\": {\"vendor_id\": \"V903\", \"vendor_name\": \"Formwise\", \"procurement_status\": \"New\", \"security_status\": \"Approved\", \"security_review_date\": \"2026-05-01\", \"legal_terms_status\": \"Approved\"}, \"api\": {\"outcome\": \"ok\", \"status_code\": 200, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/Formwise\", \"error\": null, \"record\": {\"vendor_name\": \"Formwise\", \"risk_level\": \"low\", \"security_review_status\": \"approved\", \"last_review_date\": \"2026-05-01\", \"processes_personal_data\": false, \"stores_data_outside_region\": false}}, \"derived\": {\"registered\": true, \"registry_class\": \"approved\", \"registry_review_date\": \"2026-05-01\", \"registry_age_days\": 152, \"registry_current\": true, \"api_outcome\": \"ok\", \"api_class\": \"approved\", \"api_review_date\": \"2026-05-01\", \"api_age_days\": 152, \"expired\": false, \"conflict\": false, \"cleared\": true, \"new_vendor\": true, \"procurement_status\": \"New\", \"legal_terms_status\": \"Approved\", \"legal_terms_approved\": true, \"stores_data_outside_region\": false, \"processes_personal_data\": false}, \"untrusted_text\": {\"registry_notes\": \"Security assessment complete; contract not yet signed\", \"api_notes\": \"Current assessment.\"}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_category\": \"Forms & Surveys\", \"keywords_used\": [], \"candidates\": [], \"overlap_flag_candidates\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-X110\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Department Head\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000\"]}, {\"role\": \"Procurement\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000\"]}, {\"role\": \"Legal\", \"reasons\": [\"\\u00a77 New vendor with annual spend $10,000 (>= $10,000)\"]}], \"risk_flags\": [\"legal_review_required\"], \"flag_details\": {}, \"missing_information\": [], \"request_fields_missing\": false, \"financial_tier\": \"$1,000.01-$10,000\", \"data_classes\": [], \"overlap_flag_candidates\": [], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_specialist_review\"}\n{\"status\": \"ok\", \"section\": 4, \"title\": \"Financial approval thresholds\", \"text\": \"Use deterministic logic for the annualized request amount:\\n\\n| Annual amount | Minimum business approvals |\\n|---|---|\\n| Up to $1,000 | Manager |\\n| $1,000.01 - $10,000 | Department Head + Procurement |\\n| $10,000.01 - $25,000 | Department Head + Finance + Procurement |\\n| Above $25,000 | Department Head + Finance + CFO + Procurement |\\n\\nThese are minimum approvals. Security, Privacy, or Legal review can be added by the rules below.\"}",
+    "proposals": {
+      "single": {
+        "decision_type": "route_for_specialist_review",
+        "recommendation": "Route purchase request REQ-X110 for Department Head, Procurement, and Legal review due to financial tier and new vendor spend thresholds.",
+        "next_step": "Route the request to Department Head, Procurement, and Legal for review.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          },
+          {
+            "role": "Legal",
+            "reason": "\u00a77 New vendor with annual spend $10,000 (>= $10,000)"
+          }
+        ],
+        "risk_flags": [
+          "legal_review_required"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Annual cost is $10,000.00, which fits within the Marketing available budget of $15,000.00.",
+            "reference": "department_budgets.csv:Marketing"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "No existing licensed products in the Forms & Surveys category overlap with this request.",
+            "reference": "REQ-X110"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Formwise is registered as a new vendor with a low risk level and approved security review dated 2026-05-01.",
+            "reference": "V903"
+          },
+          {
+            "source": "evaluate_policy_rules",
+            "finding": "Policy requires Department Head and Procurement approvals for costs between $1,000.01 and $10,000.",
+            "reference": "\u00a74"
+          },
+          {
+            "source": "evaluate_policy_rules",
+            "finding": "Policy requires Legal review for new vendors with annual spend of $10,000 or greater.",
+            "reference": "\u00a77"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "implied_data_classes": [],
+        "analyst_disagreements": []
+      },
+      "submissions": [
+        {
+          "recommendation": "Route purchase request REQ-X110 for Department Head, Procurement, and Legal review due to financial tier and new vendor spend thresholds.",
+          "next_step": "Route the request to Department Head, Procurement, and Legal for review.",
+          "injection_observed": false,
+          "overlap_assessment": [],
+          "decision_type": "route_for_specialist_review",
+          "implied_data_classes": [],
+          "evidence": [
+            {
+              "source": "check_budget",
+              "reference": "department_budgets.csv:Marketing",
+              "finding": "Annual cost is $10,000.00, which fits within the Marketing available budget of $15,000.00."
+            },
+            {
+              "source": "search_software_catalog",
+              "reference": "REQ-X110",
+              "finding": "No existing licensed products in the Forms & Surveys category overlap with this request."
+            },
+            {
+              "source": "get_vendor_status",
+              "reference": "V903",
+              "finding": "Formwise is registered as a new vendor with a low risk level and approved security review dated 2026-05-01."
+            },
+            {
+              "reference": "\u00a74",
+              "finding": "Policy requires Department Head and Procurement approvals for costs between $1,000.01 and $10,000.",
+              "source": "evaluate_policy_rules"
+            },
+            {
+              "source": "evaluate_policy_rules",
+              "finding": "Policy requires Legal review for new vendors with annual spend of $10,000 or greater.",
+              "reference": "\u00a77"
+            }
+          ],
+          "risk_flags": [
+            "legal_review_required"
+          ],
+          "required_approvals": [
+            {
+              "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000",
+              "role": "Department Head"
+            },
+            {
+              "role": "Procurement",
+              "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $10,000"
+            },
+            {
+              "role": "Legal",
+              "reason": "\u00a77 New vendor with annual spend $10,000 (>= $10,000)"
+            }
+          ],
+          "missing_information": []
+        }
+      ]
+    },
+    "policy": {
+      "request_id": "REQ-X110",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $10,000"
+            }
+          ],
+          "name_hint": "David Chen (Director, Marketing)"
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $10,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Legal",
+          "reasons": [
+            {
+              "rule": "R9",
+              "policy_ref": "\u00a77",
+              "detail": "New vendor with annual spend $10,000 (>= $10,000)"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "legal_review_required"
+      ],
+      "flag_reasons": {
+        "legal_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a77",
+            "detail": "New vendor with annual spend $10,000 (>= $10,000)"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$1,000.01-$10,000",
+      "data_classes": [],
+      "data_class_sources": {},
+      "overlap_flag_candidates": [],
+      "requester": {
+        "id": "E001",
+        "name": "Sarah Lee",
+        "department": "Marketing",
+        "level": "IC4",
+        "manager_hint": "David Chen",
+        "department_head_hint": "David Chen (Director, Marketing)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Marketing",
+        "annual_cost": 10000.0,
+        "available_usd": 15000.0,
+        "committed_usd": 165000.0,
+        "annual_budget_usd": 180000.0,
+        "within_budget": true,
+        "remaining_after_usd": 5000.0,
+        "reference": "department_budgets.csv:Marketing"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "Formwise",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V903",
+          "vendor_name": "Formwise",
+          "procurement_status": "New",
+          "security_status": "Approved",
+          "security_review_date": "2026-05-01",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/Formwise",
+          "error": null,
+          "record": {
+            "vendor_name": "Formwise",
+            "risk_level": "low",
+            "security_review_status": "approved",
+            "last_review_date": "2026-05-01",
+            "processes_personal_data": false,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-05-01",
+          "registry_age_days": 152,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-05-01",
+          "api_age_days": 152,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": true,
+          "procurement_status": "New",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": false
+        },
+        "untrusted_text": {
+          "registry_notes": "Security assessment complete; contract not yet signed",
+          "api_notes": "Current assessment."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E001 Sarah Lee (Marketing, IC4); annual cost $10,000; users 20; data access internal_marketing",
+          "reference": "employees.csv:E001",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $10,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Marketing available software budget $15,000; request $10,000 -> within budget ($5,000 left)",
+          "reference": "department_budgets.csv:Marketing",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V903 Formwise: procurement New, security Approved (review 2026-05-01, 152 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V903",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-05-01, stores data outside region no, processes personal data no",
+          "reference": "GET /vendor-risk/Formwise",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Legal review required: New vendor with annual spend $10,000 (>= $10,000)",
+          "reference": "Policy \u00a77",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "get_request_details"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 7,
+          "schema_chars": 5090
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status",
+          "evaluate_policy_rules"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 7,
+          "schema_chars": 5090
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 3,
+        "forced": false,
+        "tool_calls": [
+          "lookup_policy_section"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 7,
+          "schema_chars": 5090
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 4,
+        "forced": false,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 7,
+          "schema_chars": 5090
+        }
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 4,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          }
+        ],
+        "name_hint": "David Chen (Director, Marketing)"
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $10,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Legal",
+        "reasons": [
+          {
+            "rule": "R9",
+            "policy_ref": "\u00a77",
+            "detail": "New vendor with annual spend $10,000 (>= $10,000)"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "legal_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a77",
+          "detail": "New vendor with annual spend $10,000 (>= $10,000)"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "G-20",
+    "request_id": "REQ-X110",
+    "architecture": "single",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "new_vendor,threshold",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 24411.3,
+    "latency_active_ms": 7388.6,
+    "llm_wait_ms": 17022.7,
+    "llm_calls": 4,
+    "tool_calls": 7,
+    "total_tokens": 13781,
+    "run_id": "20261009T132916-dc775fdd",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 0,
+    "implied_class_ungrounded": 0,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [],
+    "reviewer_helped": null,
+    "reviewer_hurt": null,
+    "reviewer_neutral": null,
+    "reviewer_unknown": null,
+    "raw_decision_ok": true,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 2
+  }
+}

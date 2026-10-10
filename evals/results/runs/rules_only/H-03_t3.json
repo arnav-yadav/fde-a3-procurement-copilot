@@ -1,0 +1,553 @@
+{
+  "case": "H-03",
+  "architecture": "rules_only",
+  "trial": 3,
+  "decision": {
+    "request_id": "REQ-H203",
+    "recommendation": "Route for specialist review: Route for specialist review before any business approval: Security review and Legal review.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $4,000; users 30; data access internal_documents",
+        "reference": "employees.csv:E002"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $4,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Engineering available software budget $26,000; request $4,000 -> within budget ($22,000 left)",
+        "reference": "department_budgets.csv:Engineering"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW004 DocSpace (Knowledge Management, Company-wide, 200 seats, Approved) matches by same_category -> overlap",
+        "reference": "software_catalog.csv:SW004"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor 'Notely' not found in vendor registry: treated as new vendor with unknown terms",
+        "reference": "vendors.csv"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API has no record for this vendor (HTTP 404): no external assessment exists",
+        "reference": "GET /vendor-risk/Notely"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: vendor not registered",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Legal review required: Legal terms not approved/standard (not registered)",
+        "reference": "Policy \u00a77"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Procurement",
+      "Security",
+      "Legal"
+    ],
+    "missing_information": [
+      "vendor-risk record (not found)"
+    ],
+    "risk_flags": [
+      "existing_tool_overlap",
+      "security_review_required",
+      "legal_review_required",
+      "vendor_not_registered"
+    ],
+    "next_step": "Send the evidence pack to Department Head, Procurement, Security and Legal; Security and Legal review first.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 0,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261009T134103-5b0701d3",
+    "request_id": "REQ-H203",
+    "architecture": "single",
+    "mode": "rules_only",
+    "path": "rules_only",
+    "provider": null,
+    "model": null,
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 3.0,
+    "llm_wait_ms": 0.0,
+    "latency_active_ms": 3.0,
+    "llm_ms": 0.0,
+    "tool_ms": 2.7,
+    "llm_calls": 0,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-H203"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.3,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-H203"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-H203"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.3,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "Notely"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 1.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-H203"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-H203"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-H203"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "Notely"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-H203"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.3,
+        "cache_hit": false
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-H203\", \"facts\": {\"requester_id\": \"E002\", \"annual_cost_usd\": 4000.0, \"user_count\": 30, \"data_access_level\": \"internal_documents\", \"integrations_count\": 0, \"urgency_informational_only\": \"normal\"}, \"untrusted_text\": {\"product_name\": \"Notely Team Wiki\", \"vendor_name\": \"Notely\", \"category\": \"Knowledge Management\", \"business_justification\": \"We need a shared wiki for team documentation and onboarding guides.\", \"requested_integrations\": [], \"raw_data_access_level\": \"internal_documents\"}, \"requester\": {\"id\": \"E002\", \"name\": \"Arjun Mehta\", \"department\": \"Engineering\", \"level\": \"IC5\", \"manager_hint\": \"Maya Rao\", \"department_head_hint\": \"Maya Rao (Director, Engineering)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"department\": \"Engineering\", \"annual_cost\": 4000.0, \"available_usd\": 26000.0, \"committed_usd\": 274000.0, \"annual_budget_usd\": 300000.0, \"within_budget\": true, \"remaining_after_usd\": 22000.0, \"reference\": \"department_budgets.csv:Engineering\"}\n{\"status\": \"ok\", \"request_category\": \"Knowledge Management\", \"keywords_used\": [], \"candidates\": [{\"software_id\": \"SW004\", \"product_name\": \"DocSpace\", \"vendor_name\": \"DocSpace\", \"category\": \"Knowledge Management\", \"status\": \"Approved\", \"licensed_seats\": 200, \"scope\": \"Company-wide\", \"annual_cost_usd\": 24000.0, \"match\": [\"same_category\"], \"raises_overlap_flag\": true, \"purchase_history\": [], \"untrusted_text\": {\"notes\": \"Knowledge base and docs\"}}], \"overlap_flag_candidates\": [\"SW004\"], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"Notely\", \"reference_date\": \"2026-09-30\", \"registry\": null, \"api\": {\"outcome\": \"not_found\", \"status_code\": 404, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/Notely\", \"error\": \"No vendor-risk record for 'Notely'\", \"record\": null}, \"derived\": {\"registered\": false, \"registry_class\": null, \"registry_review_date\": null, \"registry_age_days\": null, \"registry_current\": false, \"api_outcome\": \"not_found\", \"api_class\": null, \"api_review_date\": null, \"api_age_days\": null, \"expired\": false, \"conflict\": false, \"cleared\": false, \"new_vendor\": true, \"procurement_status\": null, \"legal_terms_status\": null, \"legal_terms_approved\": false, \"stores_data_outside_region\": null, \"processes_personal_data\": null}, \"untrusted_text\": {\"registry_notes\": null, \"api_notes\": null}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-H203\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Department Head\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $4,000\"]}, {\"role\": \"Procurement\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $4,000\"]}, {\"role\": \"Security\", \"reasons\": [\"\\u00a75 Vendor security assessment missing, expired, not completed or conflicting: vendor not registered\"]}, {\"role\": \"Legal\", \"reasons\": [\"\\u00a77 Legal terms not approved/standard (not registered)\"]}], \"risk_flags\": [\"existing_tool_overlap\", \"security_review_required\", \"legal_review_required\", \"vendor_not_registered\"], \"flag_details\": {\"existing_tool_overlap\": [\"Existing catalog product(s) in the same category/product: SW004 DocSpace\"], \"vendor_not_registered\": [\"Vendor 'Notely' is not in the vendor registry\"]}, \"missing_information\": [\"vendor-risk record (not found)\"], \"request_fields_missing\": false, \"financial_tier\": \"$1,000.01-$10,000\", \"data_classes\": [], \"overlap_flag_candidates\": [\"SW004\"], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_specialist_review\"}",
+    "proposals": {},
+    "policy": {
+      "request_id": "REQ-H203",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $4,000"
+            }
+          ],
+          "name_hint": "Maya Rao (Director, Engineering)"
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $4,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R6",
+              "policy_ref": "\u00a75",
+              "detail": "Vendor security assessment missing, expired, not completed or conflicting: vendor not registered"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Legal",
+          "reasons": [
+            {
+              "rule": "R9",
+              "policy_ref": "\u00a77",
+              "detail": "Legal terms not approved/standard (not registered)"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "existing_tool_overlap",
+        "security_review_required",
+        "legal_review_required",
+        "vendor_not_registered"
+      ],
+      "flag_reasons": {
+        "existing_tool_overlap": [
+          {
+            "rule": "R5",
+            "policy_ref": "\u00a73",
+            "detail": "Existing catalog product(s) in the same category/product: SW004 DocSpace"
+          }
+        ],
+        "vendor_not_registered": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a77",
+            "detail": "Vendor 'Notely' is not in the vendor registry"
+          }
+        ],
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: vendor not registered"
+          }
+        ],
+        "legal_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a77",
+            "detail": "Legal terms not approved/standard (not registered)"
+          }
+        ]
+      },
+      "missing_information": [
+        "vendor-risk record (not found)"
+      ],
+      "request_fields_missing": false,
+      "tier": "$1,000.01-$10,000",
+      "data_classes": [],
+      "data_class_sources": {},
+      "overlap_flag_candidates": [
+        "SW004"
+      ],
+      "requester": {
+        "id": "E002",
+        "name": "Arjun Mehta",
+        "department": "Engineering",
+        "level": "IC5",
+        "manager_hint": "Maya Rao",
+        "department_head_hint": "Maya Rao (Director, Engineering)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Engineering",
+        "annual_cost": 4000.0,
+        "available_usd": 26000.0,
+        "committed_usd": 274000.0,
+        "annual_budget_usd": 300000.0,
+        "within_budget": true,
+        "remaining_after_usd": 22000.0,
+        "reference": "department_budgets.csv:Engineering"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "Notely",
+        "reference_date": "2026-09-30",
+        "registry": null,
+        "api": {
+          "outcome": "not_found",
+          "status_code": 404,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/Notely",
+          "error": "No vendor-risk record for 'Notely'",
+          "record": null
+        },
+        "derived": {
+          "registered": false,
+          "registry_class": null,
+          "registry_review_date": null,
+          "registry_age_days": null,
+          "registry_current": false,
+          "api_outcome": "not_found",
+          "api_class": null,
+          "api_review_date": null,
+          "api_age_days": null,
+          "expired": false,
+          "conflict": false,
+          "cleared": false,
+          "new_vendor": true,
+          "procurement_status": null,
+          "legal_terms_status": null,
+          "legal_terms_approved": false,
+          "stores_data_outside_region": null,
+          "processes_personal_data": null
+        },
+        "untrusted_text": {
+          "registry_notes": null,
+          "api_notes": null
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E002 Arjun Mehta (Engineering, IC5); annual cost $4,000; users 30; data access internal_documents",
+          "reference": "employees.csv:E002",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $4,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Engineering available software budget $26,000; request $4,000 -> within budget ($22,000 left)",
+          "reference": "department_budgets.csv:Engineering",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW004 DocSpace (Knowledge Management, Company-wide, 200 seats, Approved) matches by same_category -> overlap",
+          "reference": "software_catalog.csv:SW004",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor 'Notely' not found in vendor registry: treated as new vendor with unknown terms",
+          "reference": "vendors.csv",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API has no record for this vendor (HTTP 404): no external assessment exists",
+          "reference": "GET /vendor-risk/Notely",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Vendor security assessment missing, expired, not completed or conflicting: vendor not registered",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Legal review required: Legal terms not approved/standard (not registered)",
+          "reference": "Policy \u00a77",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [],
+    "event_counts": {
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $4,000"
+          }
+        ],
+        "name_hint": "Maya Rao (Director, Engineering)"
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $4,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R6",
+            "policy_ref": "\u00a75",
+            "detail": "Vendor security assessment missing, expired, not completed or conflicting: vendor not registered"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Legal",
+        "reasons": [
+          {
+            "rule": "R9",
+            "policy_ref": "\u00a77",
+            "detail": "Legal terms not approved/standard (not registered)"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "existing_tool_overlap": [
+        {
+          "rule": "R5",
+          "policy_ref": "\u00a73",
+          "detail": "Existing catalog product(s) in the same category/product: SW004 DocSpace"
+        }
+      ],
+      "vendor_not_registered": [
+        {
+          "rule": "R6",
+          "policy_ref": "\u00a77",
+          "detail": "Vendor 'Notely' is not in the vendor registry"
+        }
+      ],
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Vendor security assessment missing, expired, not completed or conflicting: vendor not registered"
+        }
+      ],
+      "legal_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a77",
+          "detail": "Legal terms not approved/standard (not registered)"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": true,
+      "next_step": true
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "H-03",
+    "request_id": "REQ-H203",
+    "architecture": "rules_only",
+    "status": "valid",
+    "path": "rules_only",
+    "fault": "",
+    "requires_ai": "decision",
+    "tests": "existing_tool,new_vendor",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": false,
+    "safety_ok": true,
+    "case_pass": false,
+    "failures": "decision: got route_for_specialist_review, acceptable ['use_existing_tool']",
+    "latency_total_ms": 3.0,
+    "latency_active_ms": 3.0,
+    "llm_wait_ms": 0.0,
+    "llm_calls": 0,
+    "tool_calls": 5,
+    "total_tokens": 0,
+    "run_id": "20261009T134103-5b0701d3",
+    "model": null,
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 0,
+    "implied_class_ungrounded": 0,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [],
+    "reviewer_helped": null,
+    "reviewer_hurt": null,
+    "reviewer_neutral": null,
+    "reviewer_unknown": null,
+    "raw_decision_ok": null,
+    "raw_approvals_ok": null,
+    "raw_flags_ok": null,
+    "trial": 3
+  }
+}

@@ -1,0 +1,824 @@
+{
+  "case": "H-01",
+  "architecture": "single",
+  "trial": 3,
+  "decision": {
+    "request_id": "REQ-H201",
+    "recommendation": "Route for specialist review: Route for specialist review before any business approval: Security review and Privacy review.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $6,000; users 4; data access internal_documents",
+        "reference": "employees.csv:E004"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $6,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Finance available software budget $29,000; request $6,000 -> within budget ($23,000 left)",
+        "reference": "department_budgets.csv:Finance"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW006 MetricLoop (Analytics / BI, Company-wide, 55 seats, Approved) matches by same_vendor -> evidence only, no overlap flag",
+        "reference": "software_catalog.csv:SW006"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V006 MetricLoop: procurement Approved, security Approved (review 2026-05-10, 143 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V006"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-05-10, stores data outside region no, processes personal data yes",
+        "reference": "GET /vendor-risk/MetricLoop"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Data classes: employee_pii (AI: implied employee_pii (quote: 'import employee salary bands and performance ratings'))",
+        "reference": "Policy \u00a75, \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Sensitive data/access: employee_pii (AI: implied employee_pii (quote: 'import employee salary bands and performance ratings'))",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Privacy review required: Processes employee_pii",
+        "reference": "Policy \u00a76"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Annual cost is $6,000.00, which is within the Finance department's available budget of $29,000.00.",
+        "reference": "department_budgets.csv:Finance"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Financial tier is $1,000.01 to $10,000, requiring Department Head and Procurement approval.",
+        "reference": "\u00a74"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "MetricLoop is already an approved registered vendor with a current security review date of 2026-05-10.",
+        "reference": "V006"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Procurement",
+      "Security",
+      "Privacy"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "security_review_required",
+      "privacy_review_required"
+    ],
+    "next_step": "Send the evidence pack to Department Head, Procurement, Security and Privacy; Security and Privacy review first.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 3,
+      "tool_calls": 6,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261010T075939-3497d6d4",
+    "request_id": "REQ-H201",
+    "architecture": "single",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 18165.6,
+    "llm_wait_ms": 13720.4,
+    "latency_active_ms": 4445.3,
+    "llm_ms": 4417.3,
+    "tool_ms": 17.3,
+    "llm_calls": 3,
+    "tool_calls": 6,
+    "tokens": {
+      "prompt_tokens": 10379,
+      "completion_tokens": 710,
+      "total_tokens": 11089
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.3,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.7,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "Atlassian"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 5.6,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "MetricLoop"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 3.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 4.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "MetricLoop"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-H201"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "MetricLoop"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-H201\", \"facts\": {\"requester_id\": \"E004\", \"annual_cost_usd\": 6000.0, \"user_count\": 4, \"data_access_level\": \"internal_documents\", \"integrations_count\": 0, \"urgency_informational_only\": \"normal\"}, \"untrusted_text\": {\"product_name\": \"MetricLoop Compensation Module\", \"vendor_name\": \"MetricLoop\", \"category\": \"Compensation Planning\", \"business_justification\": \"Import employee salary bands and performance ratings so Finance can model next year's compensation budget.\", \"requested_integrations\": [], \"raw_data_access_level\": \"internal_documents\"}, \"requester\": {\"id\": \"E004\", \"name\": \"Noah Williams\", \"department\": \"Finance\", \"level\": \"IC4\", \"manager_hint\": \"Priya Shah\", \"department_head_hint\": \"Priya Shah (Director, Finance)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"department\": \"Finance\", \"annual_cost\": 6000.0, \"available_usd\": 29000.0, \"committed_usd\": 61000.0, \"annual_budget_usd\": 90000.0, \"within_budget\": true, \"remaining_after_usd\": 23000.0, \"reference\": \"department_budgets.csv:Finance\"}\n{\"status\": \"ok\", \"request_category\": \"Compensation Planning\", \"keywords_used\": [], \"candidates\": [{\"software_id\": \"SW006\", \"product_name\": \"MetricLoop\", \"vendor_name\": \"MetricLoop\", \"category\": \"Analytics / BI\", \"status\": \"Approved\", \"licensed_seats\": 55, \"scope\": \"Company-wide\", \"annual_cost_usd\": 52000.0, \"match\": [\"same_vendor\"], \"raises_overlap_flag\": false, \"purchase_history\": [], \"untrusted_text\": {\"notes\": \"Dashboards and BI\"}}], \"overlap_flag_candidates\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"Atlassian\", \"reference_date\": \"2026-09-30\", \"registry\": null, \"api\": {\"outcome\": \"not_found\", \"status_code\": 404, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/Atlassian\", \"error\": \"No vendor-risk record for 'Atlassian'\", \"record\": null}, \"derived\": {\"registered\": false, \"registry_class\": null, \"registry_review_date\": null, \"registry_age_days\": null, \"registry_current\": false, \"api_outcome\": \"not_found\", \"api_class\": null, \"api_review_date\": null, \"api_age_days\": null, \"expired\": false, \"conflict\": false, \"cleared\": false, \"new_vendor\": true, \"procurement_status\": null, \"legal_terms_status\": null, \"legal_terms_approved\": false, \"stores_data_outside_region\": null, \"processes_personal_data\": null}, \"untrusted_text\": {\"registry_notes\": null, \"api_notes\": null}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"MetricLoop\", \"reference_date\": \"2026-09-30\", \"registry\": {\"vendor_id\": \"V006\", \"vendor_name\": \"MetricLoop\", \"procurement_status\": \"Approved\", \"security_status\": \"Approved\", \"security_review_date\": \"2026-05-10\", \"legal_terms_status\": \"Approved\"}, \"api\": {\"outcome\": \"ok\", \"status_code\": 200, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/MetricLoop\", \"error\": null, \"record\": {\"vendor_name\": \"MetricLoop\", \"risk_level\": \"low\", \"security_review_status\": \"approved\", \"last_review_date\": \"2026-05-10\", \"processes_personal_data\": true, \"stores_data_outside_region\": false}}, \"derived\": {\"registered\": true, \"registry_class\": \"approved\", \"registry_review_date\": \"2026-05-10\", \"registry_age_days\": 143, \"registry_current\": true, \"api_outcome\": \"ok\", \"api_class\": \"approved\", \"api_review_date\": \"2026-05-10\", \"api_age_days\": 143, \"expired\": false, \"conflict\": false, \"cleared\": true, \"new_vendor\": false, \"procurement_status\": \"Approved\", \"legal_terms_status\": \"Approved\", \"legal_terms_approved\": true, \"stores_data_outside_region\": false, \"processes_personal_data\": true}, \"untrusted_text\": {\"registry_notes\": \"Standard vendor\", \"api_notes\": \"Current assessment.\"}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-H201\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Department Head\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $6,000\"]}, {\"role\": \"Procurement\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $6,000\"]}], \"risk_flags\": [], \"flag_details\": {}, \"missing_information\": [], \"request_fields_missing\": false, \"financial_tier\": \"$1,000.01-$10,000\", \"data_classes\": [], \"overlap_flag_candidates\": [], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_approval\"}",
+    "proposals": {
+      "single": {
+        "decision_type": "route_for_approval",
+        "recommendation": "Route request REQ-H201 for Department Head and Procurement approval as the cost is within budget and the vendor is approved.",
+        "next_step": "Route the request to the Department Head (Priya Shah) and Procurement for approval.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $6,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $6,000"
+          }
+        ],
+        "risk_flags": [
+          "privacy_review_required",
+          "security_review_required"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW006",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "Existing catalog item SW006 is MetricLoop for Analytics / BI dashboards, whereas this request is for the Compensation Module add-on to import salary bands and performance ratings."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Annual cost is $6,000.00, which is within the Finance department's available budget of $29,000.00.",
+            "reference": "department_budgets.csv:Finance"
+          },
+          {
+            "source": "evaluate_policy_rules",
+            "finding": "Financial tier is $1,000.01 to $10,000, requiring Department Head and Procurement approval.",
+            "reference": "\u00a74"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "MetricLoop is already an approved registered vendor with a current security review date of 2026-05-10.",
+            "reference": "V006"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog contains SW006 MetricLoop (Analytics / BI), but this request is for the Compensation Module add-on, representing a product expansion rather than a duplicate tool.",
+            "reference": "SW006"
+          },
+          {
+            "source": "get_request_details",
+            "finding": "Request completeness is verified with all necessary fields present and no prompt injection detected.",
+            "reference": "REQ-H201"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "implied_data_classes": [
+          {
+            "data_class": "employee_pii",
+            "quote": "Import employee salary bands and performance ratings"
+          }
+        ],
+        "analyst_disagreements": []
+      },
+      "submissions": [
+        {
+          "next_step": "Route the request to the Department Head (Priya Shah) and Procurement for approval.",
+          "missing_information": [],
+          "overlap_assessment": [
+            {
+              "covers_stated_need": false,
+              "software_id": "SW006",
+              "relationship": "same_product_expansion",
+              "reason": "Existing catalog item SW006 is MetricLoop for Analytics / BI dashboards, whereas this request is for the Compensation Module add-on to import salary bands and performance ratings."
+            }
+          ],
+          "injection_observed": false,
+          "implied_data_classes": [
+            {
+              "data_class": "employee_pii",
+              "quote": "Import employee salary bands and performance ratings"
+            }
+          ],
+          "recommendation": "Route request REQ-H201 for Department Head and Procurement approval as the cost is within budget and the vendor is approved.",
+          "risk_flags": [
+            "privacy_review_required",
+            "security_review_required"
+          ],
+          "required_approvals": [
+            {
+              "role": "Department Head",
+              "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $6,000"
+            },
+            {
+              "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $6,000",
+              "role": "Procurement"
+            }
+          ],
+          "evidence": [
+            {
+              "reference": "department_budgets.csv:Finance",
+              "source": "check_budget",
+              "finding": "Annual cost is $6,000.00, which is within the Finance department's available budget of $29,000.00."
+            },
+            {
+              "source": "evaluate_policy_rules",
+              "finding": "Financial tier is $1,000.01 to $10,000, requiring Department Head and Procurement approval.",
+              "reference": "\u00a74"
+            },
+            {
+              "reference": "V006",
+              "source": "get_vendor_status",
+              "finding": "MetricLoop is already an approved registered vendor with a current security review date of 2026-05-10."
+            },
+            {
+              "reference": "SW006",
+              "finding": "Catalog contains SW006 MetricLoop (Analytics / BI), but this request is for the Compensation Module add-on, representing a product expansion rather than a duplicate tool.",
+              "source": "search_software_catalog"
+            },
+            {
+              "reference": "REQ-H201",
+              "finding": "Request completeness is verified with all necessary fields present and no prompt injection detected.",
+              "source": "get_request_details"
+            }
+          ],
+          "decision_type": "route_for_approval"
+        }
+      ]
+    },
+    "policy": {
+      "request_id": "REQ-H201",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $6,000"
+            }
+          ],
+          "name_hint": "Priya Shah (Director, Finance)"
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $6,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a75",
+              "detail": "Sensitive data/access: employee_pii (AI: implied employee_pii (quote: 'import employee salary bands and performance ratings'))"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Privacy",
+          "reasons": [
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a76",
+              "detail": "Processes employee_pii"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "security_review_required",
+        "privacy_review_required"
+      ],
+      "flag_reasons": {
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: employee_pii (AI: implied employee_pii (quote: 'import employee salary bands and performance ratings'))"
+          }
+        ],
+        "privacy_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a76",
+            "detail": "Processes employee_pii"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$1,000.01-$10,000",
+      "data_classes": [
+        "employee_pii"
+      ],
+      "data_class_sources": {
+        "employee_pii": [
+          "AI: implied employee_pii (quote: 'import employee salary bands and performance ratings')"
+        ]
+      },
+      "overlap_flag_candidates": [],
+      "requester": {
+        "id": "E004",
+        "name": "Noah Williams",
+        "department": "Finance",
+        "level": "IC4",
+        "manager_hint": "Priya Shah",
+        "department_head_hint": "Priya Shah (Director, Finance)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Finance",
+        "annual_cost": 6000.0,
+        "available_usd": 29000.0,
+        "committed_usd": 61000.0,
+        "annual_budget_usd": 90000.0,
+        "within_budget": true,
+        "remaining_after_usd": 23000.0,
+        "reference": "department_budgets.csv:Finance"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "MetricLoop",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V006",
+          "vendor_name": "MetricLoop",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-05-10",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/MetricLoop",
+          "error": null,
+          "record": {
+            "vendor_name": "MetricLoop",
+            "risk_level": "low",
+            "security_review_status": "approved",
+            "last_review_date": "2026-05-10",
+            "processes_personal_data": true,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-05-10",
+          "registry_age_days": 143,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-05-10",
+          "api_age_days": 143,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": true
+        },
+        "untrusted_text": {
+          "registry_notes": "Standard vendor",
+          "api_notes": "Current assessment."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $6,000; users 4; data access internal_documents",
+          "reference": "employees.csv:E004",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $6,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Finance available software budget $29,000; request $6,000 -> within budget ($23,000 left)",
+          "reference": "department_budgets.csv:Finance",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW006 MetricLoop (Analytics / BI, Company-wide, 55 seats, Approved) matches by same_vendor -> evidence only, no overlap flag",
+          "reference": "software_catalog.csv:SW006",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V006 MetricLoop: procurement Approved, security Approved (review 2026-05-10, 143 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V006",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-05-10, stores data outside region no, processes personal data yes",
+          "reference": "GET /vendor-risk/MetricLoop",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Data classes: employee_pii (AI: implied employee_pii (quote: 'import employee salary bands and performance ratings'))",
+          "reference": "Policy \u00a75, \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Sensitive data/access: employee_pii (AI: implied employee_pii (quote: 'import employee salary bands and performance ratings'))",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Privacy review required: Processes employee_pii",
+          "reference": "Policy \u00a76",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "get_request_details",
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status",
+          "evaluate_policy_rules"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 7,
+          "schema_chars": 5090
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "get_vendor_status"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 7,
+          "schema_chars": 5090
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "single",
+        "turn": 3,
+        "forced": false,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 7,
+          "schema_chars": 5090
+        }
+      },
+      {
+        "event": "implied_class_accepted",
+        "data_class": "employee_pii",
+        "quote": "Import employee salary bands and performance ratings"
+      },
+      {
+        "event": "code_restored_approval",
+        "role": "Security"
+      },
+      {
+        "event": "code_restored_approval",
+        "role": "Privacy"
+      },
+      {
+        "event": "llm_decision_overridden",
+        "proposed": "route_for_approval",
+        "final": "route_for_specialist_review"
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 3,
+      "implied_class_accepted": 1,
+      "code_restored_approval": 2,
+      "llm_decision_overridden": 1,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $6,000"
+          }
+        ],
+        "name_hint": "Priya Shah (Director, Finance)"
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $6,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: employee_pii (AI: implied employee_pii (quote: 'import employee salary bands and performance ratings'))"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Privacy",
+        "reasons": [
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a76",
+            "detail": "Processes employee_pii"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Sensitive data/access: employee_pii (AI: implied employee_pii (quote: 'import employee salary bands and performance ratings'))"
+        }
+      ],
+      "privacy_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a76",
+          "detail": "Processes employee_pii"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": true,
+      "next_step": true
+    },
+    "error": null
+  },
+  "score": {
+    "case_id": "H-01",
+    "request_id": "REQ-H201",
+    "architecture": "single",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "approvals,flags,decision",
+    "tests": "security_sensitive,ai_interpretation",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 18165.6,
+    "latency_active_ms": 4445.3,
+    "llm_wait_ms": 13720.4,
+    "llm_calls": 3,
+    "tool_calls": 6,
+    "total_tokens": 11089,
+    "run_id": "20261010T075939-3497d6d4",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 2,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 1,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 1,
+    "implied_class_ungrounded": 0,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [],
+    "reviewer_helped": null,
+    "reviewer_hurt": null,
+    "reviewer_neutral": null,
+    "reviewer_unknown": null,
+    "raw_decision_ok": false,
+    "raw_approvals_ok": false,
+    "raw_flags_ok": true,
+    "trial": 3
+  }
+}
