@@ -840,7 +840,50 @@
       "recommendation": false,
       "next_step": false
     },
-    "error": null
+    "error": null,
+    "steps": [
+      {
+        "actor": "Single agent (LLM)",
+        "kind": "llm",
+        "why": "Decides which evidence tools to call, then submits a structured recommendation.",
+        "tools": [
+          "get_request_details",
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status",
+          "evaluate_policy_rules"
+        ],
+        "cached_lookups": 0,
+        "llm_calls": 3,
+        "tokens": 9994,
+        "ms": 19902.3,
+        "note": null
+      },
+      {
+        "actor": "Policy engine (code)",
+        "kind": "code",
+        "why": "Deterministic rules compute approvals, the budget check, review triggers and flags. The AI cannot remove anything it computes.",
+        "tools": [
+          "search_software_catalog"
+        ],
+        "cached_lookups": 4,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 0,
+        "note": null
+      },
+      {
+        "actor": "Guardrails (code)",
+        "kind": "code",
+        "why": "Checks the AI proposal against the policy engine: restores required approvals and flags, grounds data-class quotes and evidence, filters wording.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": null,
+        "note": "1 correction(s)"
+      }
+    ]
   },
   "score": {
     "case_id": "G-15",

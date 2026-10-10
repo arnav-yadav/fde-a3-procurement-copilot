@@ -673,7 +673,60 @@
       "recommendation": true,
       "next_step": true
     },
-    "error": null
+    "error": null,
+    "steps": [
+      {
+        "actor": "Orchestrator (code)",
+        "kind": "code",
+        "why": "Runs every evidence tool in a fixed order: request, budget, catalog, vendor.",
+        "tools": [
+          "get_request_details",
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 2.2,
+        "note": null
+      },
+      {
+        "actor": "Policy engine (code)",
+        "kind": "code",
+        "why": "Deterministic rules compute approvals, the budget check, review triggers and flags. The AI cannot remove anything it computes.",
+        "tools": [
+          "evaluate_policy_rules"
+        ],
+        "cached_lookups": 9,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 0.2,
+        "note": null
+      },
+      {
+        "actor": "Workflow LLM call",
+        "kind": "llm",
+        "why": "Reads the evidence gathered by code and decides in one forced call. No tools.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 1,
+        "tokens": 3683,
+        "ms": 2329.3,
+        "note": null
+      },
+      {
+        "actor": "Guardrails (code)",
+        "kind": "code",
+        "why": "Checks the AI proposal against the policy engine: restores required approvals and flags, grounds data-class quotes and evidence, filters wording.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": null,
+        "note": "4 correction(s)"
+      }
+    ]
   },
   "score": {
     "case_id": "G-23",

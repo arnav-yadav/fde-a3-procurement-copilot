@@ -20,7 +20,7 @@ Runs that fell back because the provider quota was exhausted are excluded from s
 | Specialist reviews proposed without a grounded data class (dropped, total) | n/a | 0 | 2 | 2 |
 | AI evidence removed for contradicting the budget check (C2, total) | n/a | 0 | 1 | 0 |
 | Evidence tools filled by the gate (total) | n/a | 0 | 0 | 0 |
-| Reviewer vs analyst, item level vs golden: helped / hurt / neutral / unknown | n/a | n/a | n/a | 4 / 1 / 57 / 24 |
+| Reviewer vs analyst, item level vs golden (main): helped / hurt / neutral / unknown | n/a | n/a | n/a | 4 / 1 / 57 / 24 |
 | Injection cases passed (3 per trial) | 9/9 | 9/9 | 9/9 | 9/9 |
 | Fault cases passed (2 per trial) | 6/6 | 6/6 | 6/6 | 5/6 |
 | Avg active latency (ms) | 51 | 2957 | 8112 | 8309 |
@@ -41,6 +41,7 @@ Runs that fell back because the provider quota was exhausted are excluded from s
 | AI-only held-out cases (H-01, H-03, H-05, H-06) | 0/12 | 6/12 | 8/12 | 7/12 |
 | Rules-solvable held-out cases incl. negative control (H-02, H-04) | 6/6 | 6/6 | 5/6 | 6/6 |
 | Held-out injection case | 0/3 | 3/3 | 3/3 | 3/3 |
+| Reviewer vs analyst, item level vs golden (held-out): helped / hurt / neutral / unknown | n/a | n/a | n/a | 3 / 1 / 23 / 0 |
 | Avg LLM calls / run (held-out) | 0.00 | 1.00 | 3.50 | 3.11 |
 | Runs excluded (provider quota exhausted) | 0 | 0 | 0 | 0 |
 

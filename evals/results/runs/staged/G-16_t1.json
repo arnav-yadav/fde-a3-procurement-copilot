@@ -672,7 +672,72 @@
       "recommendation": false,
       "next_step": false
     },
-    "error": null
+    "error": null,
+    "steps": [
+      {
+        "actor": "Orchestrator (code)",
+        "kind": "code",
+        "why": "Fetches the request and hands it to the analyst.",
+        "tools": [
+          "get_request_details"
+        ],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 0.7,
+        "note": null
+      },
+      {
+        "actor": "Analyst agent (LLM)",
+        "kind": "llm",
+        "why": "Gathers budget, catalog and vendor evidence and hands over a structured evidence pack.",
+        "tools": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "cached_lookups": 0,
+        "llm_calls": 3,
+        "tokens": null,
+        "ms": null,
+        "note": "1 invalid submission(s) repaired or rejected"
+      },
+      {
+        "actor": "Policy engine (code)",
+        "kind": "code",
+        "why": "Deterministic rules compute approvals, the budget check, review triggers and flags. The AI cannot remove anything it computes.",
+        "tools": [
+          "evaluate_policy_rules"
+        ],
+        "cached_lookups": 6,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 0.9,
+        "note": null
+      },
+      {
+        "actor": "Policy and risk reviewer (LLM)",
+        "kind": "llm",
+        "why": "Reads the raw tool results, the policy-engine result and the analyst's pack, then decides. No tools.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 1,
+        "tokens": null,
+        "ms": null,
+        "note": null
+      },
+      {
+        "actor": "Guardrails (code)",
+        "kind": "code",
+        "why": "Checks the AI proposal against the policy engine: restores required approvals and flags, grounds data-class quotes and evidence, filters wording.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": null,
+        "note": "no corrections needed"
+      }
+    ]
   },
   "score": {
     "case_id": "G-16",
