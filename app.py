@@ -46,7 +46,7 @@ SOURCE_LABEL = {"get_request_details": "Request", "check_budget": "Budget", "sea
                 "lookup_policy_section": "Policy text", "copilot_analysis": "Copilot"}
 ARCH_LABEL = {"workflow": "Workflow + 1 LLM", "single": "Single agent", "staged": "Staged: analyst + reviewer"}
 ARCHS = list(ARCH_LABEL)
-DEFAULT_ARCH = "single"  # the configuration chosen in docs/DECISION_MEMO.md
+DEFAULT_ARCH = "workflow"  # the configuration chosen in docs/DECISION_MEMO.md (IMPROVEMENTS.md §3 rule, run 3)
 
 _MD_SPECIAL = re.compile(r"([\\`*_{}\[\]()#+\-.!|~<>$:=&\"'])")
 
