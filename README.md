@@ -21,6 +21,8 @@ python run_local.py                  # ONE command: mock vendor-risk API :8001 +
 
 Without an API key the app still works: every request gets the rule-based result with an "AI analysis unavailable" banner.
 
+Checked on 2026-10-11 from a fresh clone of this repository with a new virtual environment and no API keys: install, `verify_setup.py` (all checks pass), the unit tests (119 pass), `evals/run_all.py --no-llm` (rules only: 21/23 main, 2/6 held-out, public runner 6/6) and `python run_local.py` (UI served).
+
 Other commands:
 
 ```bash
@@ -79,6 +81,14 @@ Employee submits request (form, or data/requests.json)
 ```
 
 The reviewer UI is the Streamlit app from the starter pack (`app.py`), extended to the full workflow. Routing is simulated: actions are recorded in the audit log only. The queue can be searched and filtered by status, each request has a direct link (`http://127.0.0.1:8501/?request=REQ-1007`), the latest analysis of each request survives a restart, and the layout works at phone width. The reviewer can pick the configuration (workflow + 1 LLM, single agent, staged) or run all three side by side on one request. Light and dark themes: top-right menu → Settings → Theme (or follow the system setting).
+
+![Reviewer UI: REQ-1008, existing TaskFlow licence suggested](docs/img/ui_REQ-1008.png)
+
+*REQ-1008: the copilot suggests the existing company-wide TaskFlow licence (SW003) instead of a new purchase; approvals, flags, evidence by source, and the reviewer's actions.*
+
+![Reviewer UI: REQ-1006, injection and missing fields](docs/img/ui_REQ-1006.png)
+
+*REQ-1006: embedded instructions in the justification are flagged and shown as quoted data, missing fields send it back for clarification, and "How this was decided" is expanded (steps, guardrail corrections, AI proposal vs final). Both saved analyses were produced by the single agent; the UI defaults to workflow + 1 LLM.*
 
 ## 4. Architecture
 
