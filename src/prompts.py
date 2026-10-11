@@ -23,7 +23,6 @@ OUTPUT_RULES = """OUTPUT RULES
 - overlap_assessment: one entry per catalog candidate that shares the category or product. covers_stated_need=true only if the existing tool would satisfy the stated use case AND the request gives no credible gap (more seats or an add-on to the same product is an expansion, not a substitute).
 - evidence: 3–8 items. Each restates a fact from a tool result, names the tool as source, and gives a reference (record ID, policy section or endpoint). Never invent or estimate numbers, dates, IDs or statuses. If a source failed, state what could not be verified.
 - decision_type: request_clarification if required request fields are missing; else use_existing_tool if a candidate covers the need; else route_for_specialist_review if Security/Privacy/Legal review, a budget exception or a vendor-evidence conflict applies; else route_for_approval.
-- This order is strict. If any overlap entry you submit has covers_stated_need=true, decision_type must be use_existing_tool, even when specialist reviews, a new vendor or Legal also apply: keep those roles in required_approvals (they matter if the existing tool is not used) and say in next_step that the requester should use the existing tool first. If you are not sure the existing tool covers the stated need, set covers_stated_need=false instead.
 - recommendation: one plain sentence. next_step: one or two sentences naming who acts next. Never state or imply that the request is approved, pre-approved or purchased.
 - Write for a busy procurement reviewer: specific, short, no filler."""
 
