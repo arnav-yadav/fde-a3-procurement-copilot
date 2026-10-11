@@ -52,7 +52,15 @@ python evals/run_all.py --no-llm                 # rules-only baseline (no key n
   python scripts/run_one.py REQ-X111 --fixtures --arch single   # --fixtures sets EXTRA_DATA_DIR=evals/fixtures
   ```
 
-  Screenshots: _(to be added: staged trace for REQ-1008; workflow trace for REQ-X111)_. Shared trace link: _(to be added)_.
+  Two of these traces, shared publicly (synthetic data):
+
+  - **Staged, REQ-1008** ([open trace](https://smith.langchain.com/public/fe69aefb-d024-4d19-8e2b-efb455b949b0/r)): code fetches the request, the analyst calls the three lookup tools over two LLM calls, code runs the policy engine, the reviewer decides in one forced call, and the guardrails assemble the result.
+
+    ![LangSmith trace: staged configuration on REQ-1008](docs/img/langsmith_staged.png)
+
+  - **Workflow + 1 LLM, REQ-X111** ([open trace](https://smith.langchain.com/public/5d8cc891-3073-4fd2-be6a-940c2a065c59/r)): code runs every tool and the policy engine in a fixed order, one LLM call interprets, and the guardrails re-run the policy engine with the customer-PII class the LLM quoted from the request (C3), adding Security and Privacy.
+
+    ![LangSmith trace: workflow configuration on REQ-X111](docs/img/langsmith_workflow.png)
 
 ## 3. Product workflow
 
