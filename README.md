@@ -213,6 +213,15 @@ Prompt injection: request text, vendor notes and API text reach the LLM only ins
 
 **Run history.** Run 2 (archived in [`evals/results/history/run2/`](evals/results/history/run2/summary.md): single 22/23, staged 20/23, rules only 21/23, 1 trial) was completed in two sessions because the free tier allows 500 requests per day per project. Both sessions used the same code, model and settings: `--resume` re-ran only the runs that the quota had stopped. Run-2 staged costs (5.00 LLM calls per run) predate change C5, which gave the analyst only the tools it needs; in run 3 staged averages 3.00, and no staged run repeated the analyst's vendor lookup (0 of 84 LLM runs, against 15 of 22 in run 2). Run 1, before change C1: single 18/23, staged 16/23, rules only 21/23 ([`history/run1_summary.md`](evals/results/history/run1_summary.md)).
 
+**Second model (partial).** The run-3 code (`run3-frozen`) was replicated on Groq `openai/gpt-oss-120b`, 1 trial, workflow and single, with calls paced for Groq's 8,000 tokens per minute (`LLM_MIN_INTERVAL_SECONDS=20`, `LLM_MAX_RETRIES=6`; nothing else changed). Groq's free tier also caps a key at 200,000 tokens per day, which stopped both configurations after the first 12–13 main cases; the run was not continued on another key. On the 12 cases both completed ([`evals/results/groq_run3/comparison.md`](evals/results/groq_run3/comparison.md), from `evals/compare_subset.py`):
+
+| Same 12 main cases (G-01 to G-12) | Groq, 1 trial | Gemini run 3, mean of 3 |
+|---|---:|---:|
+| Workflow + 1 LLM | 10/12 | 11.00/12 |
+| Single (A) | 10/12 | 12.00/12 |
+
+On Groq both configurations failed G-01 and G-11 the same way (use the existing tool for a seat expansion), and the single agent averaged 5.92 LLM calls and 16,255 tokens per run against 1.00 and 4,536 for the workflow. On this subset the gap between the two disappears on the second model; 12 cases is too few to claim more.
+
 **Run 4: a fix that was tried and rejected.** After run 3, an outside review asked for G-08 and H-03 to be fixed: the models' own overlap entry said an existing tool covers the need, yet they routed for approval or specialist review. Prompt change #6 made the decision order strict ("if your overlap entry says covers, decide use_existing_tool, and keep the required reviews"). It was evaluated the same way as run 3 (tag `run4-frozen`, separate worktree, tracing off), 1 trial, in [`evals/results/run4/`](evals/results/run4/summary.md):
 
 | Mean passes (run 3, 3 trials → run 4, 1 trial) | Workflow + 1 LLM | Single (A) | Staged (B) |
@@ -267,7 +276,7 @@ Before production:
   - Is SSO considered employee-PII processing by Privacy? We assumed not.
   - Who is the Department Head for departments without a Director? We show the nearest Director/VP as a hint.
   - Can AI tools approved for "limited use" be expanded to new data classes without a new assessment? We assumed no (policy §8).
-- **Small evaluation set and one free-tier model.** 29 cases, 3 trials, gemini-3.5-flash-lite: a one-case difference is within noise. The optional replication on a second model (Groq) was not run. The free tier allows 500 requests per day, so the 3 trials needed two days.
+- **Small evaluation set and one free-tier model.** 29 cases, 3 trials, gemini-3.5-flash-lite: a one-case difference is within noise. The second-model replication (Groq) is partial: its free tier's 200,000-tokens-per-day cap stopped it after 12 common cases. Gemini's free tier allows 500 requests per day, so the 3 trials needed two days.
 - **Quote grounding proves where a data class came from, not that it is right.** A verbatim quote can still be misread (G-10, G-21); the error is always an extra review, never a missing one.
 - **H-03** failed in every configuration and trial; the label was left unchanged (pre-registered).
 - **Manual review** covers 18 runs (6 per AI configuration, trial 1 only). Number-level grounding still lets a correct number with the wrong meaning through (G-02, single).

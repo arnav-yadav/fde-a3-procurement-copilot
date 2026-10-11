@@ -188,7 +188,7 @@ Prompts are stored verbatim from SPEC_TECHNICAL T16 in `src/prompts.py`. Each ch
 | C6 prompt | reuse the reviewer path with a flag | separate `SYSTEM_WORKFLOW` (the reviewer prompt with its first paragraph replaced) and its own module | The reviewer prompt refers to an analyst pack the workflow does not have |
 | C8 key disclosure | remove the second-project-key sentence from the README | kept for run 2 | It is true for run 2; removing it would hide how run 2 was completed. Run 3 used one key |
 | C8 order | implement C3–C6, then run | C3–C7 + smoke, then freeze: tag `run3-frozen`, all trials in a separate worktree; C9, C10 and tracing were built on main after the tag | No prompt, guardrail, policy-engine or agent edits during the trials |
-| C8 Groq replication | optional | not run | Time and quota |
+| C8 Groq replication | optional | partial: run-3 code, 1 trial, workflow + single, stopped by Groq's 200,000-tokens-per-day cap after 12 common cases (`evals/results/groq_run3/comparison.md`); not continued on another key | Free-tier limit; switching keys would mix accounts |
 | C9 steps | `step_no`, actor ids, `input_ref`, `output_ref` | actor label, why, tools, LLM calls, tokens, time, note; derived on read by `build_steps(trace)` | Works on run files written by the frozen code; inputs and outputs are already in the trace |
 | C9 LangSmith | `@traceable` on stages, tools and `assemble` | same, behind `src/tracing.py` (off by default, lazy import), plus `policy_engine.evaluate` | Trials ran with it off |
 | Dropped | (suggested in review) a deterministic PII keyword rule | not built | Keyword scans of free text are brittle (false positives, missed paraphrases); C3 grounds classes in verbatim quotes instead |
