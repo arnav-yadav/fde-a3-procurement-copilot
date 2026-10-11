@@ -213,6 +213,15 @@ Prompt injection: request text, vendor notes and API text reach the LLM only ins
 
 **Run history.** Run 2 (archived in [`evals/results/history/run2/`](evals/results/history/run2/summary.md): single 22/23, staged 20/23, rules only 21/23, 1 trial) was completed in two sessions because the free tier allows 500 requests per day per project. Both sessions used the same code, model and settings: `--resume` re-ran only the runs that the quota had stopped. Run-2 staged costs (5.00 LLM calls per run) predate change C5, which gave the analyst only the tools it needs; in run 3 staged averages 3.00, and no staged run repeated the analyst's vendor lookup (0 of 84 LLM runs, against 15 of 22 in run 2). Run 1, before change C1: single 18/23, staged 16/23, rules only 21/23 ([`history/run1_summary.md`](evals/results/history/run1_summary.md)).
 
+**Run 4: a fix that was tried and rejected.** After run 3, an outside review asked for G-08 and H-03 to be fixed: the models' own overlap entry said an existing tool covers the need, yet they routed for approval or specialist review. Prompt change #6 made the decision order strict ("if your overlap entry says covers, decide use_existing_tool, and keep the required reviews"). It was evaluated the same way as run 3 (tag `run4-frozen`, separate worktree, tracing off), 1 trial, in [`evals/results/run4/`](evals/results/run4/summary.md):
+
+| Mean passes (run 3, 3 trials → run 4, 1 trial) | Workflow + 1 LLM | Single (A) | Staged (B) |
+|---|---:|---:|---:|
+| Main (of 23) | 22.00 → 18 | 23.00 → 20 | 20.67 → 15 |
+| Held-out (of 6) | 4.00 → 4 | 4.33 → 3 | 4.33 → 3 |
+
+It fixed what it targeted (G-08 in all three configurations; H-03 for workflow and staged), but the models then chose "use existing tool" for seat expansions and add-ons (G-01, G-03, G-04, G-07) and for the negative control H-02; single's G-16 and staged's G-21 failed on that decision too. The change was reverted on `main` (`33b048f`), so the code is again the code run 3 evaluated, and run 3 remains the basis of the decision. The lesson: the models' `covers_stated_need` judgement is not reliable enough to drive the decision; a fix needs a code-side check (for example, treat a same-product seat expansion as not covering a new need), not a stricter prompt. H-03 is a held-out case, so run 4's held-out result is not an untouched measurement.
+
 **Reproduce:**
 
 ```bash
@@ -246,7 +255,7 @@ What each rung buys:
 
 Before production:
 
-1. Fix the workflow's G-08 pattern: when the model's own overlap entry says an existing tool covers the need, it should propose reusing it.
+1. Fix the G-08 / H-03 pattern in code, not in the prompt: run 4 showed that making the decision follow the model's own `covers_stated_need` fixes those two cases but breaks seat expansions and negative controls (main 18 / 20 / 15).
 2. Let the AI add `existing_tool_overlap` only when the catalog search returned a candidate the policy engine considered (5 failed runs came from this flag).
 3. Check data-class quotes for meaning as well as presence (G-10, G-21), and put the policy-engine result inside the untrusted-data block (see `docs/architecture.md`).
 4. Extend the budget-status cross-check (C2) to vendor and data-class claims.

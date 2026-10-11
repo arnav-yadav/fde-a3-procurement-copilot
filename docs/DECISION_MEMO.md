@@ -2,7 +2,7 @@
 
 ## Decision
 
-Between A (single agent) and B (analyst + reviewer), A wins, but we ship the rung below A: **workflow + one LLM call**. Code gathers the same evidence in a fixed order; one call interprets it. Our pre-registered rule (`IMPROVEMENTS.md` §3) chooses it: safe on every injection and fault case, within one case of the best on both sets, fewest LLM calls.
+Between A (single agent) and B (analyst + reviewer), A wins, but we ship the rung below A: **workflow + one LLM call**. Code gathers the evidence in a fixed order; one call interprets it. Our pre-registered rule (`IMPROVEMENTS.md` §3) chooses it: safe on every injection and fault case, within one case of the best on both sets, fewest LLM calls.
 
 ## Evidence
 
@@ -32,7 +32,7 @@ A is the most accurate (23/23 main, every trial). Against the workflow it costs 
 - H-03 failed everywhere: with specialist reviews also required, no configuration chose "use existing tool".
 - 5 failed runs (workflow 2, B 3) added an overlap flag the policy did not raise.
 - A verbatim quote can still be misread (G-10, G-21). By design this can only add a review, never remove one.
-- Before production: make the workflow propose reuse when its own overlap check says "covers", and restrict AI-added overlap flags.
+- A prompt-only G-08/H-03 fix (run 4) broke seat expansions (workflow main 22.00 → 18); reverted, it needs a code check.
 
 ## Why this is the right MVP
 
