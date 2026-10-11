@@ -14,6 +14,7 @@ python evals/run_all.py [--trials N] [--architectures workflow,single,staged] [-
   --resume skips runs that already have a valid result; --fresh deletes old runs for the selected columns.
 - If the provider quota is exhausted, remaining LLM runs are skipped (resume later with --resume).
 - --summary-only rebuilds the summary from the run files present; it runs nothing and makes no LLM calls.
+- --results-dir DIR keeps a separate run (e.g. run 4) apart from evals/results/.
 """
 from __future__ import annotations
 
@@ -122,6 +123,8 @@ def main() -> None:
     ap.add_argument("--skip-public", action="store_true")
     ap.add_argument("--resume", action="store_true", help="skip runs that already have a valid result file")
     ap.add_argument("--fresh", action="store_true", help="delete existing run files for the selected columns")
+    ap.add_argument("--results-dir", default=None,
+                    help="write runs and summary here instead of evals/results/ (e.g. evals/results/run4 for a separate run)")
     ap.add_argument("--summary-only", action="store_true",
                     help="only rebuild summary.md/json and golden_runs.csv from the existing run files (no runs, no LLM)")
     ap.add_argument("--save", action="store_true",
@@ -129,7 +132,10 @@ def main() -> None:
     args = ap.parse_args()
 
     global RESULTS, RUNS
-    if args.no_llm and not args.save:  # a deterministic check must not overwrite the committed LLM results
+    if args.results_dir:
+        RESULTS = (ROOT / args.results_dir).resolve()
+        RUNS = RESULTS / "runs"
+    elif args.no_llm and not args.save:  # a deterministic check must not overwrite the committed LLM results
         RESULTS = ROOT / "runtime" / "eval_scratch"
         RUNS = RESULTS / "runs"
 
