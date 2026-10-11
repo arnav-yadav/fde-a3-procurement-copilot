@@ -21,7 +21,7 @@ python run_local.py                  # ONE command: mock vendor-risk API :8001 +
 
 Without an API key the app still works: every request gets the rule-based result with an "AI analysis unavailable" banner.
 
-Checked on 2026-10-11 from a fresh clone of this repository with a new virtual environment and no API keys: install, `verify_setup.py` (all checks pass), the unit tests (119 pass), `evals/run_all.py --no-llm` (rules only: 21/23 main, 2/6 held-out, public runner 6/6) and `python run_local.py` (UI served).
+Checked on 2026-10-11 from a fresh clone of this repository with a new virtual environment and no API keys: install, `verify_setup.py` (all checks pass), the unit tests (120 pass), `evals/run_all.py --no-llm` (rules only: 21/23 main, 2/6 held-out, public runner 6/6) and `python run_local.py` (UI served).
 
 Other commands:
 
