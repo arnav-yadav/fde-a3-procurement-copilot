@@ -1,0 +1,960 @@
+{
+  "case": "G-23",
+  "architecture": "staged",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-X111",
+    "recommendation": "Route for specialist review: Route for specialist review before any business approval: Security review and Privacy review.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E003 Elena Garcia (Sales, IC3); annual cost $7,000; users 8; data access internal_documents",
+        "reference": "employees.csv:E003"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $7,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Sales available software budget $18,000; request $7,000 -> within budget ($11,000 left)",
+        "reference": "department_budgets.csv:Sales"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW006 MetricLoop (Analytics / BI, Company-wide, 55 seats, Approved) matches by same_vendor -> evidence only, no overlap flag",
+        "reference": "software_catalog.csv:SW006"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V006 MetricLoop: procurement Approved, security Approved (review 2026-05-10, 143 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V006"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-05-10, stores data outside region no, processes personal data yes",
+        "reference": "GET /vendor-risk/MetricLoop"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Data classes: customer_pii (AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026'))",
+        "reference": "Policy \u00a75, \u00a76"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Security review required: Sensitive data/access: customer_pii (AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026'))",
+        "reference": "Policy \u00a75"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Privacy review required: Processes customer_pii",
+        "reference": "Policy \u00a76"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Sales department has available budget of $18,000.0, and annual cost of $7,000.0 is within budget.",
+        "reference": "department_budgets.csv:Sales"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "Catalog search found existing product MetricLoop (SW006) under category Analytics / BI with same vendor MetricLoop, company-wide scope, and 55 licensed seats.",
+        "reference": "search_software_catalog"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor MetricLoop is registered and approved in the internal registry with security review date 2026-05-10 and approved legal terms.",
+        "reference": "get_vendor_status"
+      }
+    ],
+    "required_approvals": [
+      "Department Head",
+      "Procurement",
+      "Security",
+      "Privacy"
+    ],
+    "missing_information": [],
+    "risk_flags": [
+      "existing_tool_overlap",
+      "security_review_required",
+      "privacy_review_required"
+    ],
+    "next_step": "Send the evidence pack to Department Head, Procurement, Security and Privacy; Security and Privacy review first.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 4,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261011T091202-42a833b0",
+    "request_id": "REQ-X111",
+    "architecture": "staged",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_specialist_review",
+    "latency_total_ms": 23909.2,
+    "llm_wait_ms": 15006.2,
+    "latency_active_ms": 8903.0,
+    "llm_ms": 8870.4,
+    "tool_ms": 8.2,
+    "llm_calls": 4,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 11675,
+      "completion_tokens": 1742,
+      "total_tokens": 13417
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.7,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.7,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 0.8,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "MetricLoop"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 4.1,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "MetricLoop"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.9,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-X111"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "MetricLoop"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "llm_log": [
+      {
+        "ms": 1394.5,
+        "wait_ms": 3276.7,
+        "attempts": 1,
+        "prompt_tokens": 1886,
+        "completion_tokens": 69,
+        "total_tokens": 1955
+      },
+      {
+        "ms": 2775.4,
+        "wait_ms": 4598.2,
+        "attempts": 1,
+        "prompt_tokens": 2635,
+        "completion_tokens": 528,
+        "total_tokens": 3163
+      },
+      {
+        "ms": 2088.2,
+        "wait_ms": 3221.9,
+        "attempts": 1,
+        "prompt_tokens": 2983,
+        "completion_tokens": 556,
+        "total_tokens": 3539
+      },
+      {
+        "ms": 2612.3,
+        "wait_ms": 3909.4,
+        "attempts": 1,
+        "prompt_tokens": 4171,
+        "completion_tokens": 589,
+        "total_tokens": 4760
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-X111\", \"facts\": {\"requester_id\": \"E003\", \"annual_cost_usd\": 7000.0, \"user_count\": 8, \"data_access_level\": \"internal_documents\", \"integrations_count\": 0, \"urgency_informational_only\": \"normal\"}, \"untrusted_text\": {\"product_name\": \"MetricLoop Lead Scoring\", \"vendor_name\": \"MetricLoop\", \"category\": \"Sales Intelligence\", \"business_justification\": \"Upload our customer contact lists (names, emails, phone numbers) so the sales team can score and enrich leads.\", \"requested_integrations\": [], \"raw_data_access_level\": \"internal_documents\"}, \"requester\": {\"id\": \"E003\", \"name\": \"Elena Garcia\", \"department\": \"Sales\", \"level\": \"IC3\", \"manager_hint\": \"Robert King\", \"department_head_hint\": \"Robert King (Director, Go To Market)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"department\": \"Sales\", \"annual_cost\": 7000.0, \"available_usd\": 18000.0, \"committed_usd\": 202000.0, \"annual_budget_usd\": 220000.0, \"within_budget\": true, \"remaining_after_usd\": 11000.0, \"reference\": \"department_budgets.csv:Sales\"}\n{\"status\": \"ok\", \"request_category\": \"Sales Intelligence\", \"keywords_used\": [], \"candidates\": [{\"software_id\": \"SW006\", \"product_name\": \"MetricLoop\", \"vendor_name\": \"MetricLoop\", \"category\": \"Analytics / BI\", \"status\": \"Approved\", \"licensed_seats\": 55, \"scope\": \"Company-wide\", \"annual_cost_usd\": 52000.0, \"match\": [\"same_vendor\"], \"raises_overlap_flag\": false, \"purchase_history\": [], \"untrusted_text\": {\"notes\": \"Dashboards and BI\"}}], \"overlap_flag_candidates\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"MetricLoop\", \"reference_date\": \"2026-09-30\", \"registry\": {\"vendor_id\": \"V006\", \"vendor_name\": \"MetricLoop\", \"procurement_status\": \"Approved\", \"security_status\": \"Approved\", \"security_review_date\": \"2026-05-10\", \"legal_terms_status\": \"Approved\"}, \"api\": {\"outcome\": \"ok\", \"status_code\": 200, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/MetricLoop\", \"error\": null, \"record\": {\"vendor_name\": \"MetricLoop\", \"risk_level\": \"low\", \"security_review_status\": \"approved\", \"last_review_date\": \"2026-05-10\", \"processes_personal_data\": true, \"stores_data_outside_region\": false}}, \"derived\": {\"registered\": true, \"registry_class\": \"approved\", \"registry_review_date\": \"2026-05-10\", \"registry_age_days\": 143, \"registry_current\": true, \"api_outcome\": \"ok\", \"api_class\": \"approved\", \"api_review_date\": \"2026-05-10\", \"api_age_days\": 143, \"expired\": false, \"conflict\": false, \"cleared\": true, \"new_vendor\": false, \"procurement_status\": \"Approved\", \"legal_terms_status\": \"Approved\", \"legal_terms_approved\": true, \"stores_data_outside_region\": false, \"processes_personal_data\": true}, \"untrusted_text\": {\"registry_notes\": \"Standard vendor\", \"api_notes\": \"Current assessment.\"}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-X111\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Department Head\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $7,000\"]}, {\"role\": \"Procurement\", \"reasons\": [\"\\u00a74 Financial tier $1,000.01-$10,000 for annual cost $7,000\"]}], \"risk_flags\": [], \"flag_details\": {}, \"missing_information\": [], \"request_fields_missing\": false, \"financial_tier\": \"$1,000.01-$10,000\", \"data_classes\": [], \"overlap_flag_candidates\": [], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_approval\"}",
+    "proposals": {
+      "analyst": {
+        "need_summary": "Purchase MetricLoop Lead Scoring seats for the sales team to score and enrich customer contact lists.",
+        "implied_data_classes": [
+          {
+            "data_class": "customer_pii",
+            "quote": "Upload our customer contact lists (names, emails, phone numbers) so the sales team can score and enrich leads."
+          }
+        ],
+        "overlap_assessment": [
+          {
+            "software_id": "SW006",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": true,
+            "reason": "MetricLoop is already licensed company-wide under SW006, so the existing deployment may cover the stated need if seats are available."
+          }
+        ],
+        "vendor_observations": [
+          "Internal registry and external vendor-risk service are in full agreement: MetricLoop is approved, low risk, last reviewed 2026-05-10 (143 days ago, within 365 days), and stores no data outside the region."
+        ],
+        "uncertainties": [
+          "Whether existing SW006 licenses have available seat capacity for the 8 requested users without incurring new cost."
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Sales department has available budget of $18,000.0, and request annual cost of $7,000.0 is within budget.",
+            "reference": "department_budgets.csv:Sales"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog search found existing product MetricLoop (SW006) under category Analytics / BI with same vendor MetricLoop, company-wide scope, and 55 licensed seats.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor MetricLoop is registered and approved in the internal registry with security review date 2026-05-10 and approved legal terms.",
+            "reference": "get_vendor_status"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "External vendor-risk service reports MetricLoop risk level as low, security review status approved on 2026-05-10, processes personal data, and stores no data outside region.",
+            "reference": "http://127.0.0.1:8011/vendor-risk/MetricLoop"
+          }
+        ],
+        "gaps": [
+          "Need clarification on whether the existing MetricLoop company-wide license (SW006) can accommodate the 8 requested seats or if a new purchase is required."
+        ],
+        "unsupported_claims": []
+      },
+      "reviewer": {
+        "decision_type": "use_existing_tool",
+        "recommendation": "Route the request to use existing software SW006 (MetricLoop) and verify available seat capacity before considering a new purchase.",
+        "next_step": "The requester should check whether existing SW006 licenses have available seat capacity for the 8 requested users before proceeding with any new purchase.",
+        "required_approvals": [
+          {
+            "role": "Department Head",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $7,000"
+          },
+          {
+            "role": "Procurement",
+            "reason": "\u00a74 Financial tier $1,000.01-$10,000 for annual cost $7,000"
+          }
+        ],
+        "risk_flags": [
+          "existing_tool_overlap"
+        ],
+        "missing_information": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW006",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": true,
+            "reason": "MetricLoop is already licensed company-wide under SW006, so the existing deployment may cover the stated need if seats are available."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Sales department has available budget of $18,000.0, and annual cost of $7,000.0 is within budget.",
+            "reference": "department_budgets.csv:Sales"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "Catalog search found existing product MetricLoop (SW006) under category Analytics / BI with same vendor MetricLoop, company-wide scope, and 55 licensed seats.",
+            "reference": "search_software_catalog"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor MetricLoop is registered and approved in the internal registry with security review date 2026-05-10 and approved legal terms.",
+            "reference": "get_vendor_status"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "External vendor-risk service reports MetricLoop risk level as low, security review status approved on 2026-05-10, and stores no data outside region.",
+            "reference": "http://127.0.0.1:8011/vendor-risk/MetricLoop"
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": "null",
+        "implied_data_classes": [
+          {
+            "data_class": "customer_pii",
+            "quote": "Upload our customer contact lists (names, emails, phone numbers) so the sales team can score and enrich leads."
+          }
+        ],
+        "analyst_disagreements": []
+      }
+    },
+    "policy": {
+      "request_id": "REQ-X111",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Department Head",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $7,000"
+            }
+          ],
+          "name_hint": "Robert King (Director, Go To Market)"
+        },
+        {
+          "role": "Procurement",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier $1,000.01-$10,000 for annual cost $7,000"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Security",
+          "reasons": [
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a75",
+              "detail": "Sensitive data/access: customer_pii (AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026'))"
+            }
+          ],
+          "name_hint": null
+        },
+        {
+          "role": "Privacy",
+          "reasons": [
+            {
+              "rule": "R7",
+              "policy_ref": "\u00a76",
+              "detail": "Processes customer_pii"
+            }
+          ],
+          "name_hint": null
+        }
+      ],
+      "flags": [
+        "security_review_required",
+        "privacy_review_required"
+      ],
+      "flag_reasons": {
+        "security_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: customer_pii (AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026'))"
+          }
+        ],
+        "privacy_review_required": [
+          {
+            "rule": "R11",
+            "policy_ref": "\u00a76",
+            "detail": "Processes customer_pii"
+          }
+        ]
+      },
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "$1,000.01-$10,000",
+      "data_classes": [
+        "customer_pii"
+      ],
+      "data_class_sources": {
+        "customer_pii": [
+          "AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026')"
+        ]
+      },
+      "overlap_flag_candidates": [],
+      "requester": {
+        "id": "E003",
+        "name": "Elena Garcia",
+        "department": "Sales",
+        "level": "IC3",
+        "manager_hint": "Robert King",
+        "department_head_hint": "Robert King (Director, Go To Market)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Sales",
+        "annual_cost": 7000.0,
+        "available_usd": 18000.0,
+        "committed_usd": 202000.0,
+        "annual_budget_usd": 220000.0,
+        "within_budget": true,
+        "remaining_after_usd": 11000.0,
+        "reference": "department_budgets.csv:Sales"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "MetricLoop",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V006",
+          "vendor_name": "MetricLoop",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-05-10",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/MetricLoop",
+          "error": null,
+          "record": {
+            "vendor_name": "MetricLoop",
+            "risk_level": "low",
+            "security_review_status": "approved",
+            "last_review_date": "2026-05-10",
+            "processes_personal_data": true,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-05-10",
+          "registry_age_days": 143,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-05-10",
+          "api_age_days": 143,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": true
+        },
+        "untrusted_text": {
+          "registry_notes": "Standard vendor",
+          "api_notes": "Current assessment."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E003 Elena Garcia (Sales, IC3); annual cost $7,000; users 8; data access internal_documents",
+          "reference": "employees.csv:E003",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $7,000 -> tier $1,000.01-$10,000 -> Department Head, Procurement",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Sales available software budget $18,000; request $7,000 -> within budget ($11,000 left)",
+          "reference": "department_budgets.csv:Sales",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW006 MetricLoop (Analytics / BI, Company-wide, 55 seats, Approved) matches by same_vendor -> evidence only, no overlap flag",
+          "reference": "software_catalog.csv:SW006",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V006 MetricLoop: procurement Approved, security Approved (review 2026-05-10, 143 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V006",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-05-10, stores data outside region no, processes personal data yes",
+          "reference": "GET /vendor-risk/MetricLoop",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Data classes: customer_pii (AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026'))",
+          "reference": "Policy \u00a75, \u00a76",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Security review required: Sensitive data/access: customer_pii (AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026'))",
+          "reference": "Policy \u00a75",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Privacy review required: Processes customer_pii",
+          "reference": "Policy \u00a76",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "submission_invalid",
+        "stage": "analyst",
+        "error": "[{\"type\":\"missing\",\"loc\":[\"evidence\",3,\"source\"],\"msg\":\"Field required\",\"input\":{\"finding\":\"External vendor-risk service reports MetricLoop risk level as low, security review status approved on 2026-05-10, processes personal data, and stores no data outside region.\",\"reference\":\"get_vendor_status\"}}]"
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 3,
+        "forced": true,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 1,
+          "schema_chars": 1885
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "reviewer",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 1,
+          "schema_chars": 3206
+        }
+      },
+      {
+        "event": "implied_class_accepted",
+        "data_class": "customer_pii",
+        "quote": "Upload our customer contact lists (names, emails, phone numbers) so the sales team can score and enrich leads."
+      },
+      {
+        "event": "code_restored_approval",
+        "role": "Security"
+      },
+      {
+        "event": "code_restored_approval",
+        "role": "Privacy"
+      },
+      {
+        "event": "llm_added_flag",
+        "flag": "existing_tool_overlap"
+      },
+      {
+        "event": "code_restored_flag",
+        "flag": "security_review_required"
+      },
+      {
+        "event": "code_restored_flag",
+        "flag": "privacy_review_required"
+      },
+      {
+        "event": "llm_decision_overridden",
+        "proposed": "use_existing_tool",
+        "final": "route_for_specialist_review"
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 4,
+      "submission_invalid": 1,
+      "implied_class_accepted": 1,
+      "code_restored_approval": 2,
+      "llm_added_flag": 1,
+      "code_restored_flag": 2,
+      "llm_decision_overridden": 1,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Department Head",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $7,000"
+          }
+        ],
+        "name_hint": "Robert King (Director, Go To Market)"
+      },
+      {
+        "role": "Procurement",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier $1,000.01-$10,000 for annual cost $7,000"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Security",
+        "reasons": [
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a75",
+            "detail": "Sensitive data/access: customer_pii (AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026'))"
+          }
+        ],
+        "name_hint": null
+      },
+      {
+        "role": "Privacy",
+        "reasons": [
+          {
+            "rule": "R7",
+            "policy_ref": "\u00a76",
+            "detail": "Processes customer_pii"
+          }
+        ],
+        "name_hint": null
+      }
+    ],
+    "flag_reasons": {
+      "security_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a75",
+          "detail": "Sensitive data/access: customer_pii (AI: implied customer_pii (quote: 'upload our customer contact lists (names, emails, phone numbers) so the sales t\u2026'))"
+        }
+      ],
+      "privacy_review_required": [
+        {
+          "rule": "R11",
+          "policy_ref": "\u00a76",
+          "detail": "Processes customer_pii"
+        }
+      ],
+      "existing_tool_overlap": [
+        {
+          "rule": "AI",
+          "policy_ref": "",
+          "detail": "Agent assessment"
+        }
+      ]
+    },
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": true,
+      "next_step": true
+    },
+    "error": null,
+    "steps": [
+      {
+        "actor": "Orchestrator (code)",
+        "kind": "code",
+        "why": "Fetches the request and hands it to the analyst.",
+        "tools": [
+          "get_request_details"
+        ],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 0.7,
+        "note": null
+      },
+      {
+        "actor": "Analyst agent (LLM)",
+        "kind": "llm",
+        "why": "Gathers budget, catalog and vendor evidence and hands over a structured evidence pack.",
+        "tools": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "cached_lookups": 0,
+        "llm_calls": 3,
+        "tokens": 8657,
+        "ms": 6258.1,
+        "note": "1 invalid submission(s) repaired or rejected"
+      },
+      {
+        "actor": "Policy engine (code)",
+        "kind": "code",
+        "why": "Deterministic rules compute approvals, the budget check, review triggers and flags. The AI cannot remove anything it computes.",
+        "tools": [
+          "evaluate_policy_rules"
+        ],
+        "cached_lookups": 10,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 0.9,
+        "note": null
+      },
+      {
+        "actor": "Policy and risk reviewer (LLM)",
+        "kind": "llm",
+        "why": "Reads the raw tool results, the policy-engine result and the analyst's pack, then decides. No tools.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 1,
+        "tokens": 4760,
+        "ms": 2612.3,
+        "note": null
+      },
+      {
+        "actor": "Guardrails (code)",
+        "kind": "code",
+        "why": "Checks the AI proposal against the policy engine: restores required approvals and flags, grounds data-class quotes and evidence, filters wording.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": null,
+        "note": "6 correction(s)"
+      }
+    ]
+  },
+  "score": {
+    "case_id": "G-23",
+    "request_id": "REQ-X111",
+    "architecture": "staged",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "approvals,flags,decision",
+    "tests": "security_sensitive,ai_interpretation",
+    "decision_type": "route_for_specialist_review",
+    "approvals_ok": true,
+    "flags_ok": false,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": false,
+    "failures": "flags: unexpected ['existing_tool_overlap']",
+    "latency_total_ms": 23909.2,
+    "latency_active_ms": 8903.0,
+    "llm_wait_ms": 15006.2,
+    "llm_calls": 4,
+    "tool_calls": 5,
+    "total_tokens": 13417,
+    "run_id": "20261011T091202-42a833b0",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 2,
+    "code_restored_flag": 2,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 1,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 1,
+    "implied_class_ungrounded": 0,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [
+      {
+        "case_id": "G-23",
+        "item": "overlap SW006 covers_stated_need",
+        "analyst": true,
+        "reviewer": true,
+        "truth": false,
+        "verdict": "neutral"
+      },
+      {
+        "case_id": "G-23",
+        "item": "implied PII",
+        "analyst": true,
+        "reviewer": true,
+        "truth": true,
+        "verdict": "neutral"
+      }
+    ],
+    "reviewer_helped": 0,
+    "reviewer_hurt": 0,
+    "reviewer_neutral": 2,
+    "reviewer_unknown": 0,
+    "raw_decision_ok": false,
+    "raw_approvals_ok": false,
+    "raw_flags_ok": false,
+    "trial": 1
+  }
+}

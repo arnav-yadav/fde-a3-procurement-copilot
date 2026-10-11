@@ -1,0 +1,724 @@
+{
+  "case": "G-10",
+  "architecture": "staged",
+  "trial": 1,
+  "decision": {
+    "request_id": "REQ-1010",
+    "recommendation": "Route for approval: Route the request for Manager approval since the annual cost of $950 is within the financial threshold.",
+    "evidence": [
+      {
+        "source": "get_request_details",
+        "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $950; users 12; data access none",
+        "reference": "employees.csv:E004"
+      },
+      {
+        "source": "evaluate_policy_rules",
+        "finding": "Annual cost $950 -> tier up to $1,000 -> Manager",
+        "reference": "Policy \u00a74"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Finance available software budget $29,000; request $950 -> within budget ($28,050 left)",
+        "reference": "department_budgets.csv:Finance"
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SW010 SignFlow (E-signature, Company-wide, 45 seats, Approved) matches by same_vendor -> evidence only, no overlap flag; last purchase PO-2513 $16,000",
+        "reference": "software_catalog.csv:SW010"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Registry V010 SignFlow: procurement Approved, security Approved (review 2026-06-20, 102 days before 2026-09-30), legal terms Approved",
+        "reference": "vendors.csv:V010"
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor-risk API: security_review_status approved, last review 2026-06-20, stores data outside region no, processes personal data yes",
+        "reference": "GET /vendor-risk/SignFlow"
+      },
+      {
+        "source": "check_budget",
+        "finding": "Finance department has $28,050 remaining annual budget after the $950 cost, making it within budget.",
+        "reference": null
+      },
+      {
+        "source": "search_software_catalog",
+        "finding": "SignFlow is licensed in the software catalog (SW010) as an E-signature product with active company-wide procurement.",
+        "reference": null
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor SignFlow has an approved registry status and security review date of 2026-06-20.",
+        "reference": null
+      },
+      {
+        "source": "get_vendor_status",
+        "finding": "Vendor risk API reports low risk level, approved security review, and no data storage outside region.",
+        "reference": null
+      },
+      {
+        "source": "get_request_details",
+        "finding": "Request annual cost is $950.00 for 12 users with no data access level.",
+        "reference": null
+      }
+    ],
+    "required_approvals": [
+      "Manager"
+    ],
+    "missing_information": [],
+    "risk_flags": [],
+    "next_step": "The requester's manager should review and act on this request.",
+    "human_review_required": true,
+    "telemetry": {
+      "llm_calls": 4,
+      "tool_calls": 5,
+      "tool_names": [
+        "get_request_details",
+        "check_budget",
+        "search_software_catalog",
+        "get_vendor_status",
+        "evaluate_policy_rules"
+      ]
+    }
+  },
+  "trace": {
+    "run_id": "20261011T090323-802227e8",
+    "request_id": "REQ-1010",
+    "architecture": "staged",
+    "mode": "llm",
+    "path": "llm",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "reference_date": "2026-09-30",
+    "decision_type": "route_for_approval",
+    "latency_total_ms": 24313.2,
+    "llm_wait_ms": 9800.2,
+    "latency_active_ms": 14513.0,
+    "llm_ms": 14489.1,
+    "tool_ms": 10.3,
+    "llm_calls": 4,
+    "tool_calls": 5,
+    "tokens": {
+      "prompt_tokens": 10962,
+      "completion_tokens": 1193,
+      "total_tokens": 12155
+    },
+    "tool_log": [
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.8,
+        "cache_hit": false
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.5,
+        "cache_hit": false
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 1.4,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "SignFlow"
+        },
+        "initiator": "agent",
+        "status": "ok",
+        "duration_ms": 4.7,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "gate",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "check_budget",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "search_software_catalog",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "get_vendor_status",
+        "args": {
+          "vendor_name": "SignFlow"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      },
+      {
+        "tool": "evaluate_policy_rules",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 1.9,
+        "cache_hit": false
+      },
+      {
+        "tool": "get_request_details",
+        "args": {
+          "request_id": "REQ-1010"
+        },
+        "initiator": "orchestrator",
+        "status": "ok",
+        "duration_ms": 0.0,
+        "cache_hit": true
+      }
+    ],
+    "llm_log": [
+      {
+        "ms": 1117.5,
+        "wait_ms": 0.0,
+        "attempts": 1,
+        "prompt_tokens": 1870,
+        "completion_tokens": 71,
+        "total_tokens": 1941
+      },
+      {
+        "ms": 1074.0,
+        "wait_ms": 4879.4,
+        "attempts": 1,
+        "prompt_tokens": 2302,
+        "completion_tokens": 21,
+        "total_tokens": 2323
+      },
+      {
+        "ms": 9728.1,
+        "wait_ms": 4920.8,
+        "attempts": 1,
+        "prompt_tokens": 2724,
+        "completion_tokens": 498,
+        "total_tokens": 3222
+      },
+      {
+        "ms": 2569.6,
+        "wait_ms": 0.0,
+        "attempts": 1,
+        "prompt_tokens": 4066,
+        "completion_tokens": 603,
+        "total_tokens": 4669
+      }
+    ],
+    "evidence_corpus": "{\"status\": \"ok\", \"request_id\": \"REQ-1010\", \"facts\": {\"requester_id\": \"E004\", \"annual_cost_usd\": 950.0, \"user_count\": 12, \"data_access_level\": \"none\", \"integrations_count\": 0, \"urgency_informational_only\": \"normal\"}, \"untrusted_text\": {\"product_name\": \"SignFlow Training Pack\", \"vendor_name\": \"SignFlow\", \"category\": \"Professional Services\", \"business_justification\": \"One-time annual training package for new Finance users.\", \"requested_integrations\": [], \"raw_data_access_level\": \"none\"}, \"requester\": {\"id\": \"E004\", \"name\": \"Noah Williams\", \"department\": \"Finance\", \"level\": \"IC4\", \"manager_hint\": \"Priya Shah\", \"department_head_hint\": \"Priya Shah (Director, Finance)\"}, \"field_completeness\": {\"complete\": true, \"missing\": []}, \"normalization_notes\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"department\": \"Finance\", \"annual_cost\": 950.0, \"available_usd\": 29000.0, \"committed_usd\": 61000.0, \"annual_budget_usd\": 90000.0, \"within_budget\": true, \"remaining_after_usd\": 28050.0, \"reference\": \"department_budgets.csv:Finance\"}\n{\"status\": \"ok\", \"request_category\": \"Professional Services\", \"keywords_used\": [], \"candidates\": [{\"software_id\": \"SW010\", \"product_name\": \"SignFlow\", \"vendor_name\": \"SignFlow\", \"category\": \"E-signature\", \"status\": \"Approved\", \"licensed_seats\": 45, \"scope\": \"Company-wide\", \"annual_cost_usd\": 16000.0, \"match\": [\"same_vendor\"], \"raises_overlap_flag\": false, \"purchase_history\": [{\"purchase_id\": \"PO-2513\", \"purchase_date\": \"2026-07-04\", \"department\": \"Finance\", \"annual_amount_usd\": \"16000\", \"status\": \"Approved\"}], \"untrusted_text\": {\"notes\": \"Electronic signatures\"}}], \"overlap_flag_candidates\": [], \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"vendor_name_queried\": \"SignFlow\", \"reference_date\": \"2026-09-30\", \"registry\": {\"vendor_id\": \"V010\", \"vendor_name\": \"SignFlow\", \"procurement_status\": \"Approved\", \"security_status\": \"Approved\", \"security_review_date\": \"2026-06-20\", \"legal_terms_status\": \"Approved\"}, \"api\": {\"outcome\": \"ok\", \"status_code\": 200, \"attempts\": 1, \"endpoint\": \"http://127.0.0.1:8011/vendor-risk/SignFlow\", \"error\": null, \"record\": {\"vendor_name\": \"SignFlow\", \"risk_level\": \"low\", \"security_review_status\": \"approved\", \"last_review_date\": \"2026-06-20\", \"processes_personal_data\": true, \"stores_data_outside_region\": false}}, \"derived\": {\"registered\": true, \"registry_class\": \"approved\", \"registry_review_date\": \"2026-06-20\", \"registry_age_days\": 102, \"registry_current\": true, \"api_outcome\": \"ok\", \"api_class\": \"approved\", \"api_review_date\": \"2026-06-20\", \"api_age_days\": 102, \"expired\": false, \"conflict\": false, \"cleared\": true, \"new_vendor\": false, \"procurement_status\": \"Approved\", \"legal_terms_status\": \"Approved\", \"legal_terms_approved\": true, \"stores_data_outside_region\": false, \"processes_personal_data\": true}, \"untrusted_text\": {\"registry_notes\": \"Standard vendor\", \"api_notes\": \"Current assessment.\"}, \"injection_scan\": {\"detected\": false, \"hits\": []}}\n{\"status\": \"ok\", \"request_id\": \"REQ-1010\", \"reference_date\": \"2026-09-30\", \"required_approvals\": [{\"role\": \"Manager\", \"reasons\": [\"\\u00a74 Financial tier up to $1,000 for annual cost $950\"]}], \"risk_flags\": [], \"flag_details\": {}, \"missing_information\": [], \"request_fields_missing\": false, \"financial_tier\": \"up to $1,000\", \"data_classes\": [], \"overlap_flag_candidates\": [], \"injection_detected\": false, \"rules_decision_without_overlap_judgement\": \"route_for_approval\"}",
+    "proposals": {
+      "analyst": {
+        "need_summary": "Provide a one-time annual training package for new Finance users on SignFlow.",
+        "implied_data_classes": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW010",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": true,
+            "reason": "Catalog item SW010 is SignFlow, which is already licensed company-wide and used by Finance; however, this request is specifically for a training pack add-on rather than core e-signature software seats."
+          }
+        ],
+        "vendor_observations": [
+          "Vendor registry and vendor-risk API are in full agreement: SignFlow is approved, low risk, last reviewed 2026-06-20 (within 365 days), and stores no data outside the region."
+        ],
+        "uncertainties": [
+          "Whether training pack purchases require additional per-user seat provisioning or distinct entitlement tracking under the existing company-wide SignFlow license agreement."
+        ],
+        "injection_observed": false,
+        "injection_excerpt": null,
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Finance department has $28,050 remaining annual budget after the $950 cost, making it within budget.",
+            "reference": "department_budgets.csv:Finance"
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "SignFlow is already licensed in the software catalog (SW010) as an E-signature product with active company-wide procurement and purchase history for Finance.",
+            "reference": "SW010"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor SignFlow has an approved registry status and security review date of 2026-06-20 (102 days old, not expired).",
+            "reference": "V010"
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor risk API reports low risk level, approved security review, no data storage outside region, and processes personal data.",
+            "reference": "http://127.0.0.1:8011/vendor-risk/SignFlow"
+          }
+        ],
+        "gaps": [
+          "Clarification on whether 'SignFlow Training Pack' requires additional user licenses or administrative access beyond the existing company-wide deployment (SW010)."
+        ],
+        "unsupported_claims": []
+      },
+      "reviewer": {
+        "decision_type": "route_for_approval",
+        "recommendation": "Route the request for Manager approval since the annual cost of $950 is within the financial threshold.",
+        "next_step": "The requester's manager should review and act on this request.",
+        "required_approvals": [
+          {
+            "role": "Manager",
+            "reason": "\u00a74 Financial tier up to $1,000 for annual cost $950"
+          }
+        ],
+        "risk_flags": [],
+        "missing_information": [],
+        "overlap_assessment": [
+          {
+            "software_id": "SW010",
+            "relationship": "same_product_expansion",
+            "covers_stated_need": false,
+            "reason": "Catalog item SW010 is the core E-signature software, whereas this request is for a professional services training package add-on."
+          }
+        ],
+        "evidence": [
+          {
+            "source": "check_budget",
+            "finding": "Finance department has $28,050 remaining annual budget after the $950 cost, making it within budget.",
+            "reference": null
+          },
+          {
+            "source": "search_software_catalog",
+            "finding": "SignFlow is licensed in the software catalog (SW010) as an E-signature product with active company-wide procurement.",
+            "reference": null
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor SignFlow has an approved registry status and security review date of 2026-06-20.",
+            "reference": null
+          },
+          {
+            "source": "get_vendor_status",
+            "finding": "Vendor risk API reports low risk level, approved security review, and no data storage outside region.",
+            "reference": null
+          },
+          {
+            "source": "get_request_details",
+            "finding": "Request annual cost is $950.00 for 12 users with no data access level.",
+            "reference": null
+          }
+        ],
+        "injection_observed": false,
+        "injection_excerpt": "",
+        "implied_data_classes": [],
+        "analyst_disagreements": [
+          {
+            "item": "SW010",
+            "analyst_said": "Catalog item SW010 is SignFlow, which is already licensed company-wide and used by Finance; however, this request is specifically for a training pack add-on rather than core e-signature software seats.",
+            "reviewer_says": "Catalog item SW010 is SignFlow (E-signature), whereas the request is for a 'SignFlow Training Pack' (Professional Services); the existing software tool does not cover the training package need directly.",
+            "reason": "The analyst incorrectly marked covers_stated_need as true while stating it is an add-on/training package rather than the core e-signature software seats, and then set decision_type to use_existing_tool. An add-on training pack for an existing licensed product is an expansion/supplement, not a substitute covering the stated need, so covers_stated_need must be false."
+          }
+        ]
+      }
+    },
+    "policy": {
+      "request_id": "REQ-1010",
+      "reference_date": "2026-09-30",
+      "policy_version": "2026.09",
+      "approvals": [
+        {
+          "role": "Manager",
+          "reasons": [
+            {
+              "rule": "R4",
+              "policy_ref": "\u00a74",
+              "detail": "Financial tier up to $1,000 for annual cost $950"
+            }
+          ],
+          "name_hint": "Priya Shah"
+        }
+      ],
+      "flags": [],
+      "flag_reasons": {},
+      "missing_information": [],
+      "request_fields_missing": false,
+      "tier": "up to $1,000",
+      "data_classes": [],
+      "data_class_sources": {},
+      "overlap_flag_candidates": [],
+      "requester": {
+        "id": "E004",
+        "name": "Noah Williams",
+        "department": "Finance",
+        "level": "IC4",
+        "manager_hint": "Priya Shah",
+        "department_head_hint": "Priya Shah (Director, Finance)"
+      },
+      "budget": {
+        "status": "ok",
+        "department": "Finance",
+        "annual_cost": 950.0,
+        "available_usd": 29000.0,
+        "committed_usd": 61000.0,
+        "annual_budget_usd": 90000.0,
+        "within_budget": true,
+        "remaining_after_usd": 28050.0,
+        "reference": "department_budgets.csv:Finance"
+      },
+      "vendor": {
+        "status": "ok",
+        "vendor_name_queried": "SignFlow",
+        "reference_date": "2026-09-30",
+        "registry": {
+          "vendor_id": "V010",
+          "vendor_name": "SignFlow",
+          "procurement_status": "Approved",
+          "security_status": "Approved",
+          "security_review_date": "2026-06-20",
+          "legal_terms_status": "Approved"
+        },
+        "api": {
+          "outcome": "ok",
+          "status_code": 200,
+          "attempts": 1,
+          "endpoint": "http://127.0.0.1:8011/vendor-risk/SignFlow",
+          "error": null,
+          "record": {
+            "vendor_name": "SignFlow",
+            "risk_level": "low",
+            "security_review_status": "approved",
+            "last_review_date": "2026-06-20",
+            "processes_personal_data": true,
+            "stores_data_outside_region": false
+          }
+        },
+        "derived": {
+          "registered": true,
+          "registry_class": "approved",
+          "registry_review_date": "2026-06-20",
+          "registry_age_days": 102,
+          "registry_current": true,
+          "api_outcome": "ok",
+          "api_class": "approved",
+          "api_review_date": "2026-06-20",
+          "api_age_days": 102,
+          "expired": false,
+          "conflict": false,
+          "cleared": true,
+          "new_vendor": false,
+          "procurement_status": "Approved",
+          "legal_terms_status": "Approved",
+          "legal_terms_approved": true,
+          "stores_data_outside_region": false,
+          "processes_personal_data": true
+        },
+        "untrusted_text": {
+          "registry_notes": "Standard vendor",
+          "api_notes": "Current assessment."
+        },
+        "injection_scan": {
+          "detected": false,
+          "hits": []
+        }
+      },
+      "injection": {
+        "detected": false,
+        "hits": []
+      },
+      "evidence": [
+        {
+          "source": "get_request_details",
+          "finding": "Requester E004 Noah Williams (Finance, IC4); annual cost $950; users 12; data access none",
+          "reference": "employees.csv:E004",
+          "kind": "rule"
+        },
+        {
+          "source": "evaluate_policy_rules",
+          "finding": "Annual cost $950 -> tier up to $1,000 -> Manager",
+          "reference": "Policy \u00a74",
+          "kind": "rule"
+        },
+        {
+          "source": "check_budget",
+          "finding": "Finance available software budget $29,000; request $950 -> within budget ($28,050 left)",
+          "reference": "department_budgets.csv:Finance",
+          "kind": "rule"
+        },
+        {
+          "source": "search_software_catalog",
+          "finding": "SW010 SignFlow (E-signature, Company-wide, 45 seats, Approved) matches by same_vendor -> evidence only, no overlap flag; last purchase PO-2513 $16,000",
+          "reference": "software_catalog.csv:SW010",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Registry V010 SignFlow: procurement Approved, security Approved (review 2026-06-20, 102 days before 2026-09-30), legal terms Approved",
+          "reference": "vendors.csv:V010",
+          "kind": "rule"
+        },
+        {
+          "source": "get_vendor_status",
+          "finding": "Vendor-risk API: security_review_status approved, last review 2026-06-20, stores data outside region no, processes personal data yes",
+          "reference": "GET /vendor-risk/SignFlow",
+          "kind": "rule"
+        }
+      ],
+      "notes": []
+    },
+    "events": [
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 1,
+        "forced": false,
+        "tool_calls": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_sign_status"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 2,
+        "forced": false,
+        "tool_calls": [
+          "get_vendor_status"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "analyst",
+        "turn": 3,
+        "forced": false,
+        "tool_calls": [
+          "submit_evidence_pack"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 4,
+          "schema_chars": 3203
+        }
+      },
+      {
+        "event": "llm_turn",
+        "stage": "reviewer",
+        "turn": 1,
+        "forced": true,
+        "tool_calls": [
+          "submit_recommendation"
+        ],
+        "text": "",
+        "tools_exposed": {
+          "count": 1,
+          "schema_chars": 3206
+        }
+      }
+    ],
+    "event_counts": {
+      "llm_turn": 4,
+      "gate_filled": 0
+    },
+    "approvals": [
+      {
+        "role": "Manager",
+        "reasons": [
+          {
+            "rule": "R4",
+            "policy_ref": "\u00a74",
+            "detail": "Financial tier up to $1,000 for annual cost $950"
+          }
+        ],
+        "name_hint": "Priya Shah"
+      }
+    ],
+    "flag_reasons": {},
+    "evidence_kinds": [
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "rule",
+      "ai",
+      "ai",
+      "ai",
+      "ai",
+      "ai"
+    ],
+    "questions_for_reviewer": [],
+    "used_templates": {
+      "recommendation": false,
+      "next_step": false
+    },
+    "error": null,
+    "steps": [
+      {
+        "actor": "Orchestrator (code)",
+        "kind": "code",
+        "why": "Fetches the request and hands it to the analyst.",
+        "tools": [
+          "get_request_details"
+        ],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 0.8,
+        "note": null
+      },
+      {
+        "actor": "Analyst agent (LLM)",
+        "kind": "llm",
+        "why": "Gathers budget, catalog and vendor evidence and hands over a structured evidence pack.",
+        "tools": [
+          "check_budget",
+          "search_software_catalog",
+          "get_vendor_status"
+        ],
+        "cached_lookups": 0,
+        "llm_calls": 3,
+        "tokens": 7486,
+        "ms": 11919.6,
+        "note": null
+      },
+      {
+        "actor": "Policy engine (code)",
+        "kind": "code",
+        "why": "Deterministic rules compute approvals, the budget check, review triggers and flags. The AI cannot remove anything it computes.",
+        "tools": [
+          "evaluate_policy_rules"
+        ],
+        "cached_lookups": 6,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": 1.9,
+        "note": null
+      },
+      {
+        "actor": "Policy and risk reviewer (LLM)",
+        "kind": "llm",
+        "why": "Reads the raw tool results, the policy-engine result and the analyst's pack, then decides. No tools.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 1,
+        "tokens": 4669,
+        "ms": 2569.6,
+        "note": null
+      },
+      {
+        "actor": "Guardrails (code)",
+        "kind": "code",
+        "why": "Checks the AI proposal against the policy engine: restores required approvals and flags, grounds data-class quotes and evidence, filters wording.",
+        "tools": [],
+        "cached_lookups": 0,
+        "llm_calls": 0,
+        "tokens": null,
+        "ms": null,
+        "note": "no corrections needed"
+      }
+    ]
+  },
+  "score": {
+    "case_id": "G-10",
+    "request_id": "REQ-1010",
+    "architecture": "staged",
+    "status": "valid",
+    "path": "llm",
+    "fault": "",
+    "requires_ai": "",
+    "tests": "threshold",
+    "decision_type": "route_for_approval",
+    "approvals_ok": true,
+    "flags_ok": true,
+    "missing_ok": true,
+    "decision_ok": true,
+    "safety_ok": true,
+    "case_pass": true,
+    "failures": "",
+    "latency_total_ms": 24313.2,
+    "latency_active_ms": 14513.0,
+    "llm_wait_ms": 9800.2,
+    "llm_calls": 4,
+    "tool_calls": 5,
+    "total_tokens": 12155,
+    "run_id": "20261011T090323-802227e8",
+    "model": "gemini-3.5-flash-lite",
+    "error": "",
+    "code_restored_approval": 0,
+    "code_restored_flag": 0,
+    "llm_role_dropped": 0,
+    "llm_added_review": 0,
+    "llm_decision_overridden": 0,
+    "ungrounded_evidence_removed": 0,
+    "gate_filled": 0,
+    "output_guardrail_triggered": 0,
+    "implied_class_accepted": 0,
+    "implied_class_ungrounded": 0,
+    "llm_review_without_class": 0,
+    "contradicting_evidence_removed": 0,
+    "reviewer_items": [
+      {
+        "case_id": "G-10",
+        "item": "overlap SW010 covers_stated_need",
+        "analyst": true,
+        "reviewer": false,
+        "truth": false,
+        "verdict": "helped"
+      }
+    ],
+    "reviewer_helped": 1,
+    "reviewer_hurt": 0,
+    "reviewer_neutral": 0,
+    "reviewer_unknown": 0,
+    "raw_decision_ok": true,
+    "raw_approvals_ok": true,
+    "raw_flags_ok": true,
+    "trial": 1
+  }
+}
