@@ -50,7 +50,9 @@ FLAG_SHORT = {
     "vendor_review_expired": "expired vendor security review",
     "vendor_risk_unavailable": "vendor risk could not be verified",
 }
-AGENT_MERGEABLE_FLAGS = {"existing_tool_overlap", "prompt_injection_detected"}
+# existing_tool_overlap is not mergeable (C12): the policy engine raises it exactly when the catalog search returns a
+# flagged candidate (R5), so an AI-added overlap flag has no supporting candidate and is dropped (llm_flag_dropped).
+AGENT_MERGEABLE_FLAGS = {"prompt_injection_detected"}
 
 
 def output_filter_hit(text: str | None) -> bool:

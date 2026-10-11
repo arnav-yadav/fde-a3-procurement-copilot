@@ -50,6 +50,7 @@ python evals/run_all.py --trials 1          # starts mock API, runs public + gol
 python evals/run_all.py --no-llm            # deterministic-only run (no key needed); runtime/eval_scratch/ unless --save
 python evals/decision_rule.py --write       # apply the pre-registered §3 decision rule to the run files
 python evals/compare_subset.py evals/results/groq_run3 --write   # partial run vs run 3 on common cases
+python evals/replay_guardrails.py --out evals/results/replay_overlap  # current guardrails on recorded run-3 outputs; no LLM
 python scripts/backfill_steps.py            # add trace.steps (How this was decided) to stored run files; no LLM
 ```
 

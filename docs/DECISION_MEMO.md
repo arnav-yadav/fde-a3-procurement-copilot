@@ -6,7 +6,7 @@ Between A (single agent) and B (analyst + reviewer), A wins, but we ship the run
 
 ## Evidence
 
-Run 3 (`evals/results/summary.md`, `decision.md`): gemini-3.5-flash-lite, 3 trials, 23 main + 6 held-out cases (H-xx, fixed before round-2 code). AI-only: the six cases rules cannot pass by design.
+Run 3 (`evals/results/summary.md`, `decision.md`): gemini-3.5-flash-lite, 3 trials, 23 main + 6 held-out cases (H-xx, fixed in advance). AI-only: the six cases rules cannot pass by design.
 
 | | Rules only | Workflow + 1 LLM | A: single | B: staged |
 |---|---:|---:|---:|---:|
@@ -20,7 +20,7 @@ Run 3 (`evals/results/summary.md`, `decision.md`): gemini-3.5-flash-lite, 3 tria
 
 Evidence gathering is fixed and mandatory: in all 84 LLM runs, A called the same five tools as the workflow. A fixed path is a workflow; the AI only interprets.
 
-B's split (evidence vs policy review) is legitimate, and its reviewer caught errors: wrong PII on the negative control H-02 (every trial) and wrong "covers the need" claims (G-10, G-23). It also dropped correct PII on H-06: item by item, 7 helped, 2 hurt. Yet B was least consistent (same decision in 20/23 cases), failed the vendor-API-down case G-21 once by adding Privacy, and pays a second LLM stage per request.
+B's split (evidence vs policy review) is legitimate; its reviewer caught errors: wrong PII on the negative control H-02 (every trial) and wrong "covers the need" claims (G-10, G-23). It also dropped correct PII on H-06: item by item, 7 helped, 2 hurt. Yet B was least consistent (same decision in 20/23 cases), failed the vendor-API-down case G-21 once by adding Privacy, and pays a second LLM stage per request.
 
 ## Trade-offs
 
@@ -28,10 +28,10 @@ A is the most accurate (23/23 main, every trial). Against the workflow it costs 
 
 ## Risks / limitations
 
-- 29 cases, 3 trials, one free-tier model: one case is within noise.
+- 29 cases, 3 trials, one model: one case is within noise.
 - H-03 failed everywhere: with specialist reviews also required, no configuration chose "use existing tool".
-- 5 failed runs (workflow 2, B 3) added an overlap flag the policy did not raise.
-- A verbatim quote can still be misread (G-10, G-21). By design this can only add a review, never remove one.
+- 5 failed runs added an overlap flag the policy did not raise; code now drops it (replay: those 5 pass, nothing else changes).
+- A verbatim quote can still be misread (G-10, G-21); by design that only adds reviews.
 - A prompt-only G-08/H-03 fix (run 4) broke seat expansions (workflow main 22.00 → 18); reverted, it needs a code check.
 
 ## Why this is the right MVP

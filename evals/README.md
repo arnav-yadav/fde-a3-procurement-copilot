@@ -65,6 +65,8 @@ Runs that fell back to rules because the free-tier provider quota was exhausted 
 | `runs/<arch>/<case>_t<k>.json` | full decision + trace (tool log, raw proposals, guardrail events, timings) |
 | `public_<arch>.csv` / `.txt` | public runner results |
 | `decision.md` | the pre-registered decision rule applied to the run files |
+| `replay_overlap/` | the current guardrails replayed on the recorded run-3 LLM outputs (`evals/replay_guardrails.py`, no LLM calls) |
+| `run4/`, `groq_run3/` | run 4 (a rejected prompt fix) and the partial Groq replication (`comparison.md`) |
 | `manual_review.md` | review of 6 runs per AI configuration (AI-assisted pre-fill, confirmed by the author) |
 | `history/` | earlier runs (run 1 summary; run 2 in full) |
 

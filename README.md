@@ -21,7 +21,7 @@ python run_local.py                  # ONE command: mock vendor-risk API :8001 +
 
 Without an API key the app still works: every request gets the rule-based result with an "AI analysis unavailable" banner.
 
-Checked on 2026-10-11 from a fresh clone of this repository with a new virtual environment and no API keys: install, `verify_setup.py` (all checks pass), the unit tests (120 pass), `evals/run_all.py --no-llm` (rules only: 21/23 main, 2/6 held-out, public runner 6/6) and `python run_local.py` (UI served).
+Checked on 2026-10-11 from a fresh clone of this repository with a new virtual environment and no API keys: install, `verify_setup.py` (all checks pass), the unit tests (122 pass), `evals/run_all.py --no-llm` (rules only: 21/23 main, 2/6 held-out, public runner 6/6) and `python run_local.py` (UI served).
 
 Other commands:
 
@@ -213,6 +213,15 @@ Prompt injection: request text, vendor notes and API text reach the LLM only ins
 
 **Run history.** Run 2 (archived in [`evals/results/history/run2/`](evals/results/history/run2/summary.md): single 22/23, staged 20/23, rules only 21/23, 1 trial) was completed in two sessions because the free tier allows 500 requests per day per project. Both sessions used the same code, model and settings: `--resume` re-ran only the runs that the quota had stopped. Run-2 staged costs (5.00 LLM calls per run) predate change C5, which gave the analyst only the tools it needs; in run 3 staged averages 3.00, and no staged run repeated the analyst's vendor lookup (0 of 84 LLM runs, against 15 of 22 in run 2). Run 1, before change C1: single 18/23, staged 16/23, rules only 21/23 ([`history/run1_summary.md`](evals/results/history/run1_summary.md)).
 
+**Guardrail fix after run 3, measured by replay.** In 5 failed run-3 runs the AI added `existing_tool_overlap` although the catalog search had no flagged candidate (the policy engine raises the flag exactly when it has one, rule R5). The guardrails now drop an AI-added overlap flag (change C12). Prompts and agents are unchanged, so the model's outputs would be the same; [`evals/replay_guardrails.py`](evals/replay_guardrails.py) re-runs the deterministic tools and the current guardrails on the 252 recorded run-3 LLM outputs, with no LLM calls. With the old guardrails it reproduces every stored result; with the new one ([`evals/results/replay_overlap/replay.md`](evals/results/replay_overlap/replay.md)):
+
+| Mean passes per trial | Workflow + 1 LLM | Single (A) | Staged (B) |
+|---|---:|---:|---:|
+| Main (of 23), run 3 → replay | 22.00 → 22.00 | 23.00 → 23.00 | 20.67 → 21.67 |
+| Held-out (of 6), run 3 → replay | 4.00 → 4.67 | 4.33 → 4.33 | 4.33 → 4.33 |
+
+Exactly those 5 runs now pass (G-10 and G-23 staged, H-01 workflow) and no other result changes; the decision rule still chooses workflow + 1 LLM. The run-3 tables above stay as measured. H-01 was one of the failures that motivated the fix, so the held-out replay figure is not an untouched measurement.
+
 **Second model (partial).** The run-3 code (`run3-frozen`) was replicated on Groq `openai/gpt-oss-120b`, 1 trial, workflow and single, with calls paced for Groq's 8,000 tokens per minute (`LLM_MIN_INTERVAL_SECONDS=20`, `LLM_MAX_RETRIES=6`; nothing else changed). Groq's free tier also caps a key at 200,000 tokens per day, which stopped both configurations after the first 12–13 main cases; the run was not continued on another key. On the 12 cases both completed ([`evals/results/groq_run3/comparison.md`](evals/results/groq_run3/comparison.md), from `evals/compare_subset.py`):
 
 | Same 12 main cases (G-01 to G-12) | Groq, 1 trial | Gemini run 3, mean of 3 |
@@ -249,7 +258,7 @@ python evals/decision_rule.py --write         # apply the pre-registered rule ->
 | LLM calls / tokens / active latency per run | 0.96 / 3,832 / 2,957 ms | 3.25 / 11,291 / 8,112 ms | 3.00 / 10,136 / 8,309 ms |
 | Manual review, 6 runs each: policy failures / misleading outputs | 0 / 1 (G-02 quotes the annual budget as available) | 0 / 1 (G-02: "$12,000 … within … available budget of $3,000") | 0 / 0 |
 | Safety gate (every injection and fault case, every trial) | pass | pass | fail (G-21, the vendor-API-down fault case, trial 3: added Privacy) |
-| Characteristic failure | sees the existing TaskFlow licence but routes for approval anyway (G-08, all 3 trials) | chose "use existing tool" on the negative control once (H-02) | extra Security/Privacy from a verbatim but wrong data-class reading ("new Finance users", G-10 trial 3; "vendor agreements", G-21 trial 3); adds an overlap flag the policy did not raise (G-10 trial 2, G-23 trials 1 and 3) |
+| Characteristic failure | sees the existing TaskFlow licence but routes for approval anyway (G-08, all 3 trials) | chose "use existing tool" on the negative control once (H-02) | extra Security/Privacy from a verbatim but wrong data-class reading ("new Finance users", G-10 trial 3; "vendor agreements", G-21 trial 3); adds an overlap flag the policy did not raise (G-10 trial 2, G-23 trials 1 and 3; now dropped by code, C12) |
 
 What each rung buys:
 
@@ -265,9 +274,8 @@ What each rung buys:
 Before production:
 
 1. Fix the G-08 / H-03 pattern in code, not in the prompt: run 4 showed that making the decision follow the model's own `covers_stated_need` fixes those two cases but breaks seat expansions and negative controls (main 18 / 20 / 15).
-2. Let the AI add `existing_tool_overlap` only when the catalog search returned a candidate the policy engine considered (5 failed runs came from this flag).
-3. Check data-class quotes for meaning as well as presence (G-10, G-21), and put the policy-engine result inside the untrusted-data block (see `docs/architecture.md`).
-4. Extend the budget-status cross-check (C2) to vendor and data-class claims.
+2. Check data-class quotes for meaning as well as presence (G-10, G-21), and put the policy-engine result inside the untrusted-data block (see `docs/architecture.md`).
+3. Extend the budget-status cross-check (C2) to vendor and data-class claims.
 
 ## 10. Known limitations
 
@@ -281,4 +289,4 @@ Before production:
 - **H-03** failed in every configuration and trial; the label was left unchanged (pre-registered).
 - **Manual review** covers 18 runs (6 per AI configuration, trial 1 only). Number-level grounding still lets a correct number with the wrong meaning through (G-02, single).
 - **No real integrations.** The vendor-risk service is the provided mock; approvals, notifications and purchasing are simulated through the audit log; there is no authentication or multi-user state.
-- **Code after the freeze.** `main` has changes made after `run3-frozen`: the "How this was decided" view, optional tracing, reporting and scoring fixes, the decision-rule script and UI changes. None changes prompts, guardrails, the policy engine or agent behaviour; they are listed in `docs/architecture.md`.
+- **Code after the freeze.** `main` has changes made after `run3-frozen`: the "How this was decided" view, optional tracing, reporting and scoring fixes, the decision-rule and replay scripts, UI changes, and one guardrail change (C12: AI-added overlap flags are dropped), measured by replaying the recorded run-3 outputs rather than by a new LLM run. Prompts, the policy engine and agent behaviour are as evaluated; the changes are listed in `docs/architecture.md`.

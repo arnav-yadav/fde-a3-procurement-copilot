@@ -123,6 +123,27 @@ class GuardrailTests(unittest.TestCase):
         self.assertEqual(a.decision.required_approvals, policy.roles)
         self.assertEqual(len(events(ctx, "implied_class_ungrounded")), 2)
 
+    def test_ai_added_overlap_flag_without_candidate_is_dropped(self):
+        # C12: run 3 had 5 failed runs where the AI added existing_tool_overlap with no flagged catalog candidate
+        policy, ctx = run_policy("REQ-1010")  # Professional Services: same-vendor match only, no overlap flag (R5)
+        self.assertNotIn("existing_tool_overlap", policy.flags)
+        p = proposal(decision_type="route_for_approval", required_approvals=[{"role": "Manager", "reason": "tier"}],
+                     risk_flags=["existing_tool_overlap"])
+        with mock_vendor_api():
+            a = assemble(policy, p, ctx)
+        self.assertNotIn("existing_tool_overlap", a.decision.risk_flags)
+        self.assertIn({"event": "llm_flag_dropped", "flag": "existing_tool_overlap"}, ctx.events)
+
+    def test_policy_overlap_flag_is_kept(self):
+        policy, ctx = run_policy("REQ-1008")  # TaskFlow: flagged candidate SW003
+        self.assertIn("existing_tool_overlap", policy.flags)
+        p = proposal(decision_type="route_for_approval",
+                     required_approvals=[{"role": "Department Head", "reason": "t"}, {"role": "Procurement", "reason": "t"}],
+                     risk_flags=[])
+        with mock_vendor_api():
+            a = assemble(policy, p, ctx)
+        self.assertIn("existing_tool_overlap", a.decision.risk_flags)
+
     def test_quote_from_vendor_text_rejected(self):
         # SignFlow's vendor-risk record says it processes personal data; that is not the request's own text
         policy, ctx = run_policy("REQ-1001")
