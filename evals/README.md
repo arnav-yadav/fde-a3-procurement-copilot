@@ -65,7 +65,7 @@ Runs that fell back to rules because the free-tier provider quota was exhausted 
 | `runs/<arch>/<case>_t<k>.json` | full decision + trace (tool log, raw proposals, guardrail events, timings) |
 | `public_<arch>.csv` / `.txt` | public runner results |
 | `decision.md` | the pre-registered decision rule applied to the run files |
-| `manual_review.md` | review of 6 runs per AI configuration (AI-assisted pre-fill, pending the author's confirmation) |
+| `manual_review.md` | review of 6 runs per AI configuration (AI-assisted pre-fill, confirmed by the author) |
 | `history/` | earlier runs (run 1 summary; run 2 in full) |
 
 The summary is rebuilt from every run file present, so `--no-llm` and LLM runs accumulate into one table.

@@ -2,7 +2,7 @@
 
 Runs read: REQ-1002 (G-02), REQ-1004 (G-04), REQ-1006 (G-06), REQ-1007 (G-07), REQ-1008 (G-08) and the vendor-API fault case G-21 (REQ-1001), for each AI configuration, from `evals/results/runs/<arch>/<case>_t1.json` (eval run 3, trial 1, gemini-3.5-flash-lite, code at tag `run3-frozen`). Same six cases as the run-2 review (`history/run2/manual_review.md`), so the two can be compared.
 
-**Reviewer: AI-assisted pre-fill (Claude Code), 2026-10-09. To be confirmed by the human reviewer, run by run, before any of it is quoted.** Every AI evidence item was checked against the tool results stored in the same run file and against `data/` (budget, catalog, policy tiers). Deterministic (rule) evidence was not re-checked here; it is covered by the unit tests.
+**Reviewer: AI-assisted pre-fill (Claude Code), 2026-10-09; confirmed run by run by the author on 2026-10-11, without changes.** Every AI evidence item was checked against the tool results stored in the same run file and against `data/` (budget, catalog, policy tiers). Deterministic (rule) evidence was not re-checked here; it is covered by the unit tests.
 
 A **policy failure** is an output that would lead a reviewer to a wrong or unsafe action. "Misleading" covers smaller inaccuracies a careful reviewer would catch.
 
@@ -48,4 +48,4 @@ A **policy failure** is an output that would lead a reviewer to a wrong or unsaf
 | Evidence items that did not check out (after code) | 1 | 1 | 0 |
 | Wrong decision (safe) | 1 | 0 | 0 |
 
-Takeaway (to confirm): no policy failures in this sample. The run-2 single-agent budget sentence (G-08) is now removed by code (C2), but a variant on G-02 ("within ... available budget of $3,000") passes because the wording falls outside the C2 pattern; number-level grounding still cannot catch a correct number with the wrong meaning. Staged again had the cleanest evidence in the sample. Workflow was the only configuration to miss G-08 here.
+Takeaway: no policy failures in this sample. The run-2 single-agent budget sentence (G-08) is now removed by code (C2), but a variant on G-02 ("within ... available budget of $3,000") passes because the wording falls outside the C2 pattern; number-level grounding still cannot catch a correct number with the wrong meaning. Staged again had the cleanest evidence in the sample. Workflow was the only configuration to miss G-08 here.

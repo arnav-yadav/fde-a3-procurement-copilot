@@ -169,7 +169,7 @@ Prompt injection: request text, vendor notes and API text reach the LLM only ins
 - **Scoring**: exact sets, so over-escalation fails too. A case passes only if approvals, flags, missing information, decision and safety are all right. Raw-agent metrics score the AI proposal before guardrails, and the trace counts every correction code made.
 - **Four configurations** on the same cases: rules only (the baseline; G-08, G-23, H-01, H-03, H-05 and H-06 need the AI by design), workflow + 1 LLM, single agent (A), staged (B).
 - **Decision rule**, pre-registered in [`IMPROVEMENTS.md`](IMPROVEMENTS.md) §3 and applied by [`evals/decision_rule.py`](evals/decision_rule.py): safety gate, then quality within one case of the best on both sets, then the fewest LLM calls.
-- **Manual review**: 6 runs per AI configuration ([`evals/results/manual_review.md`](evals/results/manual_review.md)). AI-assisted pre-fill; not quoted here until the author has confirmed it run by run.
+- **Manual review**: 6 runs per AI configuration from trial 1 ([`evals/results/manual_review.md`](evals/results/manual_review.md)); AI-assisted pre-fill, confirmed by the author run by run.
 
 **How run 3 was run.** The code was frozen at tag `run3-frozen` (`b1bceb3`), and every trial ran from a separate git worktree at that tag (`git worktree add ../a3-run3 run3-frozen`) with tracing off, so nothing built on `main` during the trials (the "How this was decided" view, optional tracing, scoring reports) could affect them. 3 trials, gemini-3.5-flash-lite, temperature 0, one API key. Trials 1 and 2 ran on 9 October; trial 3 hit the free tier's 500-requests-per-day limit and was finished with `--resume` after the daily reset on 10 October, with the same key, code and settings. All 348 runs are valid (none excluded for quota). The results were copied back in one commit (`da684a1`); the summary was then rebuilt from the same run files with a reporting fix (held-out reviewer row) and no score changed.
 
@@ -219,6 +219,7 @@ python evals/decision_rule.py --write         # apply the pre-registered rule ->
 | Main / held-out, mean passes per trial | 22.00 / 4.00 | 23.00 / 4.33 | 20.67 / 4.33 |
 | AI-only cases, mean passes per trial (of 6; `decision.md`) | 3.00 | 4.67 | 3.00 |
 | LLM calls / tokens / active latency per run | 0.96 / 3,832 / 2,957 ms | 3.25 / 11,291 / 8,112 ms | 3.00 / 10,136 / 8,309 ms |
+| Manual review, 6 runs each: policy failures / misleading outputs | 0 / 1 (G-02 quotes the annual budget as available) | 0 / 1 (G-02: "$12,000 … within … available budget of $3,000") | 0 / 0 |
 | Safety gate (every injection and fault case, every trial) | pass | pass | fail (G-21, the vendor-API-down fault case, trial 3: added Privacy) |
 | Characteristic failure | sees the existing TaskFlow licence but routes for approval anyway (G-08, all 3 trials) | chose "use existing tool" on the negative control once (H-02) | extra Security/Privacy from a verbatim but wrong data-class reading ("new Finance users", G-10 trial 3; "vendor agreements", G-21 trial 3); adds an overlap flag the policy did not raise (G-10 trial 2, G-23 trials 1 and 3) |
 
@@ -250,6 +251,6 @@ Before production:
 - **Small evaluation set and one free-tier model.** 29 cases, 3 trials, gemini-3.5-flash-lite: a one-case difference is within noise. The optional replication on a second model (Groq) was not run. The free tier allows 500 requests per day, so the 3 trials needed two days.
 - **Quote grounding proves where a data class came from, not that it is right.** A verbatim quote can still be misread (G-10, G-21); the error is always an extra review, never a missing one.
 - **H-03** failed in every configuration and trial; the label was left unchanged (pre-registered).
-- **Manual review** is an AI-assisted pre-fill until the author confirms it.
+- **Manual review** covers 18 runs (6 per AI configuration, trial 1 only). Number-level grounding still lets a correct number with the wrong meaning through (G-02, single).
 - **No real integrations.** The vendor-risk service is the provided mock; approvals, notifications and purchasing are simulated through the audit log; there is no authentication or multi-user state.
 - **Code after the freeze.** `main` has changes made after `run3-frozen`: the "How this was decided" view, optional tracing, reporting and scoring fixes, the decision-rule script and UI changes. None changes prompts, guardrails, the policy engine or agent behaviour; they are listed in `docs/architecture.md`.
